@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>CampusIQ — Student Portal</title>
+<link rel="stylesheet" href="shared.css">
+</head>
+<body>
+<div id="toast-wrap"></div>
+
+<div class="app-shell">
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <div class="tb-brand"><div class="tb-brand-icon">IQ</div>Campus<em class="tb-brand" style="color:var(--cyan);font-style:normal;font-family:var(--font-h)">IQ</em></div>
+    <div class="tb-right">
+      <span class="tb-badge badge-student">Student</span>
+      <div class="notif-bell" id="notifBtn" title="Notifications"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg><span class="notif-dot" id="nDot" style="display:none"></span></div>
+      <div class="tb-user"><div class="avatar av-sm tb-avatar" id="tbAvatar"></div><span id="tbName">Student</span></div>
+      <button class="logout-btn" onclick="logout()">Sign Out</button>
+    </div>
+  </header>
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sb-section">Academic</div>
+    <div class="sb-item active" data-page="overview" onclick="nav(this)"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>Dashboard</div>
+    <div class="sb-item" data-page="academics" onclick="nav(this)"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>My Academics</div>
+    <div class="sb-section">Portfolio</div>
+    <div class="sb-item" data-page="achievements" onclick="nav(this)"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></svg>Achievements <span class="sb-badge" id="pendBadge" style="display:none">!</span></div>
+    <div class="sb-item" data-page="skills" onclick="nav(this)"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>Skill Profile</div>
+    <div class="sb-item" data-page="profile" onclick="nav(this)"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>My Profile</div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main-area" id="mainArea"></main>
+</div>
+
+<!-- UPLOAD ACHIEVEMENT MODAL -->
+<div class="modal-overlay" id="uploadModal">
+  <div class="modal-box">
+    <div class="modal-hdr"><span class="modal-title">📤 Upload Achievement</span><button class="modal-close" onclick="closeModal()">✕</button></div>
+    <div class="form-row-2">
+      <div class="form-group"><label>Title</label><input class="form-control" id="aTitle" placeholder="e.g. HackIndia 2025 — 1st Place"></div>
+      <div class="form-group"><label>Organisation / Platform</label><input class="form-control" id="aOrg" placeholder="e.g. HackIndia"></div>
+    </div>
+    <div class="form-row-2">
+      <div class="form-group"><label>Type</label>
+        <select class="form-control" id="aType">
+          <option value="hackathon">Hackathon</option>
+          <option value="ideathon">Ideathon</option>
+          <option value="certification">Certification</option>
+          <option value="research">Research / Paper</option>
+          <option value="competition">Competition</option>
+          <option value="project">Project</option>
+          <option value="internship">Internship</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+      <div class="form-group"><label>Date</label><input class="form-control" id="aDate" type="date"></div>
+    </div>
+    <div class="form-group"><label>Skills Demonstrated (comma separated)</label><input class="form-control" id="aSkills" placeholder="e.g. React, Machine Learning, Python"></div>
+    <div class="form-group"><label>Description</label><textarea class="form-control" id="aDesc" rows="3" placeholder="Describe your achievement…"></textarea></div>
+    <div class="flex" style="gap:0.6rem;margin-top:0.5rem;">
+      <button class="btn btn-primary w-full" id="submitAch">Submit for Verification</button>
+    </div>
+  </div>
+</div>
+
+<script src="data.js"></script>
+<script>
+seedIfEmpty();
+
+// ── AUTH ──────────────────────────────────
+const session = DB.getSession();
+if(!session || session.role !== 'student') { window.location.href = 'index.html'; }
+const student = DB.getStudentByUserId(session.userId);
+if(!student) { window.location.href = 'index.html'; }
+
+// Topbar
+const initials = session.name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+document.getElementById('tbName').textContent = session.name;
+const av = document.getElementById('tbAvatar');
+av.textContent = initials;
+av.style.background = 'linear-gradient(135deg,#38BDF8,#8B5CF6)';
+
+function logout(){ DB.clearSession(); window.location.href='index.html'; }
+
+// ── NOTIFICATIONS ────────────────────────
+function checkNotifs(){
+  const notifs = DB.getNotifications(session.userId);
+  const unread = notifs.filter(n=>!n.read).length;
+  const dot = document.getElementById('nDot');
+  dot.style.display = unread > 0 ? 'block' : 'none';
+}
+checkNotifs();
+
+// ── NAVIGATION ───────────────────────────
+function nav(el) {
+  document.querySelectorAll('.sb-item').forEach(i=>i.classList.remove('active'));
+  el.classList.add('active');
+  renderPage(el.dataset.page);
+}
+function renderPage(page) {
+  const pages = { overview:renderOverview, academics:renderAcademics, achievements:renderAchievements, skills:renderSkills, profile:renderProfile };
+  (pages[page] || renderOverview)();
+}
+renderPage('overview');
+
+// ── TOAST ────────────────────────────────
+function toast(msg, sub='', type='ok') {
+  const wrap = document.getElementById('toast-wrap');
+  const t = document.createElement('div');
+  t.className = `toast ${type==='error'?'error':''}`;
+  const ico = type==='ok'?'✅':type==='error'?'❌':'ℹ️';
+  const ic  = type==='ok'?'toast-ico-ok':type==='error'?'toast-ico-err':'toast-ico-info';
+  t.innerHTML = `<div class="toast-ico ${ic}">${ico}</div><div><div class="toast-t">${msg}</div>${sub?`<div class="toast-s">${sub}</div>`:''}</div>`;
+  wrap.appendChild(t);
+  requestAnimationFrame(()=>requestAnimationFrame(()=>t.classList.add('in')));
+  setTimeout(()=>{t.classList.add('out');setTimeout(()=>t.remove(),400);},4000);
+}
+
+// ── HELPERS ──────────────────────────────
+function gradBar(val, max=100) {
+  const p = Math.round(val/max*100);
+  const col = p>=80?'linear-gradient(90deg,#38BDF8,#8B5CF6)':p>=60?'linear-gradient(90deg,#10B981,#38BDF8)':'linear-gradient(90deg,#F59E0B,#EF4444)';
+  return `<div class="progress-label"><span>${''}</span><span>${val}${max!==100?'/'+max:'%'}</span></div><div class="progress-wrap"><div class="progress-fill" style="width:0%" data-w="${p}%" style2="background:${col}" data-bg="${col}"></div></div>`;
+}
+function typeChip(t){const m={hackathon:'chip-cyan',ideathon:'chip-violet',certification:'chip-emerald',research:'chip-amber',competition:'chip-pink',project:'chip-cyan',internship:'chip-emerald',other:'chip-gray'};return`<span class="chip ${m[t]||'chip-gray'}">${t}</span>`;}
+function afterRender(){document.querySelectorAll('.progress-fill[data-w]').forEach(e=>{setTimeout(()=>{e.style.width=e.dataset.w;e.style.background=e.dataset.bg;},80);});}
+
+// ══════════════════════════════════════════
+// OVERVIEW
+// ══════════════════════════════════════════
+function renderOverview() {
+  const acRecs = DB.getStudentAcademic(student.id);
+  const achievs = DB.getAchievements().filter(a=>a.studentId===student.id);
+  const verified = achievs.filter(a=>a.status==='verified');
+  const pending  = achievs.filter(a=>a.status==='pending');
+  const readiness = DB.calcReadiness(student, DB.getAchievements(), DB.getAcademic());
+  const avgMark = acRecs.length ? Math.round(acRecs.reduce((s,r)=>s+r.marks,0)/acRecs.length) : 0;
+  const avgAttend = acRecs.length ? Math.round(acRecs.reduce((s,r)=>s+r.attendance,0)/acRecs.length) : 0;
+  const skills = DB.mapSkills(achievs);
+
+  // Update pending badge
+  const pb = document.getElementById('pendBadge');
+  if(pending.length){ pb.style.display='flex'; pb.textContent=pending.length; } else pb.style.display='none';
+
+  document.getElementById('mainArea').innerHTML = `
+  <div class="page-hdr animate-in">
+    <div class="page-hdr-left"><h2>Hello, ${student.name.split(' ')[0]} 👋</h2><p>${student.dept} · Year ${student.year} · Roll: ${student.rollNo}</p></div>
+    <div class="page-actions"><button class="btn btn-primary" onclick="openModal()">📤 Upload Achievement</button></div>
+  </div>
+
+  <div class="grid-4 animate-in anim-delay-1">
+    <div class="stat-card"><div class="stat-icon" style="background:rgba(56,189,248,0.1)">📊</div><div class="stat-label">Avg. Marks</div><div class="stat-val" style="color:var(--cyan)">${avgMark}%</div><div class="stat-sub">across ${acRecs.length} subjects</div></div>
+    <div class="stat-card"><div class="stat-icon" style="background:rgba(16,185,129,0.1)">📅</div><div class="stat-label">Attendance</div><div class="stat-val" style="color:var(--emerald)">${avgAttend}%</div><div class="stat-sub">${avgAttend>=75?'✓ Good standing':'⚠️ Below threshold'}</div></div>
+    <div class="stat-card"><div class="stat-icon" style="background:rgba(139,92,246,0.1)">🏆</div><div class="stat-label">Achievements</div><div class="stat-val" style="color:var(--violet)">${achievs.length}</div><div class="stat-sub">${verified.length} verified · ${pending.length} pending</div></div>
+    <div class="stat-card"><div class="stat-icon" style="background:rgba(245,158,11,0.1)">⚡</div><div class="stat-label">Readiness Score</div><div class="stat-val" style="color:var(--amber)">${readiness}</div><div class="stat-sub">out of 100</div></div>
+  </div>
+
+  <div class="grid-2 mt-2 animate-in anim-delay-2">
+    <!-- Readiness ring + skills -->
+    <div class="card">
+      <div class="card-title"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Industry Readiness</div>
+      <div style="display:flex;gap:1.5rem;align-items:center;">
+        <div class="ring-wrap">
+          <div class="ring-c" style="width:90px;height:90px;">
+            <svg width="90" height="90" viewBox="0 0 90 90"><circle cx="45" cy="45" r="36" fill="none" stroke="rgba(56,189,248,0.08)" stroke-width="7"/><circle cx="45" cy="45" r="36" fill="none" stroke="url(#rg)" stroke-width="7" stroke-linecap="round" stroke-dasharray="226" stroke-dashoffset="${226-(readiness/100)*226}" style="transition:stroke-dashoffset 1.2s ease"/><defs><linearGradient id="rg" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#38BDF8"/><stop offset="100%" stop-color="#8B5CF6"/></linearGradient></defs></svg>
+            <div class="ring-inner"><span class="ring-val" style="font-size:1.3rem">${readiness}</span><span class="ring-lbl">/100</span></div>
+          </div>
+        </div>
+        <div style="flex:1;">
+          ${[['Academics',avgMark],['Attendance',avgAttend],['Achievements',Math.min(verified.length*15,45)]].map(([l,v])=>`<div class="mb-1"><div class="progress-label"><span style="font-size:0.72rem;color:var(--text2)">${l}</span><span style="font-size:0.72rem;font-weight:600">${v}${l==='Achievements'?'':'\%'}</span></div><div class="progress-wrap"><div class="progress-fill" data-w="${v}%" data-bg="linear-gradient(90deg,var(--cyan),var(--violet))"></div></div></div>`).join('')}
+        </div>
+      </div>
+    </div>
+
+    <!-- Subject overview -->
+    <div class="card">
+      <div class="card-title"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>Subject Performance</div>
+      ${acRecs.length ? acRecs.slice(0,4).map(r=>`
+        <div style="margin-bottom:0.7rem;">
+          <div style="display:flex;justify-content:space-between;margin-bottom:0.25rem;"><span style="font-size:0.78rem;color:var(--text2)">${r.subject}</span><span style="font-size:0.78rem;font-weight:600;color:${r.marks>=80?'var(--emerald)':r.marks>=60?'var(--cyan)':'var(--red)'}">${r.marks}%</span></div>
+          <div class="progress-wrap"><div class="progress-fill" data-w="${r.marks}%" data-bg="${r.marks>=80?'linear-gradient(90deg,var(--emerald),var(--cyan))':r.marks>=60?'linear-gradient(90deg,var(--cyan),var(--violet))':'linear-gradient(90deg,var(--red),var(--amber))'}"></div></div>
+        </div>`).join('') : '<div class="empty-state"><div class="ico">📚</div><p>No academic records yet</p></div>'}
+    </div>
+  </div>
+
+  <!-- Recent achievements -->
+  <div class="card mt-2 animate-in anim-delay-3">
+    <div class="card-title" style="justify-content:space-between">
+      <span><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></svg>Recent Achievements</span>
+      <button class="btn btn-sm btn-primary" onclick="openModal()">+ Add</button>
+    </div>
+    ${achievs.length ? `<div class="tbl-wrap"><table><thead><tr><th>Title</th><th>Type</th><th>Skills</th><th>Date</th><th>Status</th></tr></thead><tbody>
+      ${achievs.slice(0,5).map(a=>`<tr><td><strong>${a.title}</strong><br><span class="text-xs text-muted">${a.org}</span></td><td>${typeChip(a.type)}</td><td><div class="skill-tags">${(a.skills||[]).map(s=>`<span class="skill-tag">${s}</span>`).join('')}</div></td><td class="text-sm">${a.date||'—'}</td><td><span class="status-${a.status}">${a.status==='verified'?'✓ Verified':a.status==='pending'?'⏳ Pending':'✗ Rejected'}</span></td></tr>`).join('')}
+    </tbody></table></div>` : '<div class="empty-state"><div class="ico">🏆</div><p>No achievements yet. Upload your first one!</p></div>'}
+  </div>
+
+  <!-- Skill cloud -->
+  ${skills.length ? `<div class="card mt-2 animate-in anim-delay-4"><div class="card-title">🧠 Mapped Skills (from verified achievements)</div><div class="skill-tags" style="gap:0.4rem">${skills.map((s,i)=>`<span class="skill-tag ${['','violet','emerald','amber'][i%4]}">${s}</span>`).join('')}</div></div>` : ''}
+  `;
+  afterRender();
+}
+
+// ══════════════════════════════════════════
+// ACADEMICS
+// ══════════════════════════════════════════
+function renderAcademics() {
+  const recs = DB.getStudentAcademic(student.id);
+  document.getElementById('mainArea').innerHTML = `
+  <div class="page-hdr animate-in"><div class="page-hdr-left"><h2>My Academics</h2><p>Subject-wise marks, quizzes, assignments & attendance</p></div></div>
+  ${recs.length ? `
+  <div class="grid-4 animate-in anim-delay-1">
+    ${[['Avg. Marks',Math.round(recs.reduce((s,r)=>s+r.marks,0)/recs.length)+'%','var(--cyan)','📊'],['Avg. Quiz',Math.round(recs.reduce((s,r)=>s+r.quiz,0)/recs.length)+'%','var(--violet)','📝'],['Avg. Assignment',Math.round(recs.reduce((s,r)=>s+r.assignment,0)/recs.length)+'%','var(--emerald)','📋'],['Avg. Attendance',Math.round(recs.reduce((s,r)=>s+r.attendance,0)/recs.length)+'%','var(--amber)','📅']].map(([l,v,c,i])=>`<div class="stat-card"><div class="stat-icon" style="background:${c}22">${i}</div><div class="stat-label">${l}</div><div class="stat-val" style="color:${c}">${v}</div></div>`).join('')}
+  </div>
+  <div class="card mt-2 animate-in anim-delay-2">
+    <div class="card-title">📚 Subject Breakdown</div>
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>Subject</th><th>Semester</th><th>Marks</th><th>Quiz</th><th>Assignment</th><th>Attendance</th><th>Teacher Feedback</th></tr></thead>
+      <tbody>
+        ${recs.map(r=>`<tr>
+          <td><strong>${r.subject}</strong></td>
+          <td class="text-sm">${r.semester}</td>
+          <td><div style="display:flex;align-items:center;gap:0.5rem;min-width:90px"><div class="progress-wrap" style="width:55px"><div class="progress-fill" data-w="${r.marks}%" data-bg="${r.marks>=80?'var(--emerald)':r.marks>=60?'var(--cyan)':'var(--red)'}"></div></div><span style="font-size:0.72rem;font-weight:600;color:${r.marks>=80?'var(--emerald)':r.marks>=60?'var(--cyan)':'var(--red)'}">${r.marks}%</span></div></td>
+          <td><span style="color:var(--violet);font-weight:600;font-size:0.8rem">${r.quiz}%</span></td>
+          <td><span style="color:var(--emerald);font-weight:600;font-size:0.8rem">${r.assignment}%</span></td>
+          <td><span style="color:${r.attendance>=75?'var(--emerald)':'var(--red)'};font-weight:600;font-size:0.8rem">${r.attendance}%</span></td>
+          <td style="font-size:0.72rem;color:var(--text2);max-width:200px">${r.feedback||'—'}</td>
+        </tr>`).join('')}
+      </tbody>
+    </table></div>
+  </div>
+  <div class="card mt-2 animate-in anim-delay-3">
+    <div class="card-title">📊 Activity Heatmap (Simulated)</div>
+    <div class="hmap" id="hmap"></div>
+  </div>
+  ` : '<div class="card animate-in"><div class="empty-state"><div class="ico">📚</div><p>No academic records yet. Your teacher will add your grades.</p></div></div>'}
+  `;
+  afterRender();
+  buildHeatmap();
+}
+
+function buildHeatmap(){
+  const m = document.getElementById('hmap'); if(!m) return;
+  for(let i=0;i<90;i++){const d=document.createElement('div');const v=[0,0,1,1,2,2,3,4][Math.floor(Math.random()*8)];d.className=`hc h${v}`;m.appendChild(d);}
+}
+
+// ══════════════════════════════════════════
+// ACHIEVEMENTS
+// ══════════════════════════════════════════
+function renderAchievements() {
+  const achievs = DB.getAchievements().filter(a=>a.studentId===student.id);
+  const pending = achievs.filter(a=>a.status==='pending');
+  const pb = document.getElementById('pendBadge');
+  if(pending.length){pb.style.display='flex';pb.textContent=pending.length;}else pb.style.display='none';
+
+  document.getElementById('mainArea').innerHTML = `
+  <div class="page-hdr animate-in">
+    <div class="page-hdr-left"><h2>My Achievements</h2><p>${achievs.length} total · ${achievs.filter(a=>a.status==='verified').length} verified</p></div>
+    <div class="page-actions"><button class="btn btn-primary" onclick="openModal()">📤 Upload New</button></div>
+  </div>
+  <div class="grid-3 animate-in anim-delay-1">
+    ${[['Total',achievs.length,'var(--cyan)'],['Verified',achievs.filter(a=>a.status==='verified').length,'var(--emerald)'],['Pending',achievs.filter(a=>a.status==='pending').length,'var(--amber)']].map(([l,v,c])=>`<div class="stat-card"><div class="stat-label">${l}</div><div class="stat-val" style="color:${c}">${v}</div></div>`).join('')}
+  </div>
+  <div class="card mt-2 animate-in anim-delay-2">
+    ${achievs.length ? `<div class="tbl-wrap"><table>
+      <thead><tr><th>Achievement</th><th>Type</th><th>Skills</th><th>Date</th><th>Status</th><th>Actions</th></tr></thead>
+      <tbody>
+        ${achievs.map(a=>`<tr>
+          <td><strong>${a.title}</strong><br><span class="text-xs text-muted">${a.org} · ${a.desc?.slice(0,50)||''}</span></td>
+          <td>${typeChip(a.type)}</td>
+          <td><div class="skill-tags">${(a.skills||[]).map(s=>`<span class="skill-tag">${s}</span>`).join('')}</div></td>
+          <td class="text-sm">${a.date||'—'}</td>
+          <td><span class="status-${a.status}">${a.status==='verified'?'✓ Verified':a.status==='pending'?'⏳ Pending':'✗ Rejected'}</span></td>
+          <td>${a.status==='pending'?`<button class="btn btn-xs btn-danger" onclick="deleteAchievement('${a.id}')">Delete</button>`:'<span class="text-xs text-muted">Locked</span>'}</td>
+        </tr>`).join('')}
+      </tbody>
+    </table></div>` : `<div class="empty-state"><div class="ico">🏆</div><p>No achievements yet.</p><button class="btn btn-primary mt-2" onclick="openModal()">Upload Your First Achievement</button></div>`}
+  </div>
+  `;
+  afterRender();
+}
+
+function deleteAchievement(id) {
+  const list = DB.getAchievements().filter(a=>a.id!==id);
+  DB.saveAchievements(list);
+  toast('Achievement removed', 'The pending achievement was deleted.');
+  renderAchievements();
+}
+
+// ══════════════════════════════════════════
+// SKILLS
+// ══════════════════════════════════════════
+function renderSkills() {
+  const achievs = DB.getAchievements().filter(a=>a.studentId===student.id);
+  const skills = DB.mapSkills(achievs);
+  const readiness = DB.calcReadiness(student, DB.getAchievements(), DB.getAcademic());
+
+  document.getElementById('mainArea').innerHTML = `
+  <div class="page-hdr animate-in"><div class="page-hdr-left"><h2>Skill Profile</h2><p>AI-mapped from your verified achievements</p></div></div>
+  <div class="grid-2 animate-in anim-delay-1">
+    <div class="card">
+      <div class="card-title">⚡ Industry Readiness Score</div>
+      <div class="ring-wrap" style="padding:1rem 0">
+        <div class="ring-c" style="width:110px;height:110px">
+          <svg width="110" height="110" viewBox="0 0 110 110"><circle cx="55" cy="55" r="44" fill="none" stroke="rgba(56,189,248,0.07)" stroke-width="8"/><circle cx="55" cy="55" r="44" fill="none" stroke="url(#rg2)" stroke-width="8" stroke-linecap="round" stroke-dasharray="276" stroke-dashoffset="${276-(readiness/100)*276}"/><defs><linearGradient id="rg2" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#38BDF8"/><stop offset="100%" stop-color="#8B5CF6"/></linearGradient></defs></svg>
+          <div class="ring-inner"><span class="ring-val" style="font-size:1.6rem">${readiness}</span><span class="ring-lbl">/100</span></div>
+        </div>
+        <div class="text-sm text-muted" style="text-align:center">Based on academics, attendance & verified achievements</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">🧠 Mapped Skills (${skills.length})</div>
+      ${skills.length ? `<div class="skill-tags" style="gap:0.5rem">${skills.map((s,i)=>`<span class="skill-tag ${['','violet','emerald','amber'][i%4]}" style="font-size:0.72rem;padding:0.28rem 0.7rem">${s}</span>`).join('')}</div><div class="divider"></div><div class="text-xs text-muted">Skills are extracted from verified achievements. Upload more achievements to grow your profile.</div>` 
+      : `<div class="empty-state"><div class="ico">🔬</div><p>No verified achievements yet. Skills will appear here once your achievements are verified by a teacher.</p></div>`}
+    </div>
+  </div>
+  <div class="card mt-2 animate-in anim-delay-2">
+    <div class="card-title">📋 Skill-Achievement Map</div>
+    ${achievs.filter(a=>a.status==='verified').length ? `<div class="tbl-wrap"><table>
+      <thead><tr><th>Achievement</th><th>Skills Demonstrated</th><th>Verified</th></tr></thead>
+      <tbody>${achievs.filter(a=>a.status==='verified').map(a=>`<tr>
+        <td><strong>${a.title}</strong><br><span class="text-xs text-muted">${a.org}</span></td>
+        <td><div class="skill-tags">${(a.skills||[]).map(s=>`<span class="skill-tag">${s}</span>`).join('')}</div></td>
+        <td><span class="status-verified">✓ Verified</span></td>
+      </tr>`).join('')}</tbody>
+    </table></div>` : `<div class="empty-state"><div class="ico">📊</div><p>Verified achievements will be mapped here.</p></div>`}
+  </div>
+  `;
+}
+
+// ══════════════════════════════════════════
+// PROFILE
+// ══════════════════════════════════════════
+function renderProfile() {
+  const readiness = DB.calcReadiness(student, DB.getAchievements(), DB.getAcademic());
+  const achievs = DB.getAchievements().filter(a=>a.studentId===student.id&&a.status==='verified');
+  const skills = DB.mapSkills(achievs);
+  document.getElementById('mainArea').innerHTML = `
+  <div class="page-hdr animate-in"><div class="page-hdr-left"><h2>My Profile</h2><p>Your public talent card</p></div></div>
+  <div class="card animate-in anim-delay-1" style="max-width:600px">
+    <div style="display:flex;gap:1.2rem;align-items:center;margin-bottom:1.2rem">
+      <div class="avatar av-xl" style="background:linear-gradient(135deg,var(--cyan),var(--violet))">${initials}</div>
+      <div>
+        <div style="font-family:var(--font-h);font-size:1.2rem;font-weight:800;margin-bottom:0.2rem">${session.name}</div>
+        <div class="text-sm text-muted">${student.dept} · Year ${student.year} · ${student.rollNo}</div>
+        <div style="margin-top:0.5rem"><span class="tb-badge badge-student">Student</span></div>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <div class="grid-2" style="margin-top:0.75rem">
+      <div><div class="text-xs text-muted mb-1">GPA</div><div style="font-family:var(--font-h);font-size:1.4rem;font-weight:800;color:var(--cyan)">${student.gpa}</div></div>
+      <div><div class="text-xs text-muted mb-1">Readiness Score</div><div style="font-family:var(--font-h);font-size:1.4rem;font-weight:800;color:var(--violet)">${readiness}/100</div></div>
+    </div>
+    <div class="divider"></div>
+    <div><div class="text-xs text-muted mb-1">Verified Skills</div><div class="skill-tags mt-1">${skills.slice(0,12).map((s,i)=>`<span class="skill-tag ${['','violet','emerald','amber'][i%4]}">${s}</span>`).join('')||'<span class="text-xs text-muted">No skills yet</span>'}</div></div>
+    <div class="divider"></div>
+    <div><div class="text-xs text-muted mb-1">Email</div><div class="text-sm">${session.email}</div></div>
+  </div>`;
+}
+
+// ══════════════════════════════════════════
+// MODAL: UPLOAD ACHIEVEMENT
+// ══════════════════════════════════════════
+function openModal(){document.getElementById('uploadModal').classList.add('open');}
+function closeModal(){document.getElementById('uploadModal').classList.remove('open');}
+document.getElementById('uploadModal').addEventListener('click',e=>{if(e.target.id==='uploadModal')closeModal();});
+
+document.getElementById('submitAch').addEventListener('click', () => {
+  const title  = document.getElementById('aTitle').value.trim();
+  const org    = document.getElementById('aOrg').value.trim();
+  const type   = document.getElementById('aType').value;
+  const date   = document.getElementById('aDate').value;
+  const skills = document.getElementById('aSkills').value.split(',').map(s=>s.trim()).filter(Boolean);
+  const desc   = document.getElementById('aDesc').value.trim();
+  if(!title){ toast('Title is required','','error'); return; }
+  const id = 'a' + Date.now();
+  DB.addAchievement({ id, studentId:student.id, ownerId:session.userId, type, title, org, skills, date, desc, status:'pending', verifiedBy:null });
+  // Notify all teachers
+  DB.getTeachers().forEach(t => {
+    DB.addNotification({ userId:t.userId, type:'new_achievement', text:`${session.name} uploaded: ${title}`, read:false, date:new Date().toISOString(), refId:id });
+  });
+  toast('Achievement submitted!','Waiting for teacher verification 🎓');
+  closeModal();
+  ['aTitle','aOrg','aSkills','aDesc'].forEach(id=>document.getElementById(id).value='');
+  renderAchievements();
+});
+</script>
+</body>
+</html>
