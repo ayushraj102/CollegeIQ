@@ -81,13 +81,10 @@ body{background:var(--bg);color:var(--text);font-family:var(--fb);min-height:100
 .trust-dot:nth-child(2){background:linear-gradient(135deg,#10B981,#38BDF8);}
 .trust-dot:nth-child(3){background:linear-gradient(135deg,#F59E0B,#EF4444);}
 .trust-dot:nth-child(4){background:linear-gradient(135deg,#EC4899,#8B5CF6);}
-.right{position:relative;background:rgba(5,8,16,0.97);display:flex;flex-direction:column;padding:0;overflow:hidden;}
+.right{position:relative;background:rgba(5,8,16,0.97);display:flex;flex-direction:column;justify-content:center;padding:2rem 2.2rem;overflow:hidden;}
 .right::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;z-index:3;background:linear-gradient(90deg,transparent,rgba(56,189,248,0.28),transparent);}
-.right-inner{flex:1;overflow-y:auto;overflow-x:hidden;padding:2rem 2.2rem 1.5rem;display:flex;flex-direction:column;min-height:0;scrollbar-width:none;}
-.right-inner::-webkit-scrollbar{display:none;}
-.right-footer{flex-shrink:0;padding:0 2.2rem 1.5rem;background:rgba(5,8,16,0.97);border-top:1px solid rgba(255,255,255,0.04);}
-.right-footer-inner{padding-top:1rem;display:flex;flex-direction:column;gap:0.7rem;}
-.role-tabs{display:flex;gap:0.18rem;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:11px;padding:0.25rem;margin-bottom:1.5rem;flex-shrink:0;}
+.right-inner{display:flex;flex-direction:column;}
+.role-tabs{display:flex;gap:0.18rem;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:11px;padding:0.25rem;margin-bottom:1rem;}
 .rtab{flex:1;padding:0.44rem 0.3rem;border-radius:8px;border:none;background:none;cursor:pointer;transition:all 0.2s;display:flex;flex-direction:column;align-items:center;gap:0.1rem;color:var(--muted);}
 .rtab .ricon{font-size:0.88rem;transition:transform 0.2s;}
 .rtab .rlabel{font-size:0.65rem;font-weight:600;letter-spacing:0.02em;}
@@ -104,8 +101,8 @@ body{background:var(--bg);color:var(--text);font-family:var(--fb);min-height:100
 .login-tag-dot{width:5px;height:5px;border-radius:50%;background:var(--cyan);box-shadow:0 0 7px var(--cyan);animation:ldot 2s infinite;flex-shrink:0;}
 @keyframes ldot{0%,100%{opacity:1;}50%{opacity:0.25;}}
 .login-h1{font-family:var(--fh);font-size:1.55rem;font-weight:800;letter-spacing:-0.03em;color:var(--text);line-height:1.1;margin-bottom:0.25rem;}
-.login-sub{font-size:0.78rem;color:var(--text2);margin-bottom:1.4rem;line-height:1.5;transition:opacity 0.2s;}
-.form-group{margin-bottom:0.85rem;}
+.login-sub{font-size:0.78rem;color:var(--text2);margin-bottom:1rem;line-height:1.5;transition:opacity 0.2s;}
+.form-group{margin-bottom:0.7rem;}
 .form-label{display:block;font-size:0.67rem;font-weight:600;color:var(--text2);letter-spacing:0.05em;text-transform:uppercase;margin-bottom:0.3rem;}
 .form-input{width:100%;background:#060D1A;border:1px solid rgba(255,255,255,0.08);border-radius:9px;padding:0.65rem 0.9rem;font-size:0.85rem;color:var(--text);font-family:var(--fb);outline:none;transition:border-color 0.2s,box-shadow 0.2s,background 0.2s;}
 .form-input::placeholder{color:var(--muted);}
@@ -228,7 +225,6 @@ body{background:var(--bg);color:var(--text);font-family:var(--fb);min-height:100
         <div class="form-group">
           <label class="form-label">Password</label>
           <input class="form-input ri-student" id="password" type="password" placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;" autocomplete="current-password" required>
-          <div class="cred-hint" id="credHint">student1@campusiq.edu &middot; stud123</div>
         </div>
         <button class="btn-login" id="loginBtn" type="submit">
           <div class="btn-spinner"></div>
@@ -240,18 +236,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--fb);min-height:100
         <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
         Continue with Google
       </button>
-      <div class="domain-note">Only <span>@iilm.edu</span> accounts &mdash; change in CONFIG</div>
-    </div>
-    <div class="right-footer">
-      <div class="right-footer-inner">
-        <div class="divider">or quick access</div>
-        <button class="btn-demo" onclick="enterDemo()">
-          <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M5 3l14 9-14 9V3z"/></svg>
-          Enter Demo as <span class="demo-role-label" id="demoRoleLabel">Student</span>
-        </button>
-        <div class="login-trust"><span class="tbadge">&#x1F512; Secure</span>&nbsp;&middot;&nbsp;localStorage only&nbsp;&middot;&nbsp;no server</div>
-      </div>
-    </div>
+
   </div>
 
 </div>
@@ -272,10 +257,9 @@ window.addEventListener('load',()=>{if(typeof google==='undefined')return;google
 function triggerGoogleLogin(){if(typeof google==='undefined'||GOOGLE_CLIENT_ID==='YOUR_GOOGLE_CLIENT_ID'){showToast('Google Client ID not configured — use demo login');return;}google.accounts.id.prompt();}
 function handleGoogleCredential(r){try{const p=JSON.parse(atob(r.credential.split('.')[1]));const email=p.email||'';const name=p.name||email.split('@')[0];if(ALLOWED_DOMAIN&&!email.endsWith('@'+ALLOWED_DOMAIN)){showErrMsg('Access denied. Only @'+ALLOWED_DOMAIN+' accounts allowed.');return;}let user=null;try{user=DB.getUserByEmail(email);}catch(e){}if(!user){const uid='g_'+Date.now();user={id:uid,email,name,password:'',role:'student'};const u=DB.getUsers();u.push(user);DB.saveUsers(u);const s=DB.getStudents();s.push({id:'s_'+Date.now(),userId:uid,name,dept:'General',year:1,section:'A',rollNo:'GOOGLE',gpa:0,skills:[],readiness:0});DB.saveStudents(s);}DB.setSession({userId:user.id,role:user.role,name:user.name||name,email});showToast('Welcome, '+(user.name||name).split(' ')[0]+' !');const portals={admin:'admin.html',teacher:'teacher.html',student:'student.html',recruiter:'recruiter.html'};setTimeout(()=>{window.location.href=portals[user.role]||'student.html';},850);}catch(err){showErrMsg('Google sign-in failed. Try the demo login.');}}
 function showErrMsg(msg){const e=document.getElementById('errMsg');e.textContent=msg;e.style.display='block';requestAnimationFrame(()=>e.classList.add('show'));}
-function setRole(btn){document.querySelectorAll('.rtab').forEach(b=>b.classList.remove('active'));btn.classList.add('active');activeRole=btn.dataset.role;const cfg=ROLES[activeRole];const sub=document.getElementById('loginSub');sub.style.opacity='0';setTimeout(()=>{sub.textContent=cfg.sub;sub.style.opacity='1';},140);document.getElementById('roleTagText').textContent=cfg.tag;document.getElementById('demoRoleLabel').textContent=cfg.label;['email','password'].forEach(id=>{const el=document.getElementById(id);el.className='form-input ri-'+activeRole+' role-flash';setTimeout(()=>el.classList.remove('role-flash'),260);});document.getElementById('credHint').textContent=cfg.email+' · '+cfg.pass;document.getElementById('email').value=cfg.email;document.getElementById('password').value=cfg.pass;document.getElementById('errMsg').classList.remove('show');document.getElementById('errMsg').style.display='none';const dot=document.getElementById('tagDot');dot.style.background=cfg.color+'1)';dot.style.boxShadow='0 0 7px '+cfg.color+'0.8)';document.getElementById('loginTag').style.color=cfg.color+'1)';}
+function setRole(btn){document.querySelectorAll('.rtab').forEach(b=>b.classList.remove('active'));btn.classList.add('active');activeRole=btn.dataset.role;const cfg=ROLES[activeRole];const sub=document.getElementById('loginSub');sub.style.opacity='0';setTimeout(()=>{sub.textContent=cfg.sub;sub.style.opacity='1';},140);document.getElementById('roleTagText').textContent=cfg.tag;['email','password'].forEach(id=>{const el=document.getElementById(id);el.className='form-input ri-'+activeRole+' role-flash';setTimeout(()=>el.classList.remove('role-flash'),260);});document.getElementById('email').value=cfg.email;document.getElementById('password').value=cfg.pass;document.getElementById('errMsg').classList.remove('show');document.getElementById('errMsg').style.display='none';const dot=document.getElementById('tagDot');dot.style.background=cfg.color+'1)';dot.style.boxShadow='0 0 7px '+cfg.color+'0.8)';document.getElementById('loginTag').style.color=cfg.color+'1)';}
 document.getElementById('email').value=ROLES.student.email;
 document.getElementById('password').value=ROLES.student.pass;
-document.getElementById('credHint').textContent=ROLES.student.email+' · '+ROLES.student.pass;
 function doLogin(e){if(e)e.preventDefault();const email=document.getElementById('email').value.trim();const pass=document.getElementById('password').value;const btn=document.getElementById('loginBtn');const err=document.getElementById('errMsg');err.classList.remove('show');err.style.display='none';btn.classList.add('loading');document.getElementById('btnText').textContent='Authenticating…';setTimeout(()=>{let user=null;try{user=DB.getUserByEmail(email);}catch(ex){}if(!user||user.password!==pass){btn.classList.remove('loading');document.getElementById('btnText').textContent='Sign In →';err.style.display='block';requestAnimationFrame(()=>err.classList.add('show'));document.getElementById('password').value='';return;}try{DB.setSession({userId:user.id,role:user.role,name:user.name,email:user.email});}catch(ex2){}document.getElementById('btnText').textContent='✓ Signed in!';showToast('Welcome back, '+user.name.split(' ')[0]+' !');const portals={admin:'admin.html',teacher:'teacher.html',student:'student.html',recruiter:'recruiter.html'};setTimeout(()=>{window.location.href=portals[user.role];},850);},1100);}
 function enterDemo(){const cfg=ROLES[activeRole];document.getElementById('email').value=cfg.email;document.getElementById('password').value=cfg.pass;doLogin(null);}
 function showToast(msg){const wrap=document.getElementById('toastWrap');const t=document.createElement('div');t.className='toast';t.innerHTML='<span class="tdot"></span>'+msg;wrap.appendChild(t);requestAnimationFrame(()=>requestAnimationFrame(()=>t.classList.add('in')));setTimeout(()=>{t.classList.add('out');setTimeout(()=>t.remove(),380);},3800);}
