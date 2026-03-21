@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>CampusIQ — Admin Portal</title>
+<link rel="stylesheet" href="shared.css">
+</head>
+<body>
+<div id="toast-wrap"></div>
+<div class="app-shell">
+  <header class="topbar">
+    <div class="tb-brand"><div class="tb-brand-icon">IQ</div>Campus<em style="color:var(--cyan);font-style:normal;font-family:var(--font-h)">IQ</em><span style="font-size:0.65rem;color:var(--red);background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.2);padding:0.15rem 0.5rem;border-radius:4px;margin-left:0.3rem;font-weight:700">ADMIN</span></div>
+    <div class="tb-right">
+      <span class="tb-badge badge-admin">System Admin</span>
+      <div class="tb-user"><div class="avatar av-sm" id="tbAvatar" style="background:linear-gradient(135deg,#EF4444,#F97316)"></div><span id="tbName"></span></div>
+      <button class="logout-btn" onclick="logout()">Sign Out</button>
+    </div>
+  </header>
+  <aside class="sidebar">
+    <div class="sb-section">Overview</div>
+    <div class="sb-item active" data-page="overview" onclick="nav(this)"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>Dashboard</div>
+    <div class="sb-section">Users</div>
+    <div class="sb-item" data-page="students" onclick="nav(this)"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Students</div>
+    <div class="sb-item" data-page="teachers" onclick="nav(this)"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Teachers</div>
+    <div class="sb-item" data-page="recruiters" onclick="nav(this)"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/></svg>Recruiters</div>
+    <div class="sb-section">Content</div>
+    <div class="sb-item" data-page="achievements" onclick="nav(this)"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></svg>All Achievements</div>
+    <div class="sb-item" data-page="academics" onclick="nav(this)"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Academic Records</div>
+    <div class="sb-item" data-page="research" onclick="nav(this)"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>Research</div>
+    <div class="sb-item" data-page="importSheets" onclick="nav(this)"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>Import Sheets</div>
+    <div class="sb-section">System</div>
+    <div class="sb-item" data-page="adduser" onclick="nav(this)"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>Add User</div>
+    <div class="sb-item" data-page="reset" onclick="nav(this)"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg>Reset Data</div>
+  </aside>
+  <main class="main-area" id="mainArea"></main>
+</div>
+
+<!-- ADD USER MODAL -->
+<div class="modal-overlay" id="userModal">
+  <div class="modal-box">
+    <div class="modal-hdr"><span class="modal-title">👤 Add New User</span><button class="modal-close" onclick="document.getElementById('userModal').classList.remove('open')">✕</button></div>
+    <div class="form-row-2">
+      <div class="form-group"><label>Full Name</label><input class="form-control" id="uName" placeholder="Dr. / Prof. / Student name"></div>
+      <div class="form-group"><label>Email</label><input class="form-control" id="uEmail" type="email" placeholder="user@campusiq.edu"></div>
+    </div>
+    <div class="form-row-2">
+      <div class="form-group"><label>Password</label><input class="form-control" id="uPass" type="password" placeholder="Minimum 6 chars"></div>
+      <div class="form-group"><label>Role</label>
+        <select class="form-control" id="uRole" onchange="toggleRoleFields()">
+          <option value="student">Student</option><option value="teacher">Teacher</option><option value="recruiter">Recruiter</option>
+        </select>
+      </div>
+    </div>
+    <div id="studentFields">
+      <div class="form-row-3">
+        <div class="form-group"><label>Department</label><input class="form-control" id="uDept" placeholder="CSE"></div>
+        <div class="form-group"><label>Year</label><input class="form-control" type="number" id="uYear" min="1" max="5" placeholder="1-5"></div>
+        <div class="form-group"><label>Roll No.</label><input class="form-control" id="uRoll" placeholder="CS21001"></div>
+      </div>
+    </div>
+    <div id="teacherFields" style="display:none">
+      <div class="form-row-2">
+        <div class="form-group"><label>Department</label><input class="form-control" id="tDept" placeholder="Computer Science"></div>
+        <div class="form-group"><label>Subjects (comma sep.)</label><input class="form-control" id="tSubjects" placeholder="ML, Python, DSA"></div>
+      </div>
+    </div>
+    <button class="btn btn-primary w-full" id="saveUserBtn" style="margin-top:0.5rem">Create User</button>
+  </div>
+</div>
+
+<script src="data.js"></script>
+<script>
+seedIfEmpty();
+const session = DB.getSession();
+if(!session||session.role!=='admin'){window.location.href='index.html';}
+const initials=session.name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+document.getElementById('tbName').textContent=session.name;
+document.getElementById('tbAvatar').textContent=initials;
+function logout(){DB.clearSession();window.location.href='index.html';}
+function nav(el){document.querySelectorAll('.sb-item').forEach(i=>i.classList.remove('active'));el.classList.add('active');renderPage(el.dataset.page);}
+function renderPage(p){const m={overview:renderOverview,students:renderStudents,teachers:renderTeachers,recruiters:renderRecruiters,achievements:renderAchievements,academics:renderAcademics,research:renderResearch,adduser:renderAddUser,reset:renderReset,importSheets:renderImportSheets};(m[p]||renderOverview)();}
+renderPage('overview');
+function toast(msg,sub='',type='ok'){const w=document.getElementById('toast-wrap');const t=document.createElement('div');t.className=`toast ${type==='error'?'error':''}`;const ico=type==='ok'?'✅':type==='error'?'❌':'ℹ️';const ic=type==='ok'?'toast-ico-ok':type==='error'?'toast-ico-err':'toast-ico-info';t.innerHTML=`<div class="toast-ico ${ic}">${ico}</div><div><div class="toast-t">${msg}</div>${sub?`<div class="toast-s">${sub}</div>`:''}</div>`;w.appendChild(t);requestAnimationFrame(()=>requestAnimationFrame(()=>t.classList.add('in')));setTimeout(()=>{t.classList.add('out');setTimeout(()=>t.remove(),400);},4000);}
+function typeChip(t){const m={hackathon:'chip-cyan',ideathon:'chip-violet',certification:'chip-emerald',research:'chip-amber',competition:'chip-pink',project:'chip-cyan',internship:'chip-emerald',other:'chip-gray'};return`<span class="chip ${m[t]||'chip-gray'}">${t}</span>`;}
+
+// ══════════════════════════════════════════
+// OVERVIEW
+// ══════════════════════════════════════════
+function renderOverview(){
+  const users=DB.getUsers();const students=DB.getStudents();const teachers=DB.getTeachers();
+  const achievs=DB.getAchievements();const acRecs=DB.getAcademic();const research=DB.getResearch();
+  const pending=achievs.filter(a=>a.status==='pending').length;
+  const verified=achievs.filter(a=>a.status==='verified').length;
+  const totalCitations=research.reduce((s,r)=>s+(r.citations||0),0);
+
+  document.getElementById('mainArea').innerHTML=`
+  <div class="page-hdr animate-in"><div class="page-hdr-left"><h2>System Overview</h2><p>CampusIQ Admin Dashboard — All data in real time</p></div></div>
+  <div class="grid-4 animate-in anim-delay-1">
+    ${[['Total Users',users.length,'var(--cyan)','👤'],['Students',students.length,'var(--violet)','🎓'],['Teachers',teachers.length,'var(--emerald)','👨‍🏫'],['Pending Verifications',pending,'var(--amber)','🔍']].map(([l,v,c,i])=>`<div class="stat-card"><div class="stat-icon" style="background:${c}20">${i}</div><div class="stat-label">${l}</div><div class="stat-val" style="color:${c}">${v}</div></div>`).join('')}
+  </div>
+  <div class="grid-4 animate-in anim-delay-2" style="margin-top:1rem">
+    ${[['Total Achievements',achievs.length,'var(--cyan)','🏆'],['Verified',verified,'var(--emerald)','✅'],['Academic Records',acRecs.length,'var(--violet)','📋'],['Research Papers',research.length,'var(--pink)','📄']].map(([l,v,c,i])=>`<div class="stat-card"><div class="stat-icon" style="background:${c}20">${i}</div><div class="stat-label">${l}</div><div class="stat-val" style="color:${c}">${v}</div></div>`).join('')}
+  </div>
+  <div class="grid-2 mt-2 animate-in anim-delay-3">
+    <div class="card">
+      <div class="card-title">🎓 Students Overview</div>
+      <div class="tbl-wrap"><table><thead><tr><th>Name</th><th>Dept</th><th>GPA</th><th>Readiness</th><th>Achievements</th></tr></thead><tbody>
+        ${students.map(st=>{const r=DB.calcReadiness(st,achievs,acRecs);const achv=achievs.filter(a=>a.studentId===st.id&&a.status==='verified').length;return`<tr><td><strong>${st.name}</strong></td><td class="text-xs">${st.dept} Y${st.year}</td><td style="color:var(--cyan);font-weight:600">${st.gpa}</td><td><span style="color:var(--violet);font-weight:600">${r}/100</span></td><td>${achv}</td></tr>`}).join('')}
+      </tbody></table></div>
+    </div>
+    <div class="card">
+      <div class="card-title">📊 Achievement Status</div>
+      ${['verified','pending','rejected'].map(s=>{const count=achievs.filter(a=>a.status===s).length;const pct=achievs.length?Math.round(count/achievs.length*100):0;return`<div style="margin-bottom:0.7rem"><div class="progress-label"><span style="font-size:0.78rem;color:var(--text2);text-transform:capitalize">${s}</span><span style="font-size:0.78rem;font-weight:600">${count} (${pct}%)</span></div><div class="progress-wrap"><div class="progress-fill" data-w="${pct}%" data-bg="${s==='verified'?'var(--emerald)':s==='pending'?'var(--amber)':'var(--red)'}"></div></div></div>`}).join('')}
+      <div class="divider"></div>
+      <div class="card-title">📄 Research</div>
+      ${['published','under_review','preprint'].map(s=>{const count=research.filter(r=>r.status===s).length;return`<div style="display:flex;justify-content:space-between;margin-bottom:0.35rem"><span class="text-sm" style="text-transform:capitalize">${s.replace('_',' ')}</span><span class="text-sm fw-bold" style="color:var(--cyan)">${count}</span></div>`}).join('')}
+    </div>
+  </div>`;
+  document.querySelectorAll('.progress-fill[data-w]').forEach(e=>{setTimeout(()=>{e.style.width=e.dataset.w;e.style.background=e.dataset.bg;},80);});
+}
+
+// ── STUDENTS ──────────────────────────────
+function renderStudents(){
+  const students=DB.getStudents();
+  document.getElementById('mainArea').innerHTML=`
+  <div class="page-hdr animate-in"><div class="page-hdr-left"><h2>All Students (${students.length})</h2></div><div class="page-actions"><button class="btn btn-primary" onclick="openUserModal('student')">+ Add Student</button></div></div>
+  <div class="card animate-in anim-delay-1">
+    <div class="tbl-wrap"><table><thead><tr><th>Name</th><th>Email</th><th>Dept</th><th>Year</th><th>Roll No.</th><th>GPA</th><th>Readiness</th><th>Achievements</th><th>Actions</th></tr></thead><tbody>
+      ${students.map(st=>{const u=DB.getUserById(st.userId);const achvs=DB.getAchievements().filter(a=>a.studentId===st.id);const r=DB.calcReadiness(st,DB.getAchievements(),DB.getAcademic());return`<tr>
+        <td><div style="display:flex;align-items:center;gap:0.5rem"><div class="avatar av-sm" style="background:linear-gradient(135deg,var(--cyan),var(--violet));font-size:0.6rem">${st.name.split(' ').map(w=>w[0]).join('').slice(0,2)}</div><strong>${st.name}</strong></div></td>
+        <td class="text-xs">${u?.email||'—'}</td><td class="text-xs">${st.dept}</td><td class="text-xs">${st.year}</td><td class="text-xs">${st.rollNo}</td>
+        <td style="color:var(--cyan);font-weight:600">${st.gpa}</td><td><span style="color:var(--violet);font-weight:600">${r}/100</span></td>
+        <td>${achvs.filter(a=>a.status==='verified').length}/${achvs.length}</td>
+        <td><button class="btn btn-xs btn-danger" onclick="deleteStudent('${st.id}')">Remove</button></td>
+      </tr>`}).join('')}
+    </tbody></table></div>
+  </div>`;
+}
+function deleteStudent(sid){const st=DB.getStudentById(sid);if(!confirm(`Remove ${st?.name}?`))return;DB.saveStudents(DB.getStudents().filter(s=>s.id!==sid));DB.saveUsers(DB.getUsers().filter(u=>u.id!==st?.userId));toast('Student removed');renderStudents();}
+
+// ── TEACHERS ─────────────────────────────
+function renderTeachers(){
+  const teachers=DB.getTeachers();
+  document.getElementById('mainArea').innerHTML=`
+  <div class="page-hdr animate-in"><div class="page-hdr-left"><h2>All Teachers (${teachers.length})</h2></div><div class="page-actions"><button class="btn btn-primary" onclick="openUserModal('teacher')">+ Add Teacher</button></div></div>
+  <div class="card animate-in anim-delay-1"><div class="tbl-wrap"><table><thead><tr><th>Name</th><th>Email</th><th>Department</th><th>Subjects</th><th>Research</th><th>Actions</th></tr></thead><tbody>
+    ${teachers.map(t=>{const u=DB.getUserById(t.userId);const res=DB.getResearch().filter(r=>r.teacherId===t.id&&r.status==='published').length;return`<tr>
+      <td><strong>${t.name}</strong></td><td class="text-xs">${u?.email||'—'}</td><td class="text-sm">${t.dept}</td>
+      <td><div class="skill-tags">${(t.subjects||[]).map(s=>`<span class="skill-tag">${s}</span>`).join('')}</div></td>
+      <td style="color:var(--emerald);font-weight:600">${res} pubs</td>
+      <td><button class="btn btn-xs btn-danger" onclick="deleteTeacher('${t.id}')">Remove</button></td>
+    </tr>`}).join('')}
+  </tbody></table></div></div>`;
+}
+function deleteTeacher(tid){const t=DB.getTeachers().find(x=>x.id===tid);if(!confirm(`Remove ${t?.name}?`))return;DB.saveTeachers(DB.getTeachers().filter(x=>x.id!==tid));DB.saveUsers(DB.getUsers().filter(u=>u.id!==t?.userId));toast('Teacher removed');renderTeachers();}
+
+// ── RECRUITERS ───────────────────────────
+function renderRecruiters(){
+  const users=DB.getUsers().filter(u=>u.role==='recruiter');
+  document.getElementById('mainArea').innerHTML=`
+  <div class="page-hdr animate-in"><div class="page-hdr-left"><h2>Recruiters (${users.length})</h2></div><div class="page-actions"><button class="btn btn-primary" onclick="openUserModal('recruiter')">+ Add Recruiter</button></div></div>
+  <div class="card animate-in"><div class="tbl-wrap"><table><thead><tr><th>Name</th><th>Email</th><th>Actions</th></tr></thead><tbody>
+    ${users.map(u=>`<tr><td><strong>${u.name}</strong></td><td>${u.email}</td><td><button class="btn btn-xs btn-danger" onclick="deleteUser('${u.id}')">Remove</button></td></tr>`).join('')||'<tr><td colspan="3" style="text-align:center;color:var(--muted);padding:2rem">No recruiters yet</td></tr>'}
+  </tbody></table></div></div>`;
+}
+function deleteUser(uid){if(!confirm('Remove this user?'))return;DB.saveUsers(DB.getUsers().filter(u=>u.id!==uid));toast('User removed');renderRecruiters();}
+
+// ── ACHIEVEMENTS (all) ───────────────────
+function renderAchievements(){
+  const achievs=DB.getAchievements();
+  document.getElementById('mainArea').innerHTML=`
+  <div class="page-hdr animate-in"><div class="page-hdr-left"><h2>All Achievements (${achievs.length})</h2></div></div>
+  <div class="card animate-in"><div class="tbl-wrap"><table><thead><tr><th>Student</th><th>Achievement</th><th>Type</th><th>Skills</th><th>Status</th><th>Actions</th></tr></thead><tbody>
+    ${achievs.map(a=>{const st=DB.getStudentById(a.studentId);return`<tr>
+      <td><strong>${st?.name||'?'}</strong><br><span class="text-xs text-muted">${st?.dept||''}</span></td>
+      <td><strong>${a.title}</strong><br><span class="text-xs text-muted">${a.org||''}</span></td>
+      <td>${typeChip(a.type)}</td>
+      <td><div class="skill-tags">${(a.skills||[]).slice(0,3).map(s=>`<span class="skill-tag">${s}</span>`).join('')}</div></td>
+      <td><span class="status-${a.status}">${a.status}</span></td>
+      <td><div style="display:flex;gap:0.3rem">
+        ${a.status==='pending'?`<button class="btn btn-xs btn-success" onclick="adminVerify('${a.id}')">✓</button>`:''}
+        <button class="btn btn-xs btn-danger" onclick="adminDeleteAch('${a.id}')">✗</button>
+      </div></td>
+    </tr>`}).join('')}
+  </tbody></table></div></div>`;
+}
+function adminVerify(id){DB.updateAchievement(id,{status:'verified',verifiedBy:'admin',verifiedAt:new Date().toISOString()});toast('Achievement verified');renderAchievements();}
+function adminDeleteAch(id){if(!confirm('Delete this achievement?'))return;DB.saveAchievements(DB.getAchievements().filter(a=>a.id!==id));toast('Achievement deleted');renderAchievements();}
+
+// ── ACADEMICS ────────────────────────────
+function renderAcademics(){
+  const recs=DB.getAcademic();
+  document.getElementById('mainArea').innerHTML=`
+  <div class="page-hdr animate-in"><div class="page-hdr-left"><h2>Academic Records (${recs.length})</h2></div></div>
+  <div class="card animate-in"><div class="tbl-wrap"><table><thead><tr><th>Student</th><th>Subject</th><th>Semester</th><th>Marks</th><th>Quiz</th><th>Assign.</th><th>Attend.</th><th>Actions</th></tr></thead><tbody>
+    ${recs.map(r=>{const st=DB.getStudentById(r.studentId);return`<tr>
+      <td><strong>${st?.name||'?'}</strong></td><td>${r.subject}</td><td class="text-xs">${r.semester}</td>
+      <td style="color:${r.marks>=80?'var(--emerald)':r.marks>=60?'var(--cyan)':'var(--red)'};font-weight:600">${r.marks}%</td>
+      <td>${r.quiz}%</td><td>${r.assignment}%</td>
+      <td style="color:${r.attendance>=75?'var(--emerald)':'var(--red)'}">${r.attendance}%</td>
+      <td><button class="btn btn-xs btn-danger" onclick="adminDelRec('${r.id}')">Del</button></td>
+    </tr>`}).join('')}
+  </tbody></table></div></div>`;
+}
+function adminDelRec(id){if(!confirm('Delete this record?'))return;DB.saveAcademic(DB.getAcademic().filter(r=>r.id!==id));toast('Record deleted');renderAcademics();}
+
+// ── RESEARCH ─────────────────────────────
+function renderResearch(){
+  const research=DB.getResearch();
+  document.getElementById('mainArea').innerHTML=`
+  <div class="page-hdr animate-in"><div class="page-hdr-left"><h2>All Research Papers (${research.length})</h2></div></div>
+  <div class="card animate-in"><div class="tbl-wrap"><table><thead><tr><th>Teacher</th><th>Title</th><th>Journal</th><th>Year</th><th>Citations</th><th>Status</th><th>Actions</th></tr></thead><tbody>
+    ${research.map(r=>{const t=DB.getTeachers().find(x=>x.id===r.teacherId);return`<tr>
+      <td><strong>${t?.name||'?'}</strong></td>
+      <td style="max-width:200px"><strong>${r.title}</strong></td>
+      <td class="text-sm">${r.journal||'—'}</td><td>${r.year}</td>
+      <td style="color:var(--cyan);font-weight:600">${r.citations||0}</td>
+      <td><span class="status-${r.status==='published'?'verified':r.status==='under_review'?'pending':'review'}">${r.status?.replace('_',' ')}</span></td>
+      <td><button class="btn btn-xs btn-danger" onclick="adminDelRes('${r.id}')">Del</button></td>
+    </tr>`}).join('')}
+  </tbody></table></div></div>`;
+}
+function adminDelRes(id){if(!confirm('Delete?'))return;DB.saveResearch(DB.getResearch().filter(r=>r.id!==id));toast('Deleted');renderResearch();}
+
+// ── ADD USER ─────────────────────────────
+function renderAddUser(){
+  document.getElementById('mainArea').innerHTML=`
+  <div class="page-hdr animate-in"><div class="page-hdr-left"><h2>Add New User</h2></div></div>
+  <div class="card animate-in anim-delay-1" style="max-width:500px">
+    <div class="card-title">Quick-add user to the system</div>
+    <button class="btn btn-primary" onclick="openUserModal('student')" style="width:100%;margin-bottom:0.5rem">+ Add Student</button>
+    <button class="btn btn-violet" onclick="openUserModal('teacher')" style="width:100%;margin-bottom:0.5rem">+ Add Teacher</button>
+    <button class="btn btn-success" onclick="openUserModal('recruiter')" style="width:100%">+ Add Recruiter</button>
+  </div>`;
+}
+
+// ── RESET ────────────────────────────────
+function renderReset(){
+  document.getElementById('mainArea').innerHTML=`
+  <div class="page-hdr animate-in"><div class="page-hdr-left"><h2>Reset System Data</h2><p style="color:var(--red)">⚠️ Danger Zone</p></div></div>
+  <div class="card animate-in" style="border-color:rgba(239,68,68,0.2);max-width:500px">
+    <div class="card-title" style="color:var(--red)">⚠️ Reset to Demo Data</div>
+    <p class="text-sm text-muted" style="margin-bottom:1rem">This will erase all current data and reload the original demo seed data. This cannot be undone.</p>
+    <button class="btn btn-danger" style="width:100%" onclick="resetAll()">🗑️ Reset All Data</button>
+  </div>`;
+}
+function resetAll(){
+  if(!confirm('Are you sure? All data will be reset to demo defaults.'))return;
+  const keys=['users','students','teachers','achievements','academic','research','notifs'];
+  keys.forEach(k=>localStorage.removeItem('ciq_'+k));
+  seedIfEmpty();
+  toast('System reset','Demo data restored ✓');
+  renderOverview();
+}
+
+// ── USER MODAL ───────────────────────────
+function openUserModal(role='student'){document.getElementById('uRole').value=role;toggleRoleFields();document.getElementById('userModal').classList.add('open');}
+function toggleRoleFields(){const r=document.getElementById('uRole').value;document.getElementById('studentFields').style.display=r==='student'?'block':'none';document.getElementById('teacherFields').style.display=r==='teacher'?'block':'none';}
+document.getElementById('userModal').addEventListener('click',e=>{if(e.target.id==='userModal')document.getElementById('userModal').classList.remove('open');});
+
+document.getElementById('saveUserBtn').addEventListener('click',()=>{
+  const name=document.getElementById('uName').value.trim();
+  const email=document.getElementById('uEmail').value.trim();
+  const pass=document.getElementById('uPass').value;
+  const role=document.getElementById('uRole').value;
+  if(!name||!email||!pass){toast('All fields required','','error');return;}
+  if(DB.getUserByEmail(email)){toast('Email already exists','','error');return;}
+  const uid='u'+Date.now();
+  const users=DB.getUsers();users.push({id:uid,email,password:pass,role,name});DB.saveUsers(users);
+  if(role==='student'){
+    const dept=document.getElementById('uDept').value||'General';
+    const year=parseInt(document.getElementById('uYear').value)||1;
+    const rollNo=document.getElementById('uRoll').value||'N/A';
+    const sid='s'+Date.now();
+    const students=DB.getStudents();students.push({id:sid,userId:uid,name,dept,year,section:'A',rollNo,gpa:0,skills:[],readiness:0});DB.saveStudents(students);
+  } else if(role==='teacher'){
+    const dept=document.getElementById('tDept').value||'General';
+    const subjects=document.getElementById('tSubjects').value.split(',').map(s=>s.trim()).filter(Boolean);
+    const tid='t'+Date.now();
+    const teachers=DB.getTeachers();teachers.push({id:tid,userId:uid,name,dept,subjects,researchCount:0});DB.saveTeachers(teachers);
+  }
+  toast(`${role} account created!`,`${name} can now log in with ${email}`);
+  document.getElementById('userModal').classList.remove('open');
+  ['uName','uEmail','uPass','uDept','uRoll','tDept','tSubjects'].forEach(i=>document.getElementById(i).value='');
+  renderStudents();
+});
+
+// ══════════════════════════════════════════
+// GOOGLE SHEETS IMPORT
+// ══════════════════════════════════════════
+// ─ Replace with your actual public Google Sheet IDs ─
+const SHEETS_CFG = {
+  research:     'YOUR_RESEARCH_SHEET_ID',      // columns: title,journal,year,doi,status,co_authors
+  achievements: 'YOUR_ACHIEVEMENTS_SHEET_ID',  // columns: student_name,title,org,type,skills,date,desc
+};
+
+function renderImportSheets() {
+  document.getElementById('mainArea').innerHTML = `
+  <div class="page-hdr animate-in">
+    <div class="page-hdr-left"><h2>Import from Google Sheets</h2><p>Pull data from Google Forms responses linked to a public Sheet</p></div>
+  </div>
+  <div class="grid-2 animate-in anim-delay-1">
+
+    <div class="card">
+      <div class="card-title">📄 Research Publications</div>
+      <p class="text-sm text-muted" style="margin-bottom:0.9rem;line-height:1.65">
+        Sheet columns required: <code style="color:var(--cyan);font-size:0.7rem">title · journal · year · doi · status · co_authors</code>
+      </p>
+      <div class="form-group">
+        <label style="font-size:0.68rem;color:var(--muted);display:block;margin-bottom:0.3rem;text-transform:uppercase;letter-spacing:0.05em">Google Sheet ID</label>
+        <input class="form-control" id="rSheetId" placeholder="Paste Sheet ID here" value="${SHEETS_CFG.research}">
+      </div>
+      <button class="btn btn-primary w-full" id="btnImportR" onclick="importResearch()">⬇️ Import Research</button>
+      <div id="logR" style="margin-top:0.7rem;font-size:0.7rem;color:var(--muted);line-height:1.7;max-height:120px;overflow-y:auto"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">🏆 Student Achievements</div>
+      <p class="text-sm text-muted" style="margin-bottom:0.9rem;line-height:1.65">
+        Sheet columns required: <code style="color:var(--cyan);font-size:0.7rem">student_name · title · org · type · skills · date · desc</code>
+      </p>
+      <div class="form-group">
+        <label style="font-size:0.68rem;color:var(--muted);display:block;margin-bottom:0.3rem;text-transform:uppercase;letter-spacing:0.05em">Google Sheet ID</label>
+        <input class="form-control" id="aSheetId" placeholder="Paste Sheet ID here" value="${SHEETS_CFG.achievements}">
+      </div>
+      <button class="btn btn-primary w-full" id="btnImportA" onclick="importAchievements()">⬇️ Import Achievements</button>
+      <div id="logA" style="margin-top:0.7rem;font-size:0.7rem;color:var(--muted);line-height:1.7;max-height:120px;overflow-y:auto"></div>
+    </div>
+
+  </div>
+  <div class="card mt-2 animate-in anim-delay-2">
+    <div class="card-title">📋 Setup Instructions</div>
+    <div style="font-size:0.78rem;color:var(--text2);line-height:1.9">
+      <b>1.</b> Create a Google Sheet. Row 1 = exact column headers listed above.<br>
+      <b>2.</b> File → Share → Anyone with the link → <b>Viewer</b>.<br>
+      <b>3.</b> Copy Sheet ID from URL: <code style="color:var(--cyan)">docs.google.com/spreadsheets/d/<b>SHEET_ID</b>/edit</code><br>
+      <b>4.</b> Paste Sheet ID above → click Import.<br>
+      <b>Note:</b> Uses <a href="https://opensheet.elk.sh" target="_blank" style="color:var(--cyan)">opensheet.elk.sh</a> — free proxy, no API key needed. Duplicate titles are skipped automatically.
+    </div>
+  </div>
+  `;
+}
+
+async function fetchSheet(sheetId) {
+  const url = `https://opensheet.elk.sh/${encodeURIComponent(sheetId)}/Sheet1`;
+  const res  = await fetch(url);
+  if (!res.ok) throw new Error(`HTTP ${res.status} — Is the Sheet ID correct and public?`);
+  return res.json();
+}
+
+function addLog(id, msg, type='info') {
+  const el = document.getElementById(id); if(!el) return;
+  const c = type==='ok'?'var(--emerald)':type==='error'?'var(--red)':'var(--muted)';
+  el.innerHTML += `<div style="color:${c}">• ${msg}</div>`;
+  el.scrollTop = el.scrollHeight;
+}
+
+async function importResearch() {
+  const sheetId = document.getElementById('rSheetId').value.trim();
+  const btn = document.getElementById('btnImportR');
+  if (!sheetId || sheetId.includes('YOUR_')) { toast('Enter a valid Sheet ID','','error'); return; }
+  document.getElementById('logR').innerHTML = '';
+  btn.textContent = '⏳ Fetching…'; btn.disabled = true;
+  try {
+    const rows = await fetchSheet(sheetId);
+    if (!rows.length) { addLog('logR','Sheet empty or headers missing','error'); return; }
+    const existing   = new Set(DB.getResearch().map(r=>r.title?.trim().toLowerCase()));
+    const teachers   = DB.getTeachers();
+    const defTeacher = teachers[0];
+    let added=0, skipped=0;
+    for (const row of rows) {
+      const title = (row.title||row.Title||'').trim();
+      if (!title) { skipped++; continue; }
+      if (existing.has(title.toLowerCase())) { addLog('logR',`Skipped (duplicate): ${title}`); skipped++; continue; }
+      DB.addResearch({
+        id: 'ri_'+Date.now()+'_'+Math.random().toString(36).slice(2,5),
+        teacherId:  defTeacher?.id||'t1',
+        title,
+        journal:    row.journal   ||row.Journal   ||'',
+        year:       parseInt(row.year||row.Year)||new Date().getFullYear(),
+        doi:        row.doi       ||row.DOI       ||'',
+        status:     (row.status   ||row.Status    ||'published').toLowerCase().replace(/\s+/,'_'),
+        coAuthors:  (row.co_authors||row['Co Authors']||'').split(',').map(s=>s.trim()).filter(Boolean),
+        citations:  parseInt(row.citations||0)||0,
+        importedAt: new Date().toISOString(),
+      });
+      existing.add(title.toLowerCase());
+      addLog('logR',`Added: ${title}`,'ok');
+      added++;
+    }
+    addLog('logR',`Done: ${added} added, ${skipped} skipped`, added>0?'ok':'info');
+    toast('Research imported',`${added} new records`);
+  } catch(err) {
+    addLog('logR','Error: '+err.message,'error');
+    toast('Import failed',err.message,'error');
+  }
+  btn.textContent='⬇️ Import Research'; btn.disabled=false;
+}
+
+async function importAchievements() {
+  const sheetId = document.getElementById('aSheetId').value.trim();
+  const btn = document.getElementById('btnImportA');
+  if (!sheetId || sheetId.includes('YOUR_')) { toast('Enter a valid Sheet ID','','error'); return; }
+  document.getElementById('logA').innerHTML = '';
+  btn.textContent = '⏳ Fetching…'; btn.disabled = true;
+  try {
+    const rows = await fetchSheet(sheetId);
+    if (!rows.length) { addLog('logA','Sheet empty or headers missing','error'); return; }
+    const existing  = new Set(DB.getAchievements().map(a=>a.title?.trim().toLowerCase()));
+    const students  = DB.getStudents();
+    let added=0, skipped=0;
+    for (const row of rows) {
+      const title = (row.title||row.Title||'').trim();
+      if (!title) { skipped++; continue; }
+      if (existing.has(title.toLowerCase())) { addLog('logA',`Skipped (duplicate): ${title}`); skipped++; continue; }
+      const sName   = (row.student_name||row['Student Name']||'').trim().toLowerCase();
+      const student = students.find(s=>s.name.toLowerCase()===sName)||students[0];
+      DB.addAchievement({
+        id: 'ai_'+Date.now()+'_'+Math.random().toString(36).slice(2,5),
+        studentId:  student?.id    ||'s1',
+        ownerId:    student?.userId||'u4',
+        title,
+        org:        row.org        ||row.Organisation||row.Organization||'',
+        type:       (row.type      ||row.Type        ||'other').toLowerCase(),
+        skills:     (row.skills    ||row.Skills      ||'').split(',').map(s=>s.trim()).filter(Boolean),
+        date:       row.date       ||row.Date        ||'',
+        desc:       row.desc       ||row.Description ||'',
+        status:     'pending',
+        verifiedBy: null,
+        importedAt: new Date().toISOString(),
+      });
+      existing.add(title.toLowerCase());
+      addLog('logA',`Added: ${title} → ${student?.name||'unmatched'}`,'ok');
+      added++;
+    }
+    addLog('logA',`Done: ${added} added, ${skipped} skipped`, added>0?'ok':'info');
+    toast('Achievements imported',`${added} new records`);
+  } catch(err) {
+    addLog('logA','Error: '+err.message,'error');
+    toast('Import failed',err.message,'error');
+  }
+  btn.textContent='⬇️ Import Achievements'; btn.disabled=false;
+}
+</script>
+</body>
+</html>

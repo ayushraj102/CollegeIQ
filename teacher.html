@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>CampusIQ — Teacher Portal</title>
+<link rel="stylesheet" href="shared.css">
+</head>
+<body>
+<div id="toast-wrap"></div>
+<div class="app-shell">
+  <header class="topbar">
+    <div class="tb-brand"><div class="tb-brand-icon">IQ</div>Campus<em style="color:var(--cyan);font-style:normal;font-family:var(--font-h)">IQ</em></div>
+    <div class="tb-right">
+      <span class="tb-badge badge-teacher">Teacher</span>
+      <div class="notif-bell" id="notifBtn" title="Notifications"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg><span class="notif-dot" id="nDot" style="display:none"></span></div>
+      <div class="tb-user"><div class="avatar av-sm" id="tbAvatar" style="background:linear-gradient(135deg,#8B5CF6,#EC4899)"></div><span id="tbName"></span></div>
+      <button class="logout-btn" onclick="logout()">Sign Out</button>
+    </div>
+  </header>
+  <aside class="sidebar">
+    <div class="sb-section">Teaching</div>
+    <div class="sb-item active" data-page="overview" onclick="nav(this)"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>Dashboard</div>
+    <div class="sb-item" data-page="students" onclick="nav(this)"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>My Students</div>
+    <div class="sb-item" data-page="grades" onclick="nav(this)"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>Add/Edit Grades</div>
+    <div class="sb-section">Verification</div>
+    <div class="sb-item" data-page="verify" onclick="nav(this)"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>Verify Achievements <span class="sb-badge amber" id="vBadge" style="display:none">0</span></div>
+    <div class="sb-section">Research</div>
+    <div class="sb-item" data-page="research" onclick="nav(this)"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>My Research</div>
+    <div class="sb-item" data-page="analytics" onclick="nav(this)"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Student Analytics</div>
+  </aside>
+  <main class="main-area" id="mainArea"></main>
+</div>
+
+<!-- GRADE MODAL -->
+<div class="modal-overlay" id="gradeModal">
+  <div class="modal-box">
+    <div class="modal-hdr"><span class="modal-title" id="gradeMTitle">📝 Add Grade Record</span><button class="modal-close" onclick="closeGradeModal()">✕</button></div>
+    <input type="hidden" id="gEditId">
+    <div class="form-row-2">
+      <div class="form-group"><label>Student</label>
+        <select class="form-control" id="gStudent"></select>
+      </div>
+      <div class="form-group"><label>Subject</label><input class="form-control" id="gSubject" placeholder="e.g. Data Structures"></div>
+    </div>
+    <div class="form-row-2">
+      <div class="form-group"><label>Semester</label><input class="form-control" id="gSemester" placeholder="e.g. Sem 5"></div>
+      <div class="form-group"><label>Marks (%)</label><input class="form-control" type="number" id="gMarks" min="0" max="100" placeholder="0-100"></div>
+    </div>
+    <div class="form-row-3">
+      <div class="form-group"><label>Quiz (%)</label><input class="form-control" type="number" id="gQuiz" min="0" max="100"></div>
+      <div class="form-group"><label>Assignment (%)</label><input class="form-control" type="number" id="gAssignment" min="0" max="100"></div>
+      <div class="form-group"><label>Attendance (%)</label><input class="form-control" type="number" id="gAttendance" min="0" max="100"></div>
+    </div>
+    <div class="form-group"><label>Feedback for Student</label><textarea class="form-control" id="gFeedback" rows="2" placeholder="Write constructive feedback…"></textarea></div>
+    <button class="btn btn-primary w-full" id="saveGradeBtn" style="margin-top:0.5rem">Save Record</button>
+  </div>
+</div>
+
+<!-- RESEARCH MODAL -->
+<div class="modal-overlay" id="researchModal">
+  <div class="modal-box">
+    <div class="modal-hdr"><span class="modal-title">📄 Add Research Publication</span><button class="modal-close" onclick="document.getElementById('researchModal').classList.remove('open')">✕</button></div>
+    <div class="form-group"><label>Title</label><input class="form-control" id="rTitle" placeholder="Full paper title"></div>
+    <div class="form-row-2">
+      <div class="form-group"><label>Journal / Conference</label><input class="form-control" id="rJournal" placeholder="e.g. IEEE, Nature ML"></div>
+      <div class="form-group"><label>Year</label><input class="form-control" type="number" id="rYear" placeholder="2025" value="2025"></div>
+    </div>
+    <div class="form-row-2">
+      <div class="form-group"><label>DOI (optional)</label><input class="form-control" id="rDoi" placeholder="10.xxxx/xxxx"></div>
+      <div class="form-group"><label>Status</label>
+        <select class="form-control" id="rStatus"><option value="published">Published</option><option value="under_review">Under Review</option><option value="preprint">Preprint</option></select>
+      </div>
+    </div>
+    <div class="form-group"><label>Co-Authors (comma separated)</label><input class="form-control" id="rCoAuth" placeholder="e.g. Prof. Singh, Dr. Mehta"></div>
+    <button class="btn btn-primary w-full" id="saveResearchBtn" style="margin-top:0.5rem">Save Publication</button>
+  </div>
+</div>
+
+<script src="data.js"></script>
+<script>
+seedIfEmpty();
+const session = DB.getSession();
+if(!session||session.role!=='teacher'){window.location.href='index.html';}
+const teacher = DB.getTeacherByUserId(session.userId);
+if(!teacher){window.location.href='index.html';}
+const initials = session.name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+document.getElementById('tbName').textContent = session.name;
+document.getElementById('tbAvatar').textContent = initials;
+function logout(){DB.clearSession();window.location.href='index.html';}
+
+// Notifs
+function checkNotifs(){const n=DB.getNotifications(session.userId);const u=n.filter(x=>!x.read).length;document.getElementById('nDot').style.display=u?'block':'none';}
+checkNotifs();
+
+// Pending badge
+function refreshPendingBadge(){const p=DB.getAchievements().filter(a=>a.status==='pending').length;const b=document.getElementById('vBadge');if(p){b.style.display='flex';b.textContent=p;}else b.style.display='none';}
+refreshPendingBadge();
+
+function nav(el){document.querySelectorAll('.sb-item').forEach(i=>i.classList.remove('active'));el.classList.add('active');renderPage(el.dataset.page);}
+function renderPage(p){const m={overview:renderOverview,students:renderStudents,grades:renderGrades,verify:renderVerify,research:renderResearch,analytics:renderAnalytics};(m[p]||renderOverview)();}
+renderPage('overview');
+
+function toast(msg,sub='',type='ok'){const w=document.getElementById('toast-wrap');const t=document.createElement('div');t.className=`toast ${type==='error'?'error':''}`;const ico=type==='ok'?'✅':type==='error'?'❌':'ℹ️';const ic=type==='ok'?'toast-ico-ok':type==='error'?'toast-ico-err':'toast-ico-info';t.innerHTML=`<div class="toast-ico ${ic}">${ico}</div><div><div class="toast-t">${msg}</div>${sub?`<div class="toast-s">${sub}</div>`:''}</div>`;w.appendChild(t);requestAnimationFrame(()=>requestAnimationFrame(()=>t.classList.add('in')));setTimeout(()=>{t.classList.add('out');setTimeout(()=>t.remove(),400);},4500);}
+function afterRender(){document.querySelectorAll('.progress-fill[data-w]').forEach(e=>{setTimeout(()=>{e.style.width=e.dataset.w;e.style.background=e.dataset.bg;},80);});}
+
+// ══════════════════════════════════════════
+// OVERVIEW
+// ══════════════════════════════════════════
+function renderOverview(){
+  const students=DB.getStudents();const pending=DB.getAchievements().filter(a=>a.status==='pending');
+  const research=DB.getResearch().filter(r=>r.teacherId===teacher.id);
+  const acRecs=DB.getAcademic().filter(r=>r.teacherId===teacher.id);
+  document.getElementById('mainArea').innerHTML=`
+  <div class="page-hdr animate-in"><div class="page-hdr-left"><h2>Teacher Dashboard</h2><p>${teacher.dept} · ${teacher.subjects.join(', ')}</p></div></div>
+  <div class="grid-4 animate-in anim-delay-1">
+    ${[['My Students',students.length,'var(--cyan)','👨‍🎓'],['Pending Verify',pending.length,'var(--amber)','🔍'],['Grade Records',acRecs.length,'var(--violet)','📋'],['Publications',research.length,'var(--emerald)','📄']].map(([l,v,c,i])=>`<div class="stat-card"><div class="stat-icon" style="background:${c}20">${i}</div><div class="stat-label">${l}</div><div class="stat-val" style="color:${c}">${v}</div></div>`).join('')}
+  </div>
+  ${pending.length?`<div class="card mt-2 animate-in anim-delay-2" style="border-color:rgba(245,158,11,0.25)">
+    <div class="card-title" style="color:var(--amber)">⚠️ Achievements Awaiting Verification (${pending.length})</div>
+    ${pending.slice(0,3).map(a=>{const st=DB.getStudentById(a.studentId);return`<div style="display:flex;align-items:center;justify-content:space-between;padding:0.65rem 0;border-bottom:1px solid var(--b3)"><div><strong style="font-size:0.82rem">${a.title}</strong><div class="text-xs text-muted">${st?.name||'Unknown'} · ${a.type}</div></div><div style="display:flex;gap:0.4rem"><button class="btn btn-xs btn-success" onclick="quickVerify('${a.id}')">✓ Verify</button><button class="btn btn-xs btn-secondary" data-page="verify" onclick="nav(document.querySelector('[data-page=verify]'))">View All</button></div></div>`}).join('')}
+    ${pending.length>3?`<div class="text-xs text-muted mt-1">+${pending.length-3} more — <a href="#" onclick="nav(document.querySelector('[data-page=verify]'));return false">View all →</a></div>`:''}
+  </div>`:''}
+  <div class="card mt-2 animate-in anim-delay-3">
+    <div class="card-title">👨‍🎓 Students Overview</div>
+    <div class="tbl-wrap"><table><thead><tr><th>Student</th><th>Dept</th><th>Avg Marks</th><th>Achievements</th><th>Readiness</th></tr></thead><tbody>
+      ${students.map(st=>{const acs=DB.getStudentAcademic(st.id);const avg=acs.length?Math.round(acs.reduce((s,r)=>s+r.marks,0)/acs.length):0;const achv=DB.getAchievements().filter(a=>a.studentId===st.id&&a.status==='verified').length;const r=DB.calcReadiness(st,DB.getAchievements(),DB.getAcademic());return`<tr><td><strong>${st.name}</strong></td><td class="text-sm">${st.dept} Y${st.year}</td><td><span style="color:${avg>=80?'var(--emerald)':avg>=60?'var(--cyan)':'var(--red)'};font-weight:600">${avg}%</span></td><td>${achv}</td><td><span style="color:var(--violet);font-weight:600">${r}/100</span></td></tr>`}).join('')}
+    </tbody></table></div>
+  </div>`;
+}
+
+// ══════════════════════════════════════════
+// STUDENTS (detailed)
+// ══════════════════════════════════════════
+function renderStudents(){
+  const students=DB.getStudents();
+  document.getElementById('mainArea').innerHTML=`
+  <div class="page-hdr animate-in"><div class="page-hdr-left"><h2>My Students</h2><p>Performance overview for all students</p></div></div>
+  <div style="display:flex;flex-direction:column;gap:1rem;">
+    ${students.map(st=>{
+      const acs=DB.getStudentAcademic(st.id);
+      const avg=acs.length?Math.round(acs.reduce((s,r)=>s+r.marks,0)/acs.length):0;
+      const avgQ=acs.length?Math.round(acs.reduce((s,r)=>s+r.quiz,0)/acs.length):0;
+      const avgA2=acs.length?Math.round(acs.reduce((s,r)=>s+r.assignment,0)/acs.length):0;
+      const avgAt=acs.length?Math.round(acs.reduce((s,r)=>s+r.attendance,0)/acs.length):0;
+      const achvs=DB.getAchievements().filter(a=>a.studentId===st.id);
+      const r=DB.calcReadiness(st,DB.getAchievements(),DB.getAcademic());
+      const initials2=st.name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+      const grads=['linear-gradient(135deg,#38BDF8,#8B5CF6)','linear-gradient(135deg,#10B981,#38BDF8)','linear-gradient(135deg,#F59E0B,#EF4444)','linear-gradient(135deg,#A78BFA,#8B5CF6)'];
+      const gi=DB.getStudents().indexOf(st)%4;
+      return`<div class="card animate-in">
+        <div style="display:flex;gap:1rem;align-items:flex-start;flex-wrap:wrap">
+          <div class="avatar av-lg" style="background:${grads[gi]}">${initials2}</div>
+          <div style="flex:1;min-width:200px">
+            <div style="font-family:var(--font-h);font-size:0.95rem;font-weight:800">${st.name}</div>
+            <div class="text-xs text-muted">${st.dept} · Year ${st.year} · ${st.rollNo}</div>
+            <div style="display:flex;gap:1rem;margin-top:0.65rem;flex-wrap:wrap">
+              ${[['Marks',avg+'%',avg>=80?'var(--emerald)':avg>=60?'var(--cyan)':'var(--red)'],['Quiz',avgQ+'%','var(--violet)'],['Assignment',avgA2+'%','var(--emerald)'],['Attendance',avgAt+'%',avgAt>=75?'var(--emerald)':'var(--red)']].map(([l,v,c])=>`<div><div class="text-xs text-muted">${l}</div><div style="font-weight:700;font-size:0.88rem;color:${c}">${v}</div></div>`).join('')}
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:0.4rem">
+            <div style="font-family:var(--font-h);font-size:1.3rem;font-weight:800;color:var(--amber)">${r}/100</div>
+            <div class="text-xs text-muted">Readiness Score</div>
+            <div style="display:flex;gap:0.35rem;margin-top:0.25rem">
+              <button class="btn btn-xs btn-primary" onclick="openGradeModal(null,'${st.id}')">+ Grade</button>
+              <button class="btn btn-xs btn-secondary" onclick="showStudentDetail('${st.id}')">Details</button>
+            </div>
+          </div>
+        </div>
+        ${acs.length?`<div class="divider"></div><div style="font-size:0.7rem;color:var(--muted);margin-bottom:0.5rem;font-weight:600;text-transform:uppercase;letter-spacing:0.06em">Subjects</div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:0.5rem">
+          ${acs.map(a=>`<div style="background:var(--s2);border-radius:8px;padding:0.6rem;border:1px solid var(--b3)"><div style="font-size:0.75rem;font-weight:600;color:var(--text2);margin-bottom:0.35rem">${a.subject}</div><div class="progress-wrap"><div class="progress-fill" data-w="${a.marks}%" data-bg="${a.marks>=80?'var(--emerald)':a.marks>=60?'var(--cyan)':'var(--red)'}"></div></div><div style="font-size:0.65rem;color:var(--muted);margin-top:0.2rem">${a.marks}% · ${a.feedback?.slice(0,40)||''}</div></div>`).join('')}
+        </div>`:'<div class="text-xs text-muted mt-1">No grades added yet.</div>'}
+        ${achvs.filter(a=>a.status==='pending').length?`<div class="divider"></div><div style="font-size:0.7rem;color:var(--amber);font-weight:600">⚠️ ${achvs.filter(a=>a.status==='pending').length} achievement(s) awaiting verification</div>`:''}
+      </div>`;
+    }).join('')}
+  </div>`;
+  afterRender();
+}
+
+function showStudentDetail(sid){
+  const st=DB.getStudentById(sid);if(!st)return;
+  const acs=DB.getStudentAcademic(sid);
+  const achvs=DB.getAchievements().filter(a=>a.studentId===sid);
+  const skills=DB.mapSkills(achvs);
+  const r=DB.calcReadiness(st,DB.getAchievements(),DB.getAcademic());
+  const initials2=st.name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+  document.getElementById('mainArea').innerHTML=`
+  <div class="page-hdr animate-in">
+    <div class="page-hdr-left"><h2>${st.name}</h2><p>${st.dept} · Year ${st.year}</p></div>
+    <div class="page-actions"><button class="btn btn-secondary" onclick="nav(document.querySelector('[data-page=students]'))">← Back</button><button class="btn btn-primary" onclick="openGradeModal(null,'${sid}')">+ Add Grade</button></div>
+  </div>
+  <div class="grid-3 animate-in anim-delay-1">
+    <div class="stat-card"><div class="stat-label">Avg Marks</div><div class="stat-val" style="color:var(--cyan)">${acs.length?Math.round(acs.reduce((s,r)=>s+r.marks,0)/acs.length):0}%</div></div>
+    <div class="stat-card"><div class="stat-label">Verified Achievements</div><div class="stat-val" style="color:var(--emerald)">${achvs.filter(a=>a.status==='verified').length}</div></div>
+    <div class="stat-card"><div class="stat-label">Readiness Score</div><div class="stat-val" style="color:var(--violet)">${r}/100</div></div>
+  </div>
+  <div class="grid-2 mt-2 animate-in anim-delay-2">
+    <div class="card">
+      <div class="card-title">📚 Academic Records</div>
+      ${acs.map(a=>`<div style="margin-bottom:0.8rem;padding-bottom:0.8rem;border-bottom:1px solid var(--b3)">
+        <div style="display:flex;justify-content:space-between;margin-bottom:0.3rem"><span style="font-size:0.82rem;font-weight:600">${a.subject}</span><button class="btn btn-xs btn-secondary" onclick="openGradeModal('${a.id}','${sid}')">Edit</button></div>
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:0.4rem;margin-bottom:0.35rem">
+          ${[['Marks',a.marks],['Quiz',a.quiz],['Assign',a.assignment],['Attend',a.attendance]].map(([l,v])=>`<div style="text-align:center"><div class="text-xs text-muted">${l}</div><div style="font-weight:700;font-size:0.82rem;color:${v>=80?'var(--emerald)':v>=60?'var(--cyan)':'var(--red)'}">${v}%</div></div>`).join('')}
+        </div>
+        <div style="font-size:0.68rem;color:var(--muted)">${a.feedback||''}</div>
+      </div>`).join('')||'<div class="empty-state"><div class="ico">📝</div><p>No records</p></div>'}
+    </div>
+    <div class="card">
+      <div class="card-title">🧠 Mapped Skills</div>
+      <div class="skill-tags">${skills.map((s,i)=>`<span class="skill-tag ${['','violet','emerald','amber'][i%4]}">${s}</span>`).join('')||'<span class="text-xs text-muted">No verified achievements</span>'}</div>
+      <div class="divider"></div>
+      <div class="card-title">🏆 Achievements</div>
+      ${achvs.map(a=>`<div style="display:flex;align-items:center;justify-content:space-between;padding:0.45rem 0;border-bottom:1px solid var(--b3)">
+        <div><div class="text-xs fw-bold">${a.title}</div><div class="text-xs text-muted">${a.org}</div></div>
+        <div style="display:flex;gap:0.35rem;align-items:center">
+          <span class="status-${a.status}">${a.status==='verified'?'✓':'⏳'}</span>
+          ${a.status==='pending'?`<button class="btn btn-xs btn-success" onclick="quickVerify('${a.id}');showStudentDetail('${sid}')">Verify</button>`:''}
+        </div>
+      </div>`).join('')||'<div class="empty-state"><div class="ico">🏅</div><p>None yet</p></div>'}
+    </div>
+  </div>`;
+  afterRender();
+}
+
+// ══════════════════════════════════════════
+// GRADES
+// ══════════════════════════════════════════
+function renderGrades(){
+  const recs=DB.getAcademic().filter(r=>r.teacherId===teacher.id);
+  document.getElementById('mainArea').innerHTML=`
+  <div class="page-hdr animate-in"><div class="page-hdr-left"><h2>Grade Management</h2><p>Add or edit student academic records</p></div><div class="page-actions"><button class="btn btn-primary" onclick="openGradeModal()">+ Add Record</button></div></div>
+  <div class="card animate-in anim-delay-1">
+    ${recs.length?`<div class="tbl-wrap"><table><thead><tr><th>Student</th><th>Subject</th><th>Sem</th><th>Marks</th><th>Quiz</th><th>Assignment</th><th>Attendance</th><th>Actions</th></tr></thead><tbody>
+      ${recs.map(r=>{const st=DB.getStudentById(r.studentId);return`<tr>
+        <td><strong>${st?.name||'Unknown'}</strong></td><td>${r.subject}</td><td class="text-xs">${r.semester}</td>
+        <td><span style="color:${r.marks>=80?'var(--emerald)':r.marks>=60?'var(--cyan)':'var(--red)'};font-weight:600">${r.marks}%</span></td>
+        <td style="color:var(--violet)">${r.quiz}%</td><td style="color:var(--emerald)">${r.assignment}%</td>
+        <td style="color:${r.attendance>=75?'var(--emerald)':'var(--red)'}">${r.attendance}%</td>
+        <td><div style="display:flex;gap:0.3rem"><button class="btn btn-xs btn-secondary" onclick="openGradeModal('${r.id}')">Edit</button><button class="btn btn-xs btn-danger" onclick="deleteGrade('${r.id}')">Del</button></div></td>
+      </tr>`}).join('')}
+    </tbody></table></div>`:`<div class="empty-state"><div class="ico">📋</div><p>No records yet. Add your first grade record.</p></div>`}
+  </div>`;
+}
+
+function deleteGrade(id){DB.saveAcademic(DB.getAcademic().filter(r=>r.id!==id));toast('Record deleted');renderGrades();}
+
+// ══════════════════════════════════════════
+// GRADE MODAL
+// ══════════════════════════════════════════
+let gradeForStudent=null;
+function openGradeModal(editId=null, prefillSid=null){
+  gradeForStudent=prefillSid;
+  const students=DB.getStudents();
+  const sel=document.getElementById('gStudent');
+  sel.innerHTML=students.map(s=>`<option value="${s.id}">${s.name}</option>`).join('');
+  if(prefillSid) sel.value=prefillSid;
+  document.getElementById('gEditId').value=editId||'';
+  document.getElementById('gradeMTitle').textContent=editId?'✏️ Edit Grade':'📝 Add Grade Record';
+  if(editId){
+    const r=DB.getAcademic().find(x=>x.id===editId);
+    if(r){sel.value=r.studentId;document.getElementById('gSubject').value=r.subject;document.getElementById('gSemester').value=r.semester;document.getElementById('gMarks').value=r.marks;document.getElementById('gQuiz').value=r.quiz;document.getElementById('gAssignment').value=r.assignment;document.getElementById('gAttendance').value=r.attendance;document.getElementById('gFeedback').value=r.feedback||'';}
+  } else {
+    ['gSubject','gSemester','gMarks','gQuiz','gAssignment','gAttendance','gFeedback'].forEach(i=>document.getElementById(i).value='');
+  }
+  document.getElementById('gradeModal').classList.add('open');
+}
+function closeGradeModal(){document.getElementById('gradeModal').classList.remove('open');gradeForStudent=null;}
+document.getElementById('gradeModal').addEventListener('click',e=>{if(e.target.id==='gradeModal')closeGradeModal();});
+
+document.getElementById('saveGradeBtn').addEventListener('click',()=>{
+  const sid=document.getElementById('gStudent').value;
+  const subject=document.getElementById('gSubject').value.trim();
+  const semester=document.getElementById('gSemester').value.trim();
+  const marks=parseInt(document.getElementById('gMarks').value)||0;
+  const quiz=parseInt(document.getElementById('gQuiz').value)||0;
+  const assignment=parseInt(document.getElementById('gAssignment').value)||0;
+  const attendance=parseInt(document.getElementById('gAttendance').value)||0;
+  const feedback=document.getElementById('gFeedback').value.trim();
+  if(!subject||!semester){toast('Fill in subject and semester','','error');return;}
+  const editId=document.getElementById('gEditId').value;
+  if(editId){
+    DB.updateAcademic(editId,{studentId:sid,teacherId:teacher.id,subject,semester,marks,quiz,assignment,attendance,feedback});
+    toast('Grade updated','Record saved successfully');
+  } else {
+    DB.addAcademic({id:'ac'+Date.now(),studentId:sid,teacherId:teacher.id,subject,semester,marks,quiz,assignment,attendance,feedback});
+    const st=DB.getStudentById(sid);
+    DB.addNotification({userId:DB.getStudents().find(s=>s.id===sid)?.userId,type:'grade',text:`New grade added: ${subject} — ${marks}%`,read:false,date:new Date().toISOString()});
+    toast('Grade added','Student has been notified');
+  }
+  closeGradeModal();
+  renderGrades();
+});
+
+// ══════════════════════════════════════════
+// VERIFY ACHIEVEMENTS
+// ══════════════════════════════════════════
+function renderVerify(){
+  const pending=DB.getAchievements().filter(a=>a.status==='pending');
+  refreshPendingBadge();
+  document.getElementById('mainArea').innerHTML=`
+  <div class="page-hdr animate-in"><div class="page-hdr-left"><h2>Verify Achievements</h2><p>${pending.length} pending verification</p></div></div>
+  ${pending.length?`<div style="display:flex;flex-direction:column;gap:0.75rem">
+    ${pending.map(a=>{const st=DB.getStudentById(a.studentId);return`<div class="card animate-in" id="achCard${a.id}">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;flex-wrap:wrap">
+        <div style="flex:1">
+          <div style="display:flex;align-items:center;gap:0.65rem;margin-bottom:0.5rem">
+            <div class="avatar av-sm" style="background:linear-gradient(135deg,var(--cyan),var(--violet));font-size:0.6rem">${(st?.name||'?').split(' ').map(w=>w[0]).join('').slice(0,2)}</div>
+            <div><div style="font-size:0.78rem;font-weight:600">${st?.name||'Unknown'}</div><div class="text-xs text-muted">${st?.dept} Y${st?.year}</div></div>
+            <span class="chip chip-amber">${a.type}</span>
+          </div>
+          <div style="font-weight:700;font-size:0.9rem;margin-bottom:0.25rem">${a.title}</div>
+          <div class="text-xs text-muted">${a.org||''} · ${a.date||''}</div>
+          <div class="text-sm mt-1" style="color:var(--text2)">${a.desc||''}</div>
+          <div class="skill-tags mt-1">${(a.skills||[]).map(s=>`<span class="skill-tag">${s}</span>`).join('')}</div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:0.4rem;min-width:120px">
+          <button class="btn btn-success" onclick="quickVerify('${a.id}')">✓ Verify</button>
+          <button class="btn btn-danger" onclick="rejectAch('${a.id}')">✗ Reject</button>
+        </div>
+      </div>
+    </div>`}).join('')}
+  </div>`:
+  `<div class="card animate-in"><div class="empty-state"><div class="ico">✅</div><p>All caught up! No pending verifications.</p></div></div>`}`;
+}
+
+function quickVerify(id){
+  const a=DB.getAchievements().find(x=>x.id===id);if(!a)return;
+  DB.updateAchievement(id,{status:'verified',verifiedBy:teacher.id,verifiedAt:new Date().toISOString()});
+  const st=DB.getStudentById(a.studentId);
+  DB.addNotification({userId:st?DB.getStudents().find(s=>s.id===st.id)?.userId:null,type:'verified',text:`Your achievement "${a.title}" has been verified! 🎉`,read:false,date:new Date().toISOString()});
+  toast(`✅ Verified: ${a.title}`,st?`${st.name}'s achievement confirmed`:'');
+  refreshPendingBadge();
+  const card=document.getElementById('achCard'+id);
+  if(card){card.style.opacity='0.4';card.style.transform='scale(0.97)';card.style.transition='all 0.3s';setTimeout(()=>renderVerify(),500);}
+  else renderVerify();
+}
+window.quickVerify=quickVerify;
+
+function rejectAch(id){
+  const a=DB.getAchievements().find(x=>x.id===id);if(!a)return;
+  DB.updateAchievement(id,{status:'rejected'});
+  toast('Achievement rejected','Student has been notified.','error');
+  refreshPendingBadge();renderVerify();
+}
+
+// ══════════════════════════════════════════
+// RESEARCH
+// ══════════════════════════════════════════
+function renderResearch(){
+  const pubs=DB.getResearch().filter(r=>r.teacherId===teacher.id);
+  document.getElementById('mainArea').innerHTML=`
+  <div class="page-hdr animate-in"><div class="page-hdr-left"><h2>My Research & Publications</h2><p>${pubs.filter(p=>p.status==='published').length} published · ${pubs.filter(p=>p.status==='under_review').length} under review</p></div><div class="page-actions"><button class="btn btn-secondary" style="display:inline-flex;align-items:center;gap:0.4rem" onclick="window.open('YOUR_GOOGLE_FORM_URL','_blank')"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>Submit via Google Form</button><button class="btn btn-primary" onclick="openResearchModal()">+ Add Manually</button></div></div>
+  <div class="grid-3 animate-in anim-delay-1">
+    ${[['Published',pubs.filter(p=>p.status==='published').length,'var(--emerald)'],['Under Review',pubs.filter(p=>p.status==='under_review').length,'var(--amber)'],['Total Citations',pubs.reduce((s,p)=>s+(p.citations||0),0),'var(--cyan)']].map(([l,v,c])=>`<div class="stat-card"><div class="stat-label">${l}</div><div class="stat-val" style="color:${c}">${v}</div></div>`).join('')}
+  </div>
+  <div style="display:flex;flex-direction:column;gap:0.75rem;margin-top:1rem">
+    ${pubs.map(p=>`<div class="card animate-in">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;flex-wrap:wrap">
+        <div style="flex:1">
+          <div style="font-family:var(--font-h);font-size:0.9rem;font-weight:800;margin-bottom:0.35rem">${p.title}</div>
+          <div class="text-xs text-muted">${p.journal||'No journal'} · ${p.year}</div>
+          ${p.doi?`<div class="text-xs" style="color:var(--cyan);margin-top:0.2rem">DOI: ${p.doi}</div>`:''}
+          ${p.coAuthors?.length?`<div class="text-xs text-muted mt-1">Co-authors: ${p.coAuthors.join(', ')}</div>`:''}
+          <div style="margin-top:0.5rem;display:flex;gap:0.4rem;align-items:center">
+            <span class="status-${p.status==='published'?'verified':p.status==='under_review'?'pending':'review'}">${p.status==='published'?'✓ Published':p.status==='under_review'?'⏳ Under Review':'📝 Preprint'}</span>
+            ${p.citations?`<span class="chip chip-cyan">📖 ${p.citations} citations</span>`:''}
+          </div>
+        </div>
+        <button class="btn btn-xs btn-danger" onclick="deleteResearch('${p.id}')">Delete</button>
+      </div>
+    </div>`).join('')||`<div class="card"><div class="empty-state"><div class="ico">📄</div><p>No publications yet. Add your first research paper!</p></div></div>`}
+  </div>`;
+}
+
+function deleteResearch(id){DB.saveResearch(DB.getResearch().filter(r=>r.id!==id));toast('Publication removed');renderResearch();}
+function openResearchModal(){document.getElementById('researchModal').classList.add('open');}
+document.getElementById('researchModal').addEventListener('click',e=>{if(e.target.id==='researchModal')document.getElementById('researchModal').classList.remove('open');});
+
+document.getElementById('saveResearchBtn').addEventListener('click',()=>{
+  const title=document.getElementById('rTitle').value.trim();
+  const journal=document.getElementById('rJournal').value.trim();
+  const year=parseInt(document.getElementById('rYear').value)||2025;
+  const doi=document.getElementById('rDoi').value.trim();
+  const status=document.getElementById('rStatus').value;
+  const coAuthors=document.getElementById('rCoAuth').value.split(',').map(s=>s.trim()).filter(Boolean);
+  if(!title){toast('Title is required','','error');return;}
+  DB.addResearch({id:'r'+Date.now(),teacherId:teacher.id,title,journal,year,doi,status,coAuthors,citations:0});
+  toast('Publication added!','Your research has been saved');
+  document.getElementById('researchModal').classList.remove('open');
+  ['rTitle','rJournal','rDoi','rCoAuth'].forEach(i=>document.getElementById(i).value='');
+  renderResearch();
+});
+
+// ══════════════════════════════════════════
+// ANALYTICS
+// ══════════════════════════════════════════
+function renderAnalytics(){
+  const students=DB.getStudents();
+  document.getElementById('mainArea').innerHTML=`
+  <div class="page-hdr animate-in"><div class="page-hdr-left"><h2>Student Analytics</h2><p>Identify where students are lagging</p></div></div>
+  <div style="display:flex;flex-direction:column;gap:1rem">
+    ${students.map(st=>{
+      const acs=DB.getStudentAcademic(st.id);if(!acs.length)return'';
+      const lagging=acs.filter(r=>r.marks<65||r.attendance<75);
+      const initials2=st.name.split(' ').map(w=>w[0]).join('').slice(0,2);
+      return`<div class="card animate-in">
+        <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:0.85rem">
+          <div class="avatar av-md" style="background:linear-gradient(135deg,var(--cyan),var(--violet))">${initials2}</div>
+          <div><div style="font-weight:700">${st.name}</div><div class="text-xs text-muted">${st.dept} Y${st.year}</div></div>
+          ${lagging.length?`<span class="chip chip-red" style="margin-left:auto">⚠️ ${lagging.length} area${lagging.length>1?'s':''} of concern</span>`:`<span class="chip chip-emerald" style="margin-left:auto">✓ On Track</span>`}
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:0.5rem">
+          ${acs.map(r=>{const warn=r.marks<65||r.attendance<75;return`<div style="background:${warn?'rgba(239,68,68,0.05)':'var(--s2)'};border:1px solid ${warn?'rgba(239,68,68,0.2)':'var(--b3)'};border-radius:8px;padding:0.65rem">
+            <div style="font-size:0.75rem;font-weight:600;color:${warn?'var(--red)':'var(--text2)'}">${r.subject}</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.25rem;margin-top:0.35rem">
+              ${[['M',r.marks],['Q',r.quiz],['A',r.assignment],['At',r.attendance]].map(([l,v])=>`<div class="text-xs"><span style="color:var(--muted)">${l}: </span><span style="color:${v<65?'var(--red)':v>=80?'var(--emerald)':'var(--cyan)'};font-weight:600">${v}%</span></div>`).join('')}
+            </div>
+          </div>`}).join('')}
+        </div>
+        ${lagging.length?`<div style="background:rgba(239,68,68,0.05);border:1px solid rgba(239,68,68,0.15);border-radius:8px;padding:0.65rem;margin-top:0.65rem"><div style="font-size:0.72rem;color:var(--red);font-weight:600;margin-bottom:0.25rem">⚠️ Needs Attention:</div>${lagging.map(r=>`<div class="text-xs text-muted">• ${r.subject}: ${r.marks<65?'Marks '+r.marks+'% (below 65%)':''}${r.marks<65&&r.attendance<75?' & ':''}${r.attendance<75?'Attendance '+r.attendance+'% (below 75%)':''}</div>`).join('')}</div>`:''}
+      </div>`;
+    }).join('')}
+  </div>`;
+}
+</script>
+</body>
+</html>
