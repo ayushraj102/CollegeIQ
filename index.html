@@ -171,7 +171,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--fb);display:flex;}
           <input class="form-input" id="regName" placeholder="Full Name" required>
         </div>
         <div class="form-group">
-          <input class="form-input" id="regEmail" type="email" placeholder="Email Address" required>
+          <input class="form-input" id="regEmail" type="email" placeholder="Email Address (e.g. name.ug23@iilm.edu)" required>
         </div>
         <div class="form-group">
           <input class="form-input" id="regPass" type="password" placeholder="Create Password (min 6 chars)" required>
@@ -246,9 +246,28 @@ document.getElementById('registerForm').onsubmit = async (e) => {
     const roleEl = document.querySelector('input[name="regRole"]:checked');
     const role = roleEl ? roleEl.value : 'student';
 
+    const email = document.getElementById('regEmail').value.trim().toLowerCase();
+    const localPart = email.split('@')[0];
+    const domain = email.split('@')[1];
+
+    // ── DOMAIN RESTRICTION UI LOGIC ──
+    if (role === 'student') {
+        if (domain !== 'iilm.edu' || !localPart.includes('ug')) {
+            if(typeof showToast === 'function') showToast("Invalid Student Email", "Must use an @iilm.edu email containing 'ug' (e.g., john.ug23@iilm.edu)", 'error');
+            else alert("Students must use an @iilm.edu email containing 'ug'.");
+            return;
+        }
+    } else if (role === 'teacher') {
+        if (domain !== 'iilm.edu' || localPart.includes('ug')) {
+            if(typeof showToast === 'function') showToast("Invalid Teacher Email", "Must use an @iilm.edu email without 'ug' (e.g., prof.smith@iilm.edu)", 'error');
+            else alert("Teachers must use an @iilm.edu email without 'ug'.");
+            return;
+        }
+    }
+
     const data = {
         name: document.getElementById('regName').value,
-        email: document.getElementById('regEmail').value,
+        email: email,
         password: document.getElementById('regPass').value,
         role: role
     };
@@ -271,8 +290,9 @@ document.getElementById('googleBtn').onclick = () => {
       if (notification.isNotDisplayed()) {
          const reason = notification.getNotDisplayedReason();
          console.warn("GSI Prompt failed:", reason);
-         if (reason === 'origin_not_allowed') {
-             if(typeof showToast === 'function') showToast("Google Login Blocked", "Domain not whitelisted in Google Console.", 'error');
+         if (reason === 'origin_not_allowed' || reason === 'unregistered_origin') {
+             if(typeof showToast === 'function') showToast("Google Login Blocked", "Domain not whitelisted in Google Console. Use standard email login for now.", 'error');
+             else alert("Google Login is not configured for this origin yet.");
          } else {
              if(typeof showToast === 'function') showToast("Google Login unavailable: " + reason, '', 'error');
          }
