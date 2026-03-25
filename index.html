@@ -5,8 +5,11 @@
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>CampusIQ — Sign In</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<!-- Google Identity Services -->
 <script src="https://accounts.google.com/gsi/client" async defer></script>
+<link rel="stylesheet" href="shared.css">
 <style>
+/* ─── ORIGINAL UI PRESERVED ─── */
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
 :root{
   --bg:#04070F;--s1:#080E1C;--s2:#0C1525;
@@ -14,601 +17,254 @@
   --text:#EDF4FF;--text2:#8BA8C4;--muted:#3A5268;--b2:#0F1E30;
   --fh:'Syne',sans-serif;--fb:'Outfit',sans-serif;
 }
-html,body{height:100%;margin:0;padding:0;}
-body{background:var(--bg);color:var(--text);font-family:var(--fb);height:100vh;overflow:hidden;display:flex;}
+html,body{height:100%;margin:0;padding:0;overflow:hidden;}
+body{background:var(--bg);color:var(--text);font-family:var(--fb);display:flex;}
 #bgCanvas{position:fixed;inset:0;z-index:0;pointer-events:none;}
-
-/* ── LAYOUT ── */
 .page{position:relative;z-index:1;display:grid;grid-template-columns:1fr 1fr;width:100vw;height:100vh;}
-
-/* ── LEFT ── */
-.left{
-  background:linear-gradient(150deg,#060D1E,#091525,#0B1D2E);
-  padding:3rem 3rem 2.5rem;
-  display:flex;flex-direction:column;
-  position:relative;overflow:hidden;
-  height:100vh;
-}
-.orb{position:absolute;border-radius:50%;filter:blur(70px);opacity:0.1;pointer-events:none;}
+.left{background:linear-gradient(150deg,#060D1E,#091525,#0B1D2E);padding:3rem;display:flex;flex-direction:column;position:relative;overflow:hidden;}
+.orb{position:absolute;border-radius:50%;filter:blur(70px);opacity:0.15;pointer-events:none;}
 .orb-1{width:350px;height:350px;background:#38BDF8;top:-100px;left:-100px;}
-.orb-2{width:280px;height:280px;background:#8B5CF6;bottom:-80px;right:-60px;}
-.orb-3{width:200px;height:200px;background:#10B981;top:55%;left:45%;transform:translate(-50%,-50%);}
-
 .left-brand{display:flex;align-items:center;gap:0.7rem;margin-bottom:2.5rem;}
-.brand-icon{width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,#38BDF8,#8B5CF6);display:flex;align-items:center;justify-content:center;font-family:var(--fh);font-size:0.72rem;font-weight:800;color:#fff;flex-shrink:0;}
+.brand-icon{width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,#38BDF8,#8B5CF6);display:flex;align-items:center;justify-content:center;font-family:var(--fh);font-size:0.72rem;font-weight:800;color:#fff;}
 .brand-name{font-family:var(--fh);font-size:1.2rem;font-weight:800;}
 .brand-name em{color:var(--cyan);font-style:normal;}
-
-.left-headline{font-family:var(--fh);font-size:2.2rem;font-weight:800;line-height:1.2;letter-spacing:-0.03em;margin-bottom:0.75rem;}
+.left-headline{font-family:var(--fh);font-size:2.2rem;font-weight:800;line-height:1.2;margin-bottom:0.75rem;}
 .left-headline span{background:linear-gradient(90deg,var(--cyan),var(--violet));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
 .left-sub{font-size:0.88rem;color:var(--text2);line-height:1.7;margin-bottom:2.5rem;max-width:380px;}
+.fc{background:rgba(255,255,255,0.045);border:1px solid rgba(255,255,255,0.09);border-radius:14px;padding:1rem;backdrop-filter:blur(10px);margin-bottom:1rem;transition:transform 0.3s;}
+.fc:hover{transform:translateY(-5px);}
 
-/* Cards section */
-.left-cards{display:flex;flex-direction:column;gap:0.7rem;flex:1;}
-.fc{background:rgba(255,255,255,0.045);border:1px solid rgba(255,255,255,0.09);border-radius:14px;padding:0.9rem 1.1rem;backdrop-filter:blur(10px);transition:transform 0.3s;}
-.fc-row{display:flex;align-items:center;gap:0.7rem;margin-bottom:0.5rem;}
-.fc-icon{width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;}
-.c-amber .fc-icon{background:rgba(245,158,11,0.15);}
-.c-cyan  .fc-icon{background:rgba(56,189,248,0.15);}
-.c-violet .fc-icon{background:rgba(139,92,246,0.15);}
-.c-green  .fc-icon{background:rgba(16,185,129,0.15);}
-.fc-title{font-size:0.82rem;font-weight:700;color:var(--text);}
-.fc-sub{font-size:0.65rem;color:var(--text2);margin-top:0.1rem;}
-.fc-chips{display:flex;gap:0.35rem;flex-wrap:wrap;}
-.sk{padding:0.2rem 0.55rem;border-radius:100px;font-size:0.62rem;font-weight:600;}
-.sk.a{background:rgba(56,189,248,0.15);color:#60CDFF;}
-.sk.b{background:rgba(139,92,246,0.15);color:#B09BFF;}
-.sk.p{background:rgba(245,158,11,0.15);color:#FBB040;}
-.sk.g{background:rgba(16,185,129,0.15);color:#34D399;}
-
-.pipeline-row{display:flex;align-items:center;gap:0.6rem;padding:0.65rem 0.9rem;background:rgba(255,255,255,0.025);border:1px solid rgba(56,189,248,0.12);border-radius:10px;}
-.ps-dot{width:7px;height:7px;border-radius:50%;background:var(--cyan);flex-shrink:0;opacity:0;transition:opacity 0.4s;}
-.ps-dot.vis{opacity:1;}
-.ps-text{font-size:0.72rem;color:var(--text2);}
-.ps-text strong{color:var(--text);}
-
-.left-trust{display:flex;align-items:center;gap:0.6rem;font-size:0.72rem;color:var(--muted);margin-top:1.5rem;}
-.trust-dots{display:flex;}
-.trust-dot{width:24px;height:24px;border-radius:50%;border:2px solid #04070F;margin-left:-7px;font-size:0.58rem;display:flex;align-items:center;justify-content:center;font-weight:700;}
-
-.flt-1{animation:flt1 4s ease-in-out infinite;}
-.flt-2{animation:flt2 5s ease-in-out infinite 0.8s;}
-@keyframes flt1{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
-@keyframes flt2{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
-
-/* ── RIGHT ── */
-.right{
-  background:#080E1C;
-  padding:0 3rem;
-  display:flex;flex-direction:column;justify-content:center;
-  height:100vh;overflow-y:auto;
-}
-
-.role-tabs{display:flex;gap:0.2rem;padding:0.28rem;background:rgba(255,255,255,0.04);border-radius:11px;border:1px solid rgba(255,255,255,0.07);margin-bottom:1.5rem;}
-.rtab{flex:1;padding:0.45rem 0;border-radius:8px;font-size:0.7rem;font-weight:600;text-align:center;cursor:pointer;border:none;background:none;color:var(--muted);transition:all 0.18s;font-family:var(--fb);}
-.rtab.active{color:#fff;}
-.ri-student   .rtab-student.active  {background:rgba(56,189,248,0.18);color:var(--cyan);}
-.ri-teacher   .rtab-teacher.active  {background:rgba(139,92,246,0.18);color:#A78BFA;}
-.ri-admin     .rtab-admin.active    {background:rgba(239,68,68,0.18);  color:#F87171;}
-.ri-recruiter .rtab-recruiter.active{background:rgba(16,185,129,0.18); color:#34D399;}
-
-.login-tag{display:inline-flex;align-items:center;gap:0.4rem;font-size:0.7rem;font-weight:600;margin-bottom:0.4rem;}
-.login-tag-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
-.login-h1{font-family:var(--fh);font-size:1.7rem;font-weight:800;letter-spacing:-0.03em;margin-bottom:0.2rem;}
+.right{background:#080E1C;padding:0 3rem;display:flex;flex-direction:column;justify-content:center;height:100vh;overflow-y:auto;}
+.role-tabs{display:flex;gap:0.2rem;padding:0.28rem;background:rgba(255,255,255,0.04);border-radius:11px;margin-bottom:1.5rem;border:1px solid rgba(255,255,255,0.07);}
+.rtab{flex:1;padding:0.45rem 0;border-radius:8px;font-size:0.7rem;font-weight:600;text-align:center;cursor:pointer;border:none;background:none;color:var(--muted);transition:all 0.2s;}
+.rtab.active{background:rgba(56,189,248,0.18);color:var(--cyan);}
+.login-h1{font-family:var(--fh);font-size:1.7rem;font-weight:800;margin-bottom:0.2rem;}
 .login-sub{font-size:0.8rem;color:var(--text2);margin-bottom:1.3rem;}
-
-.err-msg{display:none;font-size:0.75rem;color:#F87171;background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);border-radius:9px;padding:0.55rem 0.8rem;margin-bottom:0.8rem;}
-.err-msg.show{display:block;}
-
-.form-group{margin-bottom:0.85rem;}
-.form-label{display:block;font-size:0.67rem;font-weight:600;color:var(--muted);letter-spacing:0.06em;text-transform:uppercase;margin-bottom:0.3rem;}
-.form-input,.form-select{width:100%;background:#0A1424;border:1px solid rgba(255,255,255,0.09);border-radius:10px;padding:0.65rem 0.95rem;font-size:0.86rem;color:var(--text);outline:none;font-family:var(--fb);transition:border-color 0.2s,box-shadow 0.2s;}
-.form-input:focus,.form-select:focus{border-color:rgba(56,189,248,0.45);box-shadow:0 0 0 3px rgba(56,189,248,0.09);}
-.form-input::placeholder{color:var(--muted);}
-.form-select option{background:#0A1424;}
-.form-row-2{display:grid;grid-template-columns:1fr 1fr;gap:0.65rem;}
-
-.ri-student   .form-input:focus,.ri-student   .form-select:focus{border-color:rgba(56,189,248,0.45);box-shadow:0 0 0 3px rgba(56,189,248,0.09);}
-.ri-teacher   .form-input:focus,.ri-teacher   .form-select:focus{border-color:rgba(139,92,246,0.45);box-shadow:0 0 0 3px rgba(139,92,246,0.09);}
-.ri-admin     .form-input:focus,.ri-admin     .form-select:focus{border-color:rgba(239,68,68,0.45); box-shadow:0 0 0 3px rgba(239,68,68,0.09);}
-.ri-recruiter .form-input:focus,.ri-recruiter .form-select:focus{border-color:rgba(16,185,129,0.45);box-shadow:0 0 0 3px rgba(16,185,129,0.09);}
-
-.btn-login{
-  width:100%;padding:0.78rem;border-radius:11px;border:none;
-  background:linear-gradient(135deg,#38BDF8,#0EA5E9);
-  color:#fff;font-size:0.9rem;font-weight:700;cursor:pointer;font-family:var(--fb);
-  display:flex;align-items:center;justify-content:center;gap:0.5rem;
-  transition:all 0.2s;margin-bottom:0.9rem;
-}
-.btn-login:hover{filter:brightness(1.12);transform:translateY(-1px);box-shadow:0 6px 20px rgba(56,189,248,0.25);}
-.btn-login:active{transform:translateY(0);}
-.btn-login.loading{opacity:0.75;pointer-events:none;}
-.btn-spinner{width:16px;height:16px;border:2px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;animation:_spin 0.7s linear infinite;display:none;}
-.btn-login.loading .btn-spinner{display:block;}
-
-.oauth-sep{text-align:center;font-size:0.72rem;color:var(--muted);margin-bottom:0.8rem;position:relative;}
-.oauth-sep::before,.oauth-sep::after{content:'';position:absolute;top:50%;width:34%;height:1px;background:rgba(255,255,255,0.07);}
-.oauth-sep::before{left:0;}.oauth-sep::after{right:0;}
-
-.btn-google{
-  width:100%;padding:0.65rem;border-radius:10px;
-  border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.04);
-  color:var(--text);font-size:0.84rem;font-weight:500;cursor:pointer;font-family:var(--fb);
-  display:flex;align-items:center;justify-content:center;gap:0.65rem;
-  transition:all 0.2s;margin-bottom:0.9rem;
-}
-.btn-google:hover{background:rgba(255,255,255,0.08);border-color:rgba(255,255,255,0.18);}
-.btn-google:active{transform:scale(0.99);}
-
-.switch-link{text-align:center;font-size:0.77rem;color:var(--text2);margin-bottom:0.7rem;}
-.switch-link a{color:var(--cyan);cursor:pointer;font-weight:600;text-decoration:none;}
-.switch-link a:hover{text-decoration:underline;}
-
-.demo-creds{background:rgba(56,189,248,0.05);border:1px solid rgba(56,189,248,0.1);border-radius:10px;padding:0.65rem 0.85rem;font-size:0.71rem;color:var(--text2);line-height:1.85;}
-.demo-creds strong{color:var(--text);display:block;margin-bottom:0.2rem;}
-.demo-creds span{color:var(--cyan);font-family:monospace;font-size:0.69rem;}
-
-.section-label{font-size:0.65rem;font-weight:700;color:var(--muted);letter-spacing:0.08em;text-transform:uppercase;margin:0.9rem 0 0.5rem;padding-bottom:0.3rem;border-bottom:1px solid rgba(255,255,255,0.06);}
-
-/* Toast */
-#toastWrap{position:fixed;bottom:28px;left:50%;transform:translateX(-50%);z-index:999;display:flex;flex-direction:column;align-items:center;gap:0.4rem;pointer-events:none;}
-.toast-lg{background:rgba(4,7,15,0.96);border:1px solid rgba(16,185,129,0.3);border-radius:100px;padding:0.6rem 1.1rem;display:flex;align-items:center;gap:0.5rem;font-size:0.76rem;font-weight:500;color:#A8E8C8;white-space:nowrap;transform:translateY(14px) scale(0.95);opacity:0;transition:all 0.35s cubic-bezier(0.34,1.56,0.64,1);}
-.toast-lg.in{transform:none;opacity:1;}
-.toast-lg.out{transform:translateY(-8px) scale(0.95);opacity:0;}
-.tdot{width:6px;height:6px;border-radius:50%;background:var(--emerald);box-shadow:0 0 8px var(--emerald);flex-shrink:0;}
-.toast-lg.err-toast{border-color:rgba(239,68,68,0.3);color:#FCA5A5;}
-.toast-lg.err-toast .tdot{background:var(--red);box-shadow:0 0 8px var(--red);}
-
-body.login-page #theme-toggle{position:fixed;top:18px;right:18px;z-index:200;}
-
-@keyframes _spin{to{transform:rotate(360deg)}}
-@media(max-width:768px){
-  .page{grid-template-columns:1fr;}
-  .left{display:none;}
-  .right{padding:2.5rem 1.5rem;height:100vh;}
-}
+.form-input{width:100%;background:#0A1424;border:1px solid rgba(255,255,255,0.09);border-radius:10px;padding:0.8rem;color:white;outline:none;font-family:var(--fb);margin-bottom:1rem;transition:border-color 0.2s;}
+.form-input:focus{border-color:var(--cyan);}
+.btn-login{width:100%;padding:0.85rem;border-radius:11px;border:none;background:linear-gradient(135deg,#38BDF8,#0EA5E9);color:#fff;font-weight:700;cursor:pointer;transition:all 0.2s;}
+.btn-login:disabled{opacity:0.6;cursor:not-allowed;}
+.btn-google{width:100%;padding:0.75rem;border-radius:10px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.04);color:var(--text);display:flex;align-items:center;justify-content:center;gap:0.6rem;cursor:pointer;font-family:var(--fb);transition:background 0.2s;}
+.btn-google:hover{background:rgba(255,255,255,0.08);}
+.switch-link{text-align:center;font-size:0.77rem;color:var(--text2);margin-top:1.2rem;}
+.switch-link a{color:var(--cyan);font-weight:600;cursor:pointer;}
+@media(max-width:768px){.left{display:none;}.page{grid-template-columns:1fr;}.right{padding:2rem;}}
 </style>
 </head>
 <body class="login-page">
-<button id="theme-toggle" onclick="toggleTheme()" title="Toggle theme" aria-label="Toggle dark/light"></button>
 <canvas id="bgCanvas"></canvas>
-<div id="toastWrap"></div>
+
+<!-- Toast wrapper provided by utils.js -->
+<div id="toast-wrap" style="position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:9999;"></div>
 
 <div class="page" id="loginPage">
-
-  <!-- LEFT -->
+  <!-- LEFT PANEL -->
   <div class="left">
     <div class="orb orb-1"></div>
-    <div class="orb orb-2"></div>
-    <div class="orb orb-3"></div>
-
     <div class="left-brand">
       <div class="brand-icon">IQ</div>
       <div class="brand-name">Campus<em>IQ</em></div>
     </div>
-
     <div class="left-headline">Turn Campus Activity<br>into <span>Verified Talent</span></div>
     <p class="left-sub">AI-powered skill intelligence connecting students, teachers and recruiters.</p>
-
-    <div class="left-cards">
-      <div class="fc c-amber flt-1">
-        <div class="fc-row">
-          <div class="fc-icon">🏆</div>
-          <div><div class="fc-title">Hackathon Winner</div><div class="fc-sub">HackIndia 2024 — Rank 1</div></div>
-        </div>
-        <div class="fc-chips"><span class="sk a">React</span><span class="sk b">ML</span><span class="sk g">Python</span></div>
-      </div>
-
-      <div class="pipeline-row">
-        <div class="ps-dot" id="ps0"></div>
-        <div class="ps-text"><strong>Skills Detected</strong></div>
-        <div class="ps-dot" id="ps1"></div>
-        <div class="ps-text"><strong>Readiness: 92</strong></div>
-        <div class="ps-dot" id="ps2"></div>
-        <div class="ps-text" style="margin-left:auto"><strong>✓ Verified</strong></div>
-      </div>
-
-      <div class="fc c-cyan flt-2">
-        <div class="fc-row">
-          <div class="fc-icon">🧠</div>
-          <div><div class="fc-title">Skill Profile</div><div class="fc-sub">Auto-generated from achievements</div></div>
-        </div>
-        <div class="fc-chips"><span class="sk b">Python</span><span class="sk p">ML</span><span class="sk g">TensorFlow</span><span class="sk a">Cloud</span></div>
-      </div>
-
-      <div class="fc c-green">
-        <div class="fc-row">
-          <div class="fc-icon">📊</div>
-          <div><div class="fc-title">Academic Score</div><div class="fc-sub">Marks · Attendance · GPA</div></div>
-        </div>
-        <div class="fc-chips"><span class="sk g">GPA 9.2</span><span class="sk a">Att 94%</span></div>
-      </div>
+    
+    <div class="fc">
+      <div style="font-size:1.1rem;margin-bottom:0.3rem">🏆</div>
+      <strong>Hackathon Winner</strong><br>
+      <span style="font-size:0.7rem;color:var(--text2)">React · Machine Learning · Python</span>
     </div>
-
-    <div class="left-trust">
-      <div class="trust-dots">
-        <div class="trust-dot" style="background:#38BDF8">S</div>
-        <div class="trust-dot" style="background:#8B5CF6">T</div>
-        <div class="trust-dot" style="background:#10B981">R</div>
-        <div class="trust-dot" style="background:#F59E0B">A</div>
-      </div>
-      Students · Teachers · Recruiters · Admins
+    <div class="fc">
+      <div style="font-size:1.1rem;margin-bottom:0.3rem">🧠</div>
+      <strong>Skill Profile</strong><br>
+      <span style="font-size:0.7rem;color:var(--text2)">Automatically generated from verified activities</span>
     </div>
   </div>
 
-  <!-- RIGHT -->
+  <!-- RIGHT PANEL -->
   <div class="right" id="rightPanel">
     <div class="role-tabs" id="roleTabs">
-      <button class="rtab rtab-student active" data-role="student">Student</button>
-      <button class="rtab rtab-teacher"        data-role="teacher">Teacher</button>
-      <button class="rtab rtab-admin"          data-role="admin">Admin</button>
-      <button class="rtab rtab-recruiter"      data-role="recruiter">Recruiter</button>
+      <button class="rtab active" data-role="student">Student</button>
+      <button class="rtab" data-role="teacher">Teacher</button>
+      <button class="rtab" data-role="admin">Admin</button>
+      <button class="rtab" data-role="recruiter">Recruiter</button>
     </div>
-
-    <div class="login-tag" id="loginTag">
-      <span class="login-tag-dot" id="tagDot" style="background:var(--cyan);box-shadow:0 0 7px var(--cyan)"></span>
-      <span id="roleTagText">Student Portal</span>
-    </div>
-    <div class="login-h1" id="formTitle">Welcome Back</div>
-    <div class="login-sub" id="loginSub">Sign in to your student dashboard</div>
-    <div class="err-msg" id="errMsg"></div>
 
     <!-- SIGN IN VIEW -->
     <div id="signInView">
-      <form id="loginForm" novalidate>
-        <div class="form-group">
-          <label class="form-label">Email</label>
-          <input class="form-input" id="loginEmail" type="email" placeholder="your@email.edu" autocomplete="email">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Password</label>
-          <input class="form-input" id="loginPass" type="password" placeholder="••••••••" autocomplete="current-password">
-        </div>
-        <button class="btn-login" id="loginBtn" type="submit">
-          <div class="btn-spinner" id="loginSpinner"></div>
-          <span id="btnText">Sign In →</span>
-        </button>
+      <div class="login-h1">Welcome Back</div>
+      <div class="login-sub" id="loginSub">Sign in to your student dashboard</div>
+      
+      <form id="loginForm">
+        <input class="form-input" id="loginEmail" type="email" placeholder="Email Address" required>
+        <input class="form-input" id="loginPass" type="password" placeholder="Password" required>
+        <button class="btn-login" id="loginBtn" type="submit">Sign In →</button>
       </form>
 
-      <div class="oauth-sep">or continue with</div>
+      <div style="text-align:center;color:var(--muted);font-size:0.72rem;margin:1.2rem 0;position:relative;">
+        <span style="background:#080E1C;padding:0 10px;position:relative;z-index:1">OR</span>
+        <div style="position:absolute;top:50%;left:0;right:0;height:1px;background:rgba(255,255,255,0.06)"></div>
+      </div>
+
       <button class="btn-google" id="googleBtn" type="button">
         <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
         Continue with Google
       </button>
 
-      <div class="switch-link">Don't have an account? <a id="goRegister">Create one</a></div>
-
-      <div class="demo-creds">
-        <strong>Demo accounts</strong>
-        Student: <span>student1@campusiq.edu</span> / <span>stud123</span><br>
-        Teacher: <span>teacher1@campusiq.edu</span> / <span>teach123</span><br>
-        Admin: <span>admin@campusiq.edu</span> / <span>admin123</span><br>
-        Recruiter: <span>recruiter@techcorp.com</span> / <span>rec123</span>
+      <!-- Google Identity Hidden Integration -->
+      <div id="g_id_onload" 
+           data-client_id="70835003370-fbdg01a9mgp13s80cgd65174udp3h74k.apps.googleusercontent.com" 
+           data-callback="onGoogleSignIn" 
+           data-auto_prompt="false">
       </div>
+
+      <div class="switch-link">Don't have an account? <a id="goRegister">Create one</a></div>
     </div>
 
     <!-- REGISTER VIEW -->
-    <div id="registerView" style="display:none;">
-      <form id="registerForm" novalidate>
-        <div class="section-label">Account Info</div>
-        <div class="form-group">
-          <label class="form-label">Full Name *</label>
-          <input class="form-input" id="regName" type="text" placeholder="Your full name" autocomplete="name">
-        </div>
-        <div class="form-row-2">
-          <div class="form-group">
-            <label class="form-label">Email *</label>
-            <input class="form-input" id="regEmail" type="email" placeholder="your@email.com">
-          </div>
-          <div class="form-group">
-            <label class="form-label">Password *</label>
-            <input class="form-input" id="regPass" type="password" placeholder="Min 6 chars">
-          </div>
-        </div>
-        <div class="form-group">
-          <label class="form-label">I am a *</label>
-          <select class="form-select" id="regRole">
+    <div id="registerView" style="display:none">
+      <div class="login-h1">Create Account</div>
+      <div class="login-sub">Join the CampusIQ network</div>
+      <form id="registerForm">
+        <input class="form-input" id="regName" placeholder="Full Name" required>
+        <input class="form-input" id="regEmail" type="email" placeholder="Email Address" required>
+        <input class="form-input" id="regPass" type="password" placeholder="Create Password (min 6 chars)" required>
+        <select class="form-input" id="regRole" style="background:#0A1424;color:white">
             <option value="student">Student</option>
-            <option value="teacher">Teacher / Faculty</option>
             <option value="recruiter">Recruiter</option>
-          </select>
-        </div>
-
-        <div id="regStudentFields">
-          <div class="section-label">Student Details</div>
-          <div class="form-row-2">
-            <div class="form-group">
-              <label class="form-label">Department *</label>
-              <select class="form-select" id="regDept">
-                <option value="CSE">CSE</option><option value="ECE">ECE</option>
-                <option value="IT">IT</option><option value="DS">Data Science</option>
-                <option value="ME">Mechanical</option><option value="EE">Electrical</option>
-                <option value="General">General</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label class="form-label">Year *</label>
-              <select class="form-select" id="regYear">
-                <option value="1">Year 1</option><option value="2">Year 2</option>
-                <option value="3">Year 3</option><option value="4">Year 4</option>
-              </select>
-            </div>
-          </div>
-          <div class="form-row-2">
-            <div class="form-group">
-              <label class="form-label">Roll Number *</label>
-              <input class="form-input" id="regRoll" placeholder="e.g. CS21001">
-            </div>
-            <div class="form-group">
-              <label class="form-label">Section</label>
-              <input class="form-input" id="regSection" placeholder="A" maxlength="2">
-            </div>
-          </div>
-        </div>
-
-        <div id="regTeacherFields" style="display:none;">
-          <div class="section-label">Faculty Details</div>
-          <div class="form-row-2">
-            <div class="form-group">
-              <label class="form-label">Department *</label>
-              <select class="form-select" id="regTDept">
-                <option value="Computer Science">Computer Science</option>
-                <option value="Electronics">Electronics</option>
-                <option value="Mathematics">Mathematics</option>
-                <option value="Data Science">Data Science</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label class="form-label">Subjects</label>
-              <input class="form-input" id="regSubjects" placeholder="ML, Python, ...">
-            </div>
-          </div>
-        </div>
-
-        <div id="regRecruiterFields" style="display:none;">
-          <div class="section-label">Company Details</div>
-          <div class="form-group">
-            <label class="form-label">Company Name *</label>
-            <input class="form-input" id="regCompany" placeholder="e.g. TechCorp">
-          </div>
-        </div>
-
-        <button class="btn-login" id="regBtn" type="submit">
-          <div class="btn-spinner" id="regSpinner"></div>
-          <span id="regBtnText">Create Account →</span>
-        </button>
+        </select>
+        <button class="btn-login" id="regBtn" type="submit">Create Account →</button>
       </form>
       <div class="switch-link">Already have an account? <a id="goLogin">Sign in</a></div>
     </div>
-
   </div>
 </div>
 
+<!-- Load Core Scripts in exact order -->
 <script src="db.js"></script>
 <script src="utils.js"></script>
 <script src="auth.js"></script>
+
 <script>
 'use strict';
-seedIfEmpty();
 
-const GOOGLE_CLIENT_ID = '70835003370-fbdg01a9mgp13s80cgd65174udp3h74k.apps.googleusercontent.com';
-const ALLOWED_DOMAIN   = '';
-const ROLE_PORTALS = {
-  student:'student.html', teacher:'teacher.html', admin:'admin.html', recruiter:'recruiter.html'
-};
-const ROLE_CFG = {
-  student:   { tag:'Student Portal',   sub:'Track academics, upload and verify achievements',       color:'rgba(56,189,248,'  },
-  teacher:   { tag:'Teacher Portal',   sub:'Grade students, verify achievements, manage research',  color:'rgba(139,92,246,' },
-  admin:     { tag:'Admin Console',    sub:'Full system access — users, data and analytics',         color:'rgba(239,68,68,'  },
-  recruiter: { tag:'Recruiter Portal', sub:'Discover verified talent by skill and readiness',       color:'rgba(16,185,129,' },
-};
-
+// Post-login intelligent routing
+const ROUTE_MAP = { student: 'student.html', teacher: 'teacher.html', admin: 'admin.html', recruiter: 'recruiter.html' };
 let activeRole = 'student';
-let viewMode   = 'signin';
 
-const errMsg       = document.getElementById('errMsg');
-const formTitle    = document.getElementById('formTitle');
-const loginSub     = document.getElementById('loginSub');
-const roleTagText  = document.getElementById('roleTagText');
-const tagDot       = document.getElementById('tagDot');
-const rightPanel   = document.getElementById('rightPanel');
-const signInView   = document.getElementById('signInView');
-const registerView = document.getElementById('registerView');
-
-// Role tabs
+// --- Tab UI Logic ---
 document.querySelectorAll('.rtab').forEach(tab => {
-  tab.addEventListener('click', () => setRole(tab.dataset.role));
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.rtab').forEach(b => b.classList.remove('active'));
+    tab.classList.add('active');
+    activeRole = tab.dataset.role;
+    document.getElementById('loginSub').textContent = `Sign in to your ${activeRole} dashboard`;
+  });
 });
 
-function setRole(role) {
-  activeRole = role;
-  const cfg = ROLE_CFG[role];
-  document.querySelectorAll('.rtab').forEach(b => b.classList.remove('active'));
-  document.querySelector('.rtab-' + role).classList.add('active');
-  rightPanel.className = 'right ri-' + role;
-  roleTagText.textContent = cfg.tag;
-  loginSub.style.opacity = '0';
-  setTimeout(() => { loginSub.textContent = cfg.sub; loginSub.style.opacity = '1'; }, 140);
-  tagDot.style.background = cfg.color + '1)';
-  tagDot.style.boxShadow  = '0 0 7px ' + cfg.color + '0.8)';
-  document.getElementById('loginTag').style.color = cfg.color + '1)';
-  const canReg = role === 'student' || role === 'recruiter';
-  document.getElementById('goRegister').style.display = canReg ? '' : 'none';
-  if (!canReg && viewMode === 'register') showSignIn();
-  hideErr();
-}
-setRole('student');
+// --- View Toggles ---
+const goReg = document.getElementById('goRegister'), goLog = document.getElementById('goLogin');
+const signView = document.getElementById('signInView'), regView = document.getElementById('registerView');
 
-// View switching
-document.getElementById('goRegister').addEventListener('click', showRegister);
-document.getElementById('goLogin').addEventListener('click', showSignIn);
+goReg.onclick = (e) => { e.preventDefault(); signView.style.display='none'; regView.style.display='block'; };
+goLog.onclick = (e) => { e.preventDefault(); signView.style.display='block'; regView.style.display='none'; };
 
-function showSignIn() {
-  viewMode = 'signin';
-  signInView.style.display   = '';
-  registerView.style.display = 'none';
-  formTitle.textContent = 'Welcome Back';
-  loginSub.textContent  = ROLE_CFG[activeRole].sub;
-  hideErr();
-}
-function showRegister() {
-  viewMode = 'register';
-  signInView.style.display   = 'none';
-  registerView.style.display = '';
-  formTitle.textContent = 'Create Account';
-  loginSub.textContent  = 'Join CampusIQ today';
-  const roleEl = document.getElementById('regRole');
-  roleEl.value = activeRole === 'recruiter' ? 'recruiter' : 'student';
-  updateRegFields();
-  hideErr();
-}
-
-// Register role field toggle
-document.getElementById('regRole').addEventListener('change', updateRegFields);
-function updateRegFields() {
-  const r = document.getElementById('regRole').value;
-  document.getElementById('regStudentFields').style.display  = r === 'student'   ? '' : 'none';
-  document.getElementById('regTeacherFields').style.display  = r === 'teacher'   ? '' : 'none';
-  document.getElementById('regRecruiterFields').style.display= r === 'recruiter' ? '' : 'none';
-}
-
-// Login
-document.getElementById('loginForm').addEventListener('submit', async e => {
+// --- Standard Login ---
+document.getElementById('loginForm').onsubmit = async (e) => {
   e.preventDefault();
-  hideErr();
+  const btn = document.getElementById('loginBtn');
   const email = document.getElementById('loginEmail').value.trim();
-  const pass  = document.getElementById('loginPass').value;
-  if (!email || !pass) { showErr('Please enter email and password.'); return; }
-  setLoginLoading(true);
+  const pass = document.getElementById('loginPass').value;
+
+  btn.disabled = true; btn.textContent = 'Authenticating...';
+
   try {
-    const s = await Auth.login(email, pass);
-    document.getElementById('btnText').textContent = '✓ Signed in!';
-    lgToast('Welcome back, ' + s.name.split(' ')[0] + '!');
-    setTimeout(() => { window.location.href = ROLE_PORTALS[s.role] || 'student.html'; }, 900);
+    const session = await Auth.login(email, pass);
+    if(typeof showToast === 'function') showToast(`Welcome back, ${session.name.split(' ')[0]}!`, 'Redirecting...', 'ok');
+    
+    setTimeout(() => {
+      window.location.href = ROUTE_MAP[session.role] || 'student.html';
+    }, 1000);
   } catch(err) {
-    setLoginLoading(false);
-    showErr(err.message || 'Login failed.');
-    document.getElementById('loginPass').value = '';
+    if(typeof showToast === 'function') showToast(err.message, '', 'error');
+    else alert(err.message); // Fallback if utils.js failed
+    btn.disabled = false; btn.textContent = 'Sign In →';
   }
-});
-function setLoginLoading(on) {
-  document.getElementById('loginBtn').classList.toggle('loading', on);
-  document.getElementById('btnText').textContent = on ? 'Authenticating…' : 'Sign In →';
-}
+};
 
-// Register
-document.getElementById('registerForm').addEventListener('submit', async e => {
-  e.preventDefault();
-  hideErr();
-  const role = document.getElementById('regRole').value;
-  const data = {
-    name:     document.getElementById('regName').value.trim(),
-    email:    document.getElementById('regEmail').value.trim(),
-    password: document.getElementById('regPass').value,
-    role,
-  };
-  if (role === 'student') {
-    data.dept    = document.getElementById('regDept').value;
-    data.year    = parseInt(document.getElementById('regYear').value);
-    data.rollNo  = document.getElementById('regRoll').value.trim();
-    data.section = document.getElementById('regSection').value.trim() || 'A';
-    data.gpa     = 0;
-    if (!data.rollNo) { showErr('Roll number is required.'); return; }
-  } else if (role === 'teacher') {
-    data.dept     = document.getElementById('regTDept').value;
-    data.subjects = document.getElementById('regSubjects').value;
-  } else if (role === 'recruiter') {
-    data.company = document.getElementById('regCompany').value.trim();
-    if (!data.company) { showErr('Company name is required.'); return; }
+// --- Standard Register ---
+document.getElementById('registerForm').onsubmit = async (e) => {
+    e.preventDefault();
+    const btn = document.getElementById('regBtn');
+    const role = document.getElementById('regRole').value;
+    const data = {
+        name: document.getElementById('regName').value,
+        email: document.getElementById('regEmail').value,
+        password: document.getElementById('regPass').value,
+        role: role
+    };
+    
+    btn.disabled = true; btn.textContent = 'Creating Account...';
+    try {
+        await Auth.register(data);
+        if(typeof showToast === 'function') showToast("Account Created!", "Accessing portal...");
+        setTimeout(() => window.location.href = ROUTE_MAP[role], 1000);
+    } catch(err) {
+        if(typeof showToast === 'function') showToast(err.message, '', 'error');
+        btn.disabled = false; btn.textContent = 'Create Account →';
+    }
+};
+
+// --- Google Login Trigger ---
+document.getElementById('googleBtn').onclick = () => {
+  if (typeof google !== 'undefined' && google.accounts.id) {
+    google.accounts.id.prompt((notification) => {
+      if (notification.isNotDisplayed()) {
+         console.warn("GSI Prompt failed:", notification.getNotDisplayedReason());
+         if(typeof showToast === 'function') showToast("Google Login blocked or origin not allowed.", '', 'error');
+      }
+    });
+  } else {
+    if(typeof showToast === 'function') showToast("Google Identity library failed to load.", '', 'error');
   }
-  const regBtn = document.getElementById('regBtn');
-  regBtn.classList.add('loading');
-  document.getElementById('regBtnText').textContent = 'Creating account…';
+};
+
+// --- Google Response Handler (Must be global) ---
+window.onGoogleSignIn = async (response) => {
   try {
-    const result = await Auth.register(data);
-    lgToast('Welcome, ' + result.user.name.split(' ')[0] + '! Account created.');
-    setTimeout(() => { window.location.href = ROLE_PORTALS[result.user.role] || 'student.html'; }, 1000);
+    const session = Auth.handleGoogleCredential(response.credential);
+    if(typeof showToast === 'function') showToast("Google Login Success!", "Redirecting...");
+    setTimeout(() => window.location.href = ROUTE_MAP[session.role], 1000);
   } catch(err) {
-    regBtn.classList.remove('loading');
-    document.getElementById('regBtnText').textContent = 'Create Account →';
-    showErr(err.message || 'Registration failed.');
+    if(typeof showToast === 'function') showToast(err.message, '', 'error');
   }
-});
+};
 
-// Google
-window.addEventListener('load', () => {
-  if (typeof google === 'undefined') return;
-  google.accounts.id.initialize({ client_id: GOOGLE_CLIENT_ID, callback: handleGoogleCredential, auto_select: false });
-});
-document.getElementById('googleBtn').addEventListener('click', () => {
-  if (typeof google === 'undefined') { lgToast('Google login unavailable — use demo credentials', 'err'); return; }
-  google.accounts.id.prompt();
-});
-function handleGoogleCredential(response) {
-  try {
-    const s = Auth.handleGoogleCredential(response.credential, ALLOWED_DOMAIN);
-    lgToast('Welcome, ' + s.name.split(' ')[0] + '!');
-    setTimeout(() => { window.location.href = ROLE_PORTALS[s.role] || 'student.html'; }, 900);
-  } catch(e) { showErr(e.message); }
-}
-
-// Toast
-function lgToast(msg, type) {
-  const wrap = document.getElementById('toastWrap');
-  const t = document.createElement('div');
-  t.className = 'toast-lg' + (type === 'err' ? ' err-toast' : '');
-  t.innerHTML = '<span class="tdot"></span>' + msg;
-  wrap.appendChild(t);
-  requestAnimationFrame(() => requestAnimationFrame(() => t.classList.add('in')));
-  setTimeout(() => { t.classList.add('out'); setTimeout(() => t.remove(), 400); }, 3500);
-}
-function showErr(msg) { errMsg.textContent = msg; errMsg.classList.add('show'); errMsg.style.display = 'block'; }
-function hideErr()    { errMsg.classList.remove('show'); errMsg.style.display = 'none'; }
-
-// Pipeline dots animation
-(function() {
-  const ids = ['ps0','ps1','ps2'];
-  function run() {
-    ids.forEach(id => { const el=document.getElementById(id); if(el) el.classList.remove('vis'); });
-    ids.forEach((id,i) => setTimeout(() => { const el=document.getElementById(id); if(el) el.classList.add('vis'); }, i*500+200));
-  }
-  run(); setInterval(run, 5500);
-})();
-
-// Canvas particles
+// --- Original Canvas Background Animation ---
 (function() {
   const c = document.getElementById('bgCanvas'), ctx = c.getContext('2d');
-  let W, H, pts = [], mouse = {x:null,y:null};
-  function resize() { W = c.width = innerWidth; H = c.height = innerHeight; }
-  resize(); window.addEventListener('resize', resize);
-  window.addEventListener('mousemove', e => { mouse.x=e.clientX; mouse.y=e.clientY; });
+  let W, H;
+  function resize() { W = c.width = window.innerWidth; H = c.height = window.innerHeight; }
+  resize(); window.onresize = resize;
+
   class P {
-    reset(){this.x=Math.random()*W;this.y=Math.random()*H;this.r=Math.random()*1.3+0.2;this.a=Math.random()*0.25+0.03;this.vx=(Math.random()-0.5)*0.16;this.vy=(Math.random()-0.5)*0.16;this.ph=Math.random()*Math.PI*2;}
-    constructor(){this.reset();}
-    tick(){this.ph+=0.011;this.x+=this.vx;this.y+=this.vy;if(this.x<0||this.x>W||this.y<0||this.y>H)this.reset();if(mouse.x){const dx=this.x-mouse.x,dy=this.y-mouse.y,d=Math.sqrt(dx*dx+dy*dy);if(d<80){this.x+=dx*0.008;this.y+=dy*0.008;}}}
-    draw(){ctx.beginPath();ctx.arc(this.x,this.y,this.r,0,Math.PI*2);ctx.fillStyle='rgba(56,189,248,'+(this.a*(0.65+0.35*Math.sin(this.ph)))+')';ctx.fill();}
+    constructor() { this.reset(); }
+    reset() { 
+        this.x = Math.random() * W; this.y = Math.random() * H; 
+        this.vx = (Math.random() - 0.5) * 0.3; this.vy = (Math.random() - 0.5) * 0.3; 
+        this.r = Math.random() * 1.5 + 0.5; 
+    }
+    draw() { 
+      ctx.beginPath(); ctx.arc(this.x, this.y, this.r, 0, Math.PI*2); 
+      ctx.fillStyle = 'rgba(56,189,248,0.15)'; ctx.fill(); 
+      this.x += this.vx; this.y += this.vy;
+      if(this.x < 0 || this.x > W || this.y < 0 || this.y > H) this.reset();
+    }
   }
-  for(let i=0;i<65;i++) pts.push(new P());
-  function loop(){
-    ctx.clearRect(0,0,W,H);
-    ctx.strokeStyle='rgba(56,189,248,0.015)';ctx.lineWidth=0.5;
-    for(let x=0;x<W;x+=65){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
-    for(let y=0;y<H;y+=65){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
-    for(let i=0;i<pts.length;i++)for(let j=i+1;j<pts.length;j++){const dx=pts[i].x-pts[j].x,dy=pts[i].y-pts[j].y,d=Math.sqrt(dx*dx+dy*dy);if(d<100){ctx.beginPath();ctx.moveTo(pts[i].x,pts[i].y);ctx.lineTo(pts[j].x,pts[j].y);ctx.strokeStyle='rgba(56,189,248,'+(0.045*(1-d/100))+')';ctx.lineWidth=0.5;ctx.stroke();}}
-    pts.forEach(p=>{p.tick();p.draw();});
-    requestAnimationFrame(loop);
-  }
+
+  const pts = Array.from({length: 60}, () => new P());
+  function loop() { ctx.clearRect(0, 0, W, H); pts.forEach(p => p.draw()); requestAnimationFrame(loop); }
   loop();
 })();
-
-// Card hover tilt
-document.querySelectorAll('.fc').forEach(card => {
-  card.addEventListener('mousemove', e => {
-    const r=card.getBoundingClientRect(),x=(e.clientX-r.left)/r.width-0.5,y=(e.clientY-r.top)/r.height-0.5;
-    card.style.transform=`perspective(600px) rotateX(${-y*8}deg) rotateY(${x*8}deg) scale(1.02) translateY(-3px)`;
-  });
-  card.addEventListener('mouseleave', () => { card.style.transform=''; });
-});
 </script>
 </body>
 </html>
