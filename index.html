@@ -3,335 +3,233 @@
 <head>
 <script src="theme.js"></script>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>CampusIQ — Sign In</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@500;600;700&display=swap" rel="stylesheet">
+<title>CampusIQ — Private Assembly</title>
+<!-- Elegant Serif + Modern Sans -->
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
 <!-- Google Identity Services -->
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 <link rel="stylesheet" href="shared.css">
 <style>
-/* ─── PREMIUM UI: REFERENCE MATCH ─── */
+/* ─── OBSIDIAN ASSEMBLY AESTHETIC ─── */
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
 :root{
-  --bg-page: #A0A5B1; /* Cool slate background from reference */
-  --modal-grad: linear-gradient(135deg, #FDFDFD 0%, #FDF4D4 100%);
-  --yellow: #FDD14B;
-  --yellow-hover: #F6C531;
-  --text-main: #111827;
-  --text-muted: #828A9A;
-  --input-bg: #F4F5F7;
-  --border-light: #E5E7EB;
-  --fb: 'Inter', -apple-system, sans-serif;
-  --fh: 'Outfit', sans-serif;
+  --bg-sand: #E6DFD3;
+  --bg-mocha: #B49C82;
+  --obsidian: #111111;
+  --glass: rgba(255, 255, 255, 0.25);
+  --glass-border: rgba(255, 255, 255, 0.5);
+  --text-dark: #1A1A1A;
+  --text-muted: #5A5A5A;
+  --font-serif: 'Playfair Display', serif;
+  --font-sans: 'Inter', sans-serif;
 }
-html,body{height:100%;margin:0;padding:0;background:var(--bg-page);font-family:var(--fb);display:flex;align-items:center;justify-content:center;}
+html,body{height:100%;margin:0;padding:0;background:var(--bg-sand);font-family:var(--font-sans);overflow:hidden;}
 
-/* ─── MAIN MODAL LAYOUT ─── */
-.modal-wrapper {
-  width: 92vw; max-width: 1200px; height: 85vh; min-height: 650px;
-  background: var(--modal-grad);
-  border-radius: 40px;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-  display: flex; position: relative; overflow: hidden;
+/* ─── IMMERSIVE BACKGROUND ─── */
+.bg-container {
+  position: fixed; inset: 0; z-index: 0;
+  background: radial-gradient(circle at 50% 100%, var(--bg-mocha) 0%, var(--bg-sand) 80%);
+  display: flex; justify-content: center; align-items: flex-end;
 }
 
-/* ─── LEFT PANEL (Form) ─── */
-.left-panel {
-  flex: 0 0 45%; padding: 3rem 4rem;
-  display: flex; flex-direction: column; justify-content: space-between;
-  position: relative;
+/* The Central Obsidian Shape */
+.obsidian-shape {
+  width: 70vw; height: 75vh;
+  background: url('https://images.unsplash.com/photo-1616487532255-75e1f0e4b85c?q=80&w=1600&auto=format&fit=crop') center/cover no-repeat;
+  border-top-left-radius: 50% 40%; border-top-right-radius: 50% 40%;
+  mask-image: radial-gradient(ellipse at center, black 40%, transparent 80%);
+  -webkit-mask-image: radial-gradient(ellipse at center, black 40%, transparent 80%);
+  opacity: 0.85; filter: contrast(1.1) brightness(0.8);
 }
 
-.brand-pill {
-  display: inline-flex; align-items: center; justify-content: center;
-  padding: 0.6rem 1.5rem; border-radius: 99px;
-  border: 1px solid rgba(0,0,0,0.15);
-  font-family: var(--fh); font-weight: 500; font-size: 1rem; color: var(--text-main);
-  align-self: flex-start;
+/* Fine Linework */
+.fine-lines {
+  position: absolute; inset: 0; pointer-events: none;
+  background-image: 
+    url("data:image/svg+xml,%3Csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0,300 C300,100 600,600 1200,200' stroke='rgba(26,26,26,0.1)' stroke-width='1' fill='none'/%3E%3Cpath d='M-200,600 C400,800 800,100 1400,400' stroke='rgba(255,255,255,0.3)' stroke-width='1' fill='none'/%3E%3C/svg%3E");
+  background-size: cover;
 }
 
-.form-container { width: 100%; max-width: 360px; margin: 0 auto; display: flex; flex-direction: column; justify-content: center; flex: 1; }
+/* ─── TYPOGRAPHY & BRANDING ─── */
+.main-content {
+  position: relative; z-index: 1; width: 100vw; height: 100vh;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+}
 
-.header-title { font-family: var(--fh); font-size: 2rem; font-weight: 600; color: var(--text-main); margin-bottom: 0.5rem; text-align: center; }
-.header-sub { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 2.5rem; text-align: center; }
+.top-bar {
+  position: absolute; top: 0; left: 0; width: 100%; padding: 2rem 3rem;
+  display: flex; justify-content: space-between; align-items: flex-start;
+}
+.brand {
+  font-family: var(--font-serif); font-size: 1.2rem; line-height: 1.1; color: var(--text-dark);
+}
+.brand span { display: block; font-style: italic; opacity: 0.7; font-size: 0.9rem; font-family: var(--font-sans); }
 
-/* Role Selector (Segmented Pill) */
+.hero-text {
+  text-align: center; font-family: var(--font-serif);
+  color: var(--text-dark); pointer-events: none; margin-bottom: -4rem; z-index: 0;
+}
+.hero-text h1 { font-size: clamp(4rem, 8vw, 7rem); font-weight: 400; line-height: 0.9; letter-spacing: -0.03em; }
+.hero-text h1 i { font-style: italic; font-weight: 500; }
+.hero-sub { font-family: var(--font-sans); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.1em; margin-top: 1.5rem; opacity: 0.7; }
+
+/* ─── FROSTED GLASS FORM CARD ─── */
+.glass-panel {
+  background: var(--glass);
+  backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+  border: 1px solid var(--glass-border);
+  border-radius: 20px; padding: 2.5rem; width: 100%; max-width: 420px;
+  box-shadow: 0 30px 60px rgba(0,0,0,0.1), inset 0 2px 0 rgba(255,255,255,0.6);
+  z-index: 2; position: relative;
+  animation: floatUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+@keyframes floatUp { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
+
 .role-tabs {
-  display: flex; background: rgba(0,0,0,0.04); border-radius: 99px; padding: 0.3rem; margin-bottom: 1.5rem;
+  display: flex; gap: 0.2rem; background: rgba(255,255,255,0.3); border-radius: 12px; padding: 0.3rem; margin-bottom: 2rem;
 }
 .rtab {
-  flex: 1; padding: 0.6rem 0; border-radius: 99px; border: none; background: transparent;
-  font-size: 0.75rem; font-weight: 600; color: var(--text-muted); cursor: pointer; transition: all 0.3s;
+  flex: 1; padding: 0.6rem 0; border: none; background: transparent; border-radius: 8px;
+  font-family: var(--font-sans); font-size: 0.75rem; font-weight: 500; color: var(--text-muted);
+  cursor: pointer; transition: all 0.3s ease;
 }
-.rtab.active { background: #fff; color: var(--text-main); box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+.rtab.active { background: #fff; color: var(--obsidian); box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
 
-/* Inputs */
-.form-group { margin-bottom: 1.2rem; position: relative; }
-.form-label { display: block; font-size: 0.75rem; font-weight: 500; color: var(--text-muted); margin-bottom: 0.5rem; margin-left: 0.8rem; }
+.form-group { margin-bottom: 1.25rem; position: relative; }
 .form-input {
-  width: 100%; background: var(--input-bg); border: 2px solid transparent;
-  border-radius: 99px; padding: 1rem 1.5rem; color: var(--text-main);
-  font-family: var(--fb); font-size: 0.9rem; transition: all 0.2s;
+  width: 100%; background: rgba(255,255,255,0.6); border: 1px solid rgba(255,255,255,0.8);
+  padding: 1rem 1.25rem; border-radius: 12px; font-family: var(--font-sans);
+  font-size: 0.9rem; color: var(--obsidian); transition: all 0.3s ease;
 }
-.form-input::placeholder { color: #A0AABF; }
-.form-input:focus { border-color: var(--yellow); background: #fff; outline: none; }
+.form-input::placeholder { color: rgba(26,26,26,0.4); font-weight: 300; }
+.form-input:focus { background: #fff; outline: none; border-color: var(--obsidian); box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
 
-.pwd-toggle {
-  position: absolute; right: 1.2rem; top: 2.2rem; background: none; border: none;
-  color: #A0AABF; cursor: pointer; display: flex; align-items: center;
+/* Obsidian Button */
+.btn-obsidian {
+  width: 100%; background: var(--obsidian); color: #fff; border: none;
+  padding: 1rem; border-radius: 12px; font-family: var(--font-sans); font-weight: 500;
+  font-size: 0.9rem; cursor: pointer; transition: all 0.3s ease; margin-top: 0.5rem;
+  display: flex; justify-content: center; align-items: center; gap: 0.5rem;
 }
+.btn-obsidian:hover { background: #2A2A2A; transform: translateY(-2px); box-shadow: 0 10px 20px rgba(0,0,0,0.15); }
+.btn-obsidian:disabled { opacity: 0.7; cursor: not-allowed; }
 
-/* Buttons */
-.btn-primary {
-  width: 100%; background: var(--yellow); color: var(--text-main);
-  border: none; border-radius: 99px; padding: 1.1rem; font-family: var(--fb);
-  font-size: 0.95rem; font-weight: 600; cursor: pointer; transition: all 0.2s;
-  margin-top: 0.5rem; margin-bottom: 1.2rem;
-  display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+.divider {
+  display: flex; align-items: center; margin: 1.5rem 0; font-size: 0.7rem; color: var(--text-muted);
+  text-transform: uppercase; letter-spacing: 0.05em;
 }
-.btn-primary:hover { background: var(--yellow-hover); transform: translateY(-1px); }
-.btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
+.divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: rgba(26,26,26,0.1); margin: 0 1rem; }
 
-.social-btns { display: flex; gap: 1rem; }
-.btn-social {
-  flex: 1; display: flex; align-items: center; justify-content: center; gap: 0.5rem;
-  background: transparent; border: 1px solid var(--border-light);
-  border-radius: 99px; padding: 0.9rem; font-size: 0.85rem; font-weight: 500;
-  color: var(--text-main); cursor: pointer; transition: all 0.2s;
+/* View Toggle */
+.view-switch { text-align: center; font-size: 0.8rem; color: var(--text-muted); margin-top: 1.5rem; }
+.view-switch a { color: var(--obsidian); font-weight: 500; cursor: pointer; text-decoration: none; border-bottom: 1px solid var(--obsidian); padding-bottom: 2px; transition: opacity 0.2s; }
+.view-switch a:hover { opacity: 0.6; }
+
+/* Custom Toast */
+.toast-obs {
+  background: var(--obsidian); color: #fff; padding: 1rem 1.5rem; border-radius: 12px;
+  font-family: var(--font-sans); font-size: 0.85rem; display: flex; align-items: center; gap: 0.75rem;
+  box-shadow: 0 15px 30px rgba(0,0,0,0.3); margin-bottom: 0.5rem;
 }
-.btn-social:hover { background: rgba(0,0,0,0.02); }
+.toast-obs::before { content:''; width:8px; height:8px; border-radius:50%; background:#E6DFD3; }
+.toast-obs.err::before { background: #EF4444; }
 
-/* Footer Links */
-.footer-links {
-  display: flex; justify-content: space-between; width: 100%;
-  font-size: 0.75rem; color: var(--text-muted); align-items: center;
+/* Bypass Button for Presentations */
+.btn-bypass {
+  width: 100%; background: transparent; color: var(--text-muted); border: 1px dashed rgba(26,26,26,0.2);
+  padding: 0.75rem; border-radius: 12px; font-family: var(--font-sans); font-size: 0.8rem;
+  cursor: pointer; margin-top: 0.5rem; transition: all 0.2s;
 }
-.footer-links a { color: var(--text-main); font-weight: 600; text-decoration: underline; text-decoration-color: transparent; cursor: pointer; transition: text-decoration-color 0.2s; }
-.footer-links a:hover { text-decoration-color: var(--text-main); }
+.btn-bypass:hover { background: rgba(255,255,255,0.5); color: var(--obsidian); }
 
-/* ─── RIGHT PANEL (Image & Widgets) ─── */
-.right-panel {
-  flex: 1; margin: 1.5rem 1.5rem 1.5rem 0; border-radius: 32px;
-  background: url('https://images.unsplash.com/photo-1522071820081-009f0129c71c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80') center/cover no-relative;
-  position: relative; overflow: hidden;
-}
-.close-btn {
-  position: absolute; top: 1.5rem; right: 1.5rem; width: 40px; height: 40px;
-  background: rgba(255,255,255,0.9); border-radius: 50%; display: flex;
-  align-items: center; justify-content: center; cursor: pointer; font-size: 1.2rem;
-  color: var(--text-main); border: none; z-index: 10; backdrop-filter: blur(5px);
-}
-
-/* Floating Overlays */
-.widget-yellow {
-  position: absolute; top: 2rem; left: 2rem; background: var(--yellow);
-  padding: 1rem 1.5rem; border-radius: 16px; color: var(--text-main);
-  box-shadow: 0 10px 20px rgba(0,0,0,0.1); z-index: 2;
-}
-.w-title { font-size: 0.8rem; font-weight: 600; margin-bottom: 0.2rem; }
-.w-time { font-size: 0.7rem; opacity: 0.8; }
-.dot { position: absolute; top: 1rem; right: 1rem; width: 6px; height: 6px; background: #fff; border-radius: 50%; }
-
-.widget-dark {
-  position: absolute; top: 3.5rem; left: 4rem; background: rgba(31, 41, 55, 0.9);
-  padding: 1rem 1.5rem; border-radius: 16px; color: #fff; z-index: 1;
-  width: 200px; height: 70px; display: flex; align-items: flex-end;
-}
-
-.avatars {
-  position: absolute; top: 35%; right: 3rem; display: flex; flex-direction: column; gap: -10px;
-}
-.avatar-circle {
-  width: 48px; height: 48px; border-radius: 50%; border: 3px solid rgba(255,255,255,0.2);
-  background: #ccc; object-fit: cover; box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-}
-.a1 { transform: translateX(-20px); z-index: 3; background: url('https://i.pravatar.cc/100?img=5') center/cover; }
-.a2 { z-index: 2; background: url('https://i.pravatar.cc/100?img=9') center/cover; }
-.a3 { transform: translateX(20px) translateY(-10px); z-index: 1; background: url('https://i.pravatar.cc/100?img=1') center/cover; }
-
-.widget-glass {
-  position: absolute; bottom: 2rem; right: 2rem; background: rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.3);
-  padding: 1.5rem; border-radius: 20px; color: #fff; width: 280px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-}
-.calendar-days { display: flex; justify-content: space-between; text-align: center; margin-bottom: 1rem; }
-.day { display: flex; flex-direction: column; gap: 0.4rem; }
-.day span { font-size: 0.7rem; opacity: 0.8; }
-.day strong { font-size: 1.1rem; font-weight: 500; }
-.day.active strong { background: rgba(255,255,255,0.3); padding: 0.2rem 0.4rem; border-radius: 8px; }
-.glass-graph { width: 100%; height: 40px; background: repeating-linear-gradient(45deg, rgba(255,255,255,0.1), rgba(255,255,255,0.1) 2px, transparent 2px, transparent 6px); border-radius: 8px; }
-
-.widget-white {
-  position: absolute; bottom: 2rem; left: 2rem; background: #fff;
-  padding: 1.2rem; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-  display: flex; flex-direction: column; gap: 0.5rem; z-index: 2;
-}
-.w-faces { display: flex; margin-top: 0.5rem; }
-.w-faces img { width: 24px; height: 24px; border-radius: 50%; border: 2px solid #fff; margin-right: -8px; }
-
-/* ─── UTILS & ANIMATIONS ─── */
-.spinner { width: 18px; height: 18px; border: 2px solid rgba(0,0,0,0.2); border-top-color: var(--text-main); border-radius: 50%; animation: spin 0.8s linear infinite; display: none; }
-@keyframes spin { to { transform: rotate(360deg); } }
-
-.fade-in { animation: fadeIn 0.4s ease forwards; }
-@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-/* Premium Toast Override */
-.toast-lg { background: #111827; padding: 1rem 1.5rem; border-radius: 16px; color: white; font-family: var(--fb); font-size: 0.85rem; font-weight: 500; box-shadow: 0 10px 30px rgba(0,0,0,0.5); margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.75rem; }
-.toast-lg::before { content: ''; display: block; width: 8px; height: 8px; border-radius: 50%; background: var(--yellow); }
-.toast-lg.error::before { background: var(--red); }
-
-@media(max-width: 900px) {
-  .modal-wrapper { flex-direction: column; width: 100vw; height: 100vh; border-radius: 0; }
-  .right-panel { display: none; }
-  .left-panel { padding: 2rem; }
+@media (max-width: 768px) {
+  .hero-text h1 { font-size: 3.5rem; }
+  .glass-panel { margin: 0 1.5rem; padding: 2rem; }
+  .top-bar { padding: 1.5rem; }
 }
 </style>
 </head>
 <body>
 
+<!-- Background Art -->
+<div class="bg-container">
+  <div class="fine-lines"></div>
+  <div class="obsidian-shape"></div>
+</div>
+
+<!-- Toast Wrap -->
 <div id="toast-wrap" style="position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:9999;display:flex;flex-direction:column;align-items:center;"></div>
 
-<div class="modal-wrapper fade-in">
+<div class="main-content">
   
-  <!-- ─── LEFT FORM PANEL ─── -->
-  <div class="left-panel">
-    <div class="brand-pill">CampusIQ</div>
-    
-    <div class="form-container">
-      
-      <!-- SIGN IN VIEW -->
-      <div id="signInView">
-        <h1 class="header-title">Welcome back</h1>
-        <p class="header-sub">Sign in to access your dashboard</p>
-        
-        <form id="loginForm">
-          <div class="form-group">
-            <label class="form-label" for="loginEmail">Email address</label>
-            <input class="form-input" id="loginEmail" type="email" placeholder="name@domain.edu" required>
-          </div>
-          
-          <div class="form-group">
-            <label class="form-label" for="loginPass">Password</label>
-            <input class="form-input" id="loginPass" type="password" placeholder="••••••••••••••" required>
-            <button type="button" class="pwd-toggle" id="toggleLoginPwd" tabindex="-1">
-              <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-            </button>
-          </div>
-          
-          <button class="btn-primary" id="loginBtn" type="submit">
-            <span class="spinner" id="loginSpinner"></span>
-            <span id="loginBtnText">Sign In</span>
-          </button>
-
-          <div class="social-btns">
-            <button class="btn-social" type="button">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.126 3.802 3.058 1.49-.068 2.059-.968 3.868-.968 1.785 0 2.321.968 3.893.935 1.637-.035 2.65-1.528 3.632-2.983 1.144-1.674 1.616-3.298 1.638-3.385-.035-.015-3.178-1.22-3.203-4.856-.026-3.04 2.482-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.619 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.56-1.702z"/></svg>
-              Apple
-            </button>
-            <button class="btn-social" id="googleBtn" type="button">
-              <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
-              Google
-            </button>
-          </div>
-        </form>
-      </div>
-
-      <!-- REGISTER VIEW -->
-      <div id="registerView" style="display:none;">
-        <h1 class="header-title">Create an account</h1>
-        <p class="header-sub">Sign up to join the CampusIQ network</p>
-        
-        <div class="role-tabs">
-          <button class="rtab active" data-role="student">Student</button>
-          <button class="rtab" data-role="teacher">Teacher</button>
-          <button class="rtab" data-role="recruiter">Recruiter</button>
-        </div>
-
-        <form id="registerForm">
-          <div class="form-group">
-            <label class="form-label" for="regName">Full name</label>
-            <input class="form-input" id="regName" placeholder="Amélie Laurent" required>
-          </div>
-          <div class="form-group">
-            <label class="form-label" for="regEmail">Email address</label>
-            <input class="form-input" id="regEmail" type="email" placeholder="amelielaurent@iilm.edu" required>
-          </div>
-          <div class="form-group">
-            <label class="form-label" for="regPass">Password</label>
-            <input class="form-input" id="regPass" type="password" placeholder="••••••••••••••" required>
-            <button type="button" class="pwd-toggle" id="toggleRegPwd" tabindex="-1">
-              <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-            </button>
-          </div>
-          
-          <button class="btn-primary" id="regBtn" type="submit">
-            <span class="spinner" id="regSpinner"></span>
-            <span id="regBtnText">Submit</span>
-          </button>
-        </form>
-      </div>
-
-    </div>
-
-    <!-- Footers -->
-    <div class="footer-links">
-      <div id="footerText">Have any account? <a id="toggleViewBtn">Sign in</a></div>
-      <div><a href="#">Terms & Conditions</a></div>
-    </div>
+  <div class="top-bar">
+    <div class="brand">Campus<i>IQ</i> <span>A Private Assembly</span></div>
+    <div class="brand" style="text-align: right; font-size: 0.85rem;">Coordinates<br><span style="font-style:normal; opacity:0.5;">Withheld</span></div>
   </div>
 
-  <!-- ─── RIGHT IMAGE PANEL & WIDGETS ─── -->
-  <div class="right-panel">
-    <button class="close-btn">✕</button>
+  <div class="hero-text">
+    <h1>Intelligence <br><i>Shown First</i></h1>
+    <div class="hero-sub">Seek Admission</div>
+  </div>
 
-    <!-- Overlay Widgets mimicking reference -->
-    <div class="widget-dark">
-      <div class="w-time" style="opacity:0.6">10:00am–11:00am</div>
-      <div class="dot" style="background:var(--yellow); top:auto; bottom:1rem"></div>
-    </div>
+  <div class="glass-panel">
     
-    <div class="widget-yellow">
-      <div class="w-title">CampusIQ Sync Review</div>
-      <div class="w-time">09:30am–10:00am</div>
-      <div class="dot"></div>
-    </div>
-
-    <div class="avatars">
-      <img class="avatar-circle a1" src="https://i.pravatar.cc/100?img=5" alt="A">
-      <img class="avatar-circle a2" src="https://i.pravatar.cc/100?img=9" alt="B">
-      <img class="avatar-circle a3" src="https://i.pravatar.cc/100?img=1" alt="C">
-    </div>
-
-    <div class="widget-white">
-      <div class="w-title" style="color:#000">Daily Meeting</div>
-      <div class="w-time" style="color:#828A9A">12:00pm–01:00pm</div>
-      <div class="dot" style="background:var(--yellow)"></div>
-      <div class="w-faces">
-        <img src="https://i.pravatar.cc/100?img=12" alt="F">
-        <img src="https://i.pravatar.cc/100?img=32" alt="F">
-        <img src="https://i.pravatar.cc/100?img=44" alt="F">
-        <img src="https://i.pravatar.cc/100?img=15" alt="F">
+    <!-- SIGN IN VIEW -->
+    <div id="signInView">
+      <div class="role-tabs">
+        <button class="rtab active" data-role="student">Student</button>
+        <button class="rtab" data-role="teacher">Teacher</button>
+        <button class="rtab" data-role="recruiter">Recruiter</button>
       </div>
+
+      <form id="loginForm">
+        <div class="form-group">
+          <input class="form-input" id="loginEmail" type="email" placeholder="Institutional Email" required>
+        </div>
+        <div class="form-group">
+          <input class="form-input" id="loginPass" type="password" placeholder="Passkey" required>
+        </div>
+        <button class="btn-obsidian" id="loginBtn" type="submit">Enter Assembly</button>
+      </form>
+
+      <div class="divider">Or</div>
+
+      <!-- OFFICIAL GOOGLE BUTTON CONTAINER -->
+      <!-- This is much more reliable than prompt() if origins are tricky -->
+      <div id="googleBtnContainer" style="display:flex; justify-content:center; width:100%;"></div>
+
+      <!-- FAILSAFE: Dev Bypass -->
+      <button class="btn-bypass" id="bypassBtn" type="button" title="Use this if Google Login is blocked during presentations">Test Bypass (Dev Mode)</button>
+
+      <div class="view-switch">Commitment precedes entry. <a id="goRegister">Apply here</a></div>
     </div>
 
-    <div class="widget-glass">
-      <div class="calendar-days">
-        <div class="day"><span>Sun</span><strong>22</strong></div>
-        <div class="day"><span>Mon</span><strong>23</strong></div>
-        <div class="day"><span>Tue</span><strong>24</strong></div>
-        <div class="day active"><span>Wed</span><strong>25</strong></div>
-        <div class="day"><span>Thu</span><strong>26</strong></div>
-        <div class="day"><span>Fri</span><strong>27</strong></div>
-        <div class="day"><span>Sat</span><strong>28</strong></div>
+    <!-- REGISTER VIEW -->
+    <div id="registerView" style="display:none;">
+      <div class="role-tabs">
+        <button class="rtab active" data-role="student">Student</button>
+        <button class="rtab" data-role="teacher">Teacher</button>
+        <button class="rtab" data-role="recruiter">Recruiter</button>
       </div>
-      <div class="glass-graph"></div>
+
+      <form id="registerForm">
+        <div class="form-group">
+          <input class="form-input" id="regName" placeholder="Full Identity" required>
+        </div>
+        <div class="form-group">
+          <input class="form-input" id="regEmail" type="email" placeholder="Email (e.g. name.ug23@iilm.edu)" required>
+        </div>
+        <div class="form-group">
+          <input class="form-input" id="regPass" type="password" placeholder="Create Passkey (min 6)" required>
+        </div>
+        <button class="btn-obsidian" id="regBtn" type="submit">Submit Application</button>
+      </form>
+
+      <div class="view-switch">Already granted access? <a id="goLogin">Enter here</a></div>
     </div>
 
   </div>
 </div>
-
-<!-- Google Identity Hidden Trigger -->
-<div id="g_id_onload" data-client_id="70835003370-fbdg01a9mgp13s80cgd65174udp3h74k.apps.googleusercontent.com" data-callback="onGoogleSignIn" data-auto_prompt="false"></div>
 
 <!-- Load Core Scripts -->
 <script src="db.js"></script>
@@ -343,167 +241,14 @@ html,body{height:100%;margin:0;padding:0;background:var(--bg-page);font-family:v
 
 const ROUTE_MAP = { student: 'student.html', teacher: 'teacher.html', admin: 'admin.html', recruiter: 'recruiter.html' };
 let activeRole = 'student';
-let isLogin = true;
 
-// --- Role Tab Logic ---
+// --- Tab Logic ---
 document.querySelectorAll('.rtab').forEach(tab => {
   tab.addEventListener('click', () => {
-    document.querySelectorAll('.rtab').forEach(b => b.classList.remove('active'));
+    const parent = tab.parentElement;
+    parent.querySelectorAll('.rtab').forEach(b => b.classList.remove('active'));
     tab.classList.add('active');
     activeRole = tab.dataset.role;
-  });
-});
-
-// --- View Toggle Logic ---
-const signView = document.getElementById('signInView');
-const regView = document.getElementById('registerView');
-const toggleBtn = document.getElementById('toggleViewBtn');
-const footerText = document.getElementById('footerText');
-
-toggleBtn.onclick = (e) => {
-  e.preventDefault();
-  isLogin = !isLogin;
-  if (isLogin) {
-    signView.style.display = 'block';
-    regView.style.display = 'none';
-    footerText.innerHTML = `Don't have an account? <a id="toggleViewBtn">Sign up</a>`;
-  } else {
-    signView.style.display = 'none';
-    regView.style.display = 'block';
-    footerText.innerHTML = `Have any account? <a id="toggleViewBtn">Sign in</a>`;
-  }
-  // Re-bind the dynamically created link
-  document.getElementById('toggleViewBtn').onclick = toggleBtn.onclick;
-};
-
-// --- Password Visibility Toggle ---
-function setupPwdToggle(btnId, inputId) {
-  const btn = document.getElementById(btnId);
-  const input = document.getElementById(inputId);
-  if(!btn || !input) return;
-  btn.onclick = () => {
-    if (input.type === 'password') {
-      input.type = 'text';
-      btn.innerHTML = '<svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>';
-    } else {
-      input.type = 'password';
-      btn.innerHTML = '<svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
-    }
-  };
-}
-setupPwdToggle('toggleLoginPwd', 'loginPass');
-setupPwdToggle('toggleRegPwd', 'regPass');
-
-// --- Toast & Buttons ---
-function saasToast(msg, type='ok') {
-  if(typeof showToast === 'function') { showToast(msg, '', type); return; }
-  const wrap = document.getElementById('toast-wrap');
-  const t = document.createElement('div');
-  t.className = `toast-lg ${type==='error'?'error':''}`;
-  t.textContent = msg;
-  wrap.appendChild(t);
-  setTimeout(() => { t.style.opacity='0'; setTimeout(()=>t.remove(),300); }, 3000);
-}
-
-function setBtnLoading(btnId, spinnerId, textId, isLoading) {
-  const btn = document.getElementById(btnId);
-  const spin = document.getElementById(spinnerId);
-  const text = document.getElementById(textId);
-  btn.disabled = isLoading;
-  spin.style.display = isLoading ? 'inline-block' : 'none';
-  text.textContent = isLoading ? 'Processing...' : (btnId==='loginBtn' ? 'Sign In' : 'Submit');
-}
-
-// --- Standard Login ---
-document.getElementById('loginForm').onsubmit = async (e) => {
-  e.preventDefault();
-  const email = document.getElementById('loginEmail').value.trim();
-  const pass = document.getElementById('loginPass').value;
-
-  setBtnLoading('loginBtn', 'loginSpinner', 'loginBtnText', true);
-
-  try {
-    const session = await Auth.login(email, pass);
-    saasToast(`Welcome back, ${session.name.split(' ')[0]}!`, 'ok');
-    setTimeout(() => { window.location.href = ROUTE_MAP[session.role] || 'student.html'; }, 800);
-  } catch(err) {
-    saasToast(err.message, 'error');
-    setBtnLoading('loginBtn', 'loginSpinner', 'loginBtnText', false);
-  }
-};
-
-// --- Standard Register ---
-document.getElementById('registerForm').onsubmit = async (e) => {
-    e.preventDefault();
-    const email = document.getElementById('regEmail').value.trim().toLowerCase();
-    const localPart = email.split('@')[0];
-    const domain = email.split('@')[1] || '';
-
-    if (activeRole === 'student' && (domain !== 'iilm.edu' || !localPart.includes('ug'))) {
-        saasToast("Students must use @iilm.edu email containing 'ug'", 'error'); return;
-    } else if (activeRole === 'teacher' && (domain !== 'iilm.edu' || localPart.includes('ug'))) {
-        saasToast("Teachers must use @iilm.edu email without 'ug'", 'error'); return;
-    }
-
-    const data = {
-        name: document.getElementById('regName').value,
-        email: email,
-        password: document.getElementById('regPass').value,
-        role: activeRole
-    };
     
-    setBtnLoading('regBtn', 'regSpinner', 'regBtnText', true);
-    try {
-        await Auth.register(data);
-        saasToast("Account created successfully!", 'ok');
-        setTimeout(() => window.location.href = ROUTE_MAP[activeRole], 800);
-    } catch(err) {
-        saasToast(err.message, 'error');
-        setBtnLoading('regBtn', 'regSpinner', 'regBtnText', false);
-    }
-};
-
-// --- Google Login Configuration ---
-const isPreviewEnv = window.location.hostname.includes('goog') || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.hostname === '';
-
-window.onload = () => {
-    if (!isPreviewEnv && typeof google !== 'undefined' && google.accounts && google.accounts.id) {
-        google.accounts.id.initialize({
-            client_id: "70835003370-fbdg01a9mgp13s80cgd65174udp3h74k.apps.googleusercontent.com",
-            callback: window.onGoogleSignIn
-        });
-    }
-};
-
-document.getElementById('googleBtn').onclick = () => {
-  if (isPreviewEnv) {
-     saasToast("Preview Mode: Simulating Google Login...", 'ok');
-     setTimeout(() => {
-         const mockPayload = { email: "demo.ug24@iilm.edu", name: "Google Demo Student" };
-         const mockJwt = "mockHeader." + btoa(JSON.stringify(mockPayload)) + ".mockSignature";
-         if (typeof window.onGoogleSignIn === 'function') window.onGoogleSignIn({ credential: mockJwt });
-     }, 800);
-     return;
-  }
-
-  if (typeof google !== 'undefined' && google.accounts && google.accounts.id) {
-    google.accounts.id.prompt((notification) => {
-      if (notification.isNotDisplayed()) {
-         const reason = notification.getNotDisplayedReason();
-         if (reason === 'origin_not_allowed' || reason === 'unregistered_origin') saasToast("Domain not whitelisted in Google Console.", 'error');
-         else saasToast("Google Login unavailable.", 'error');
-      }
-    });
-  } else { saasToast("Google Library failed to load.", 'error'); }
-};
-
-window.onGoogleSignIn = async (response) => {
-  try {
-    const session = Auth.handleGoogleCredential(response.credential);
-    saasToast("Google Login Success!", 'ok');
-    setTimeout(() => window.location.href = ROUTE_MAP[session.role], 800);
-  } catch(err) { saasToast(err.message, 'error'); }
-};
-</script>
-</body>
-</html>
+    // Sync both sets of tabs
+    document.querySelectorAll(`.rtab[data-role="${activeRole}"]`).forEach(b
