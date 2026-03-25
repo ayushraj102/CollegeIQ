@@ -8,7 +8,7 @@
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 <link rel="stylesheet" href="shared.css">
 <style>
-/* ─── PREMIUM SAAS DESIGN SYSTEM (From Code 1) ─── */
+/* ─── PREMIUM SAAS DESIGN SYSTEM ─── */
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
 :root{
   --bg:#04070F;--s1:#080E1C;--s2:#0C1525;
@@ -18,7 +18,20 @@
   --glass: rgba(255, 255, 255, 0.03);
   --glass-border: rgba(255, 255, 255, 0.08);
 }
-html,body{height:100%;margin:0;padding:0;overflow:hidden;background:var(--bg);}
+
+/* ─── DAY/NIGHT MODE TOGGLE VARIABLES ─── */
+:root[data-theme="light"], body.light-mode {
+  --bg: #F8FAFC;
+  --s1: #F1F5F9;
+  --s2: #E2E8F0;
+  --text: #0F172A;
+  --text2: #475569;
+  --muted: #94A3B8;
+  --glass: rgba(255, 255, 255, 0.8);
+  --glass-border: rgba(0, 0, 0, 0.1);
+}
+
+html,body{height:100%;margin:0;padding:0;overflow:hidden;background:var(--bg); transition: background 0.3s ease;}
 body{color:var(--text);font-family:var(--fb);display:flex;}
 
 #bgCanvas{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:0.8;}
@@ -40,49 +53,93 @@ body{color:var(--text);font-family:var(--fb);display:flex;}
   backdrop-filter: blur(20px); padding: 4rem;
   display:flex;flex-direction:column;justify-content:center;
   position:relative;overflow:hidden; border-right: 1px solid var(--glass-border);
+  transition: background 0.3s ease;
 }
+body.light-mode .left, :root[data-theme="light"] .left { background: linear-gradient(135deg, #F1F5F9, #E2E8F0); }
+
 .orb-1{position:absolute;width:600px;height:600px;background:var(--cyan);top:-200px;left:-200px;border-radius:50%;filter:blur(120px);opacity:0.15;}
 .orb-2{position:absolute;width:400px;height:400px;background:var(--violet);bottom:-100px;right:-100px;border-radius:50%;filter:blur(100px);opacity:0.1;}
-.left-content { position: relative; z-index: 2; max-width: 480px; }
+
+/* Left Scale Adjustment */
+.left-content { position: relative; z-index: 2; max-width: 480px; transform: scale(0.88); transform-origin: left center; }
 .left-brand{display:flex;align-items:center;gap:0.75rem;margin-bottom:3rem;}
 .brand-icon{width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg, var(--cyan), var(--violet));display:flex;align-items:center;justify-content:center;font-family:var(--fh);font-size:0.85rem;font-weight:800;color:#fff;box-shadow: 0 8px 20px rgba(56,189,248,0.3);}
 .brand-name{font-family:var(--fh);font-size:1.4rem;font-weight:800;letter-spacing:-0.5px;}
 .brand-name em{color:var(--cyan);font-style:normal;}
-.left-headline{font-family:var(--fh);font-size:2.8rem;font-weight:800;line-height:1.1;margin-bottom:1rem;letter-spacing:-1px;}
-.left-headline span{background:linear-gradient(90deg, #38BDF8, #A78BFA);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
-.left-sub{font-size:1rem;color:var(--text2);line-height:1.6;margin-bottom:3rem;}
 
-/* Feature Cards & AI Pipeline Animations */
-.left-cards{display:flex;flex-direction:column;gap:1rem;}
-.fc{background: linear-gradient(145deg, rgba(255,255,255,0.05), rgba(255,255,255,0.01));border: 1px solid var(--glass-border);border-radius: 16px; padding: 1.2rem; backdrop-filter: blur(12px); display: flex; align-items: flex-start; gap: 1rem;}
-.fc-icon { font-size: 1.5rem; background: rgba(255,255,255,0.05); padding: 0.5rem; border-radius: 10px; border: 1px solid var(--glass-border); }
+/* Exact Typography Match from Image */
+.left-headline{font-family:var(--fh);font-size:3.2rem;font-weight:800;line-height:1.1;margin-bottom:1.5rem;letter-spacing:-1px;}
+.left-headline .cyan-text { color: var(--cyan); background: none; -webkit-text-fill-color: initial; }
+.left-headline .grad-text { background:linear-gradient(90deg, #38BDF8, #A78BFA);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.left-sub{font-size:1.1rem;color:var(--text2);line-height:1.6;margin-bottom:3rem;}
+
+/* Feature Cards */
+.left-cards{display:flex;flex-direction:column;gap:1.2rem;}
+.fc{
+  background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255,255,255,0.05);
+  border-radius: 16px; padding: 1.25rem 1.5rem; backdrop-filter: blur(12px); 
+  display: flex; align-items: center; gap: 1.2rem; width: 95%; box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+}
+.fc-icon { 
+  width: 48px; height: 48px; border-radius: 14px; background: rgba(255,255,255,0.03);
+  display: flex; align-items: center; justify-content: center; font-size: 1.5rem; 
+  box-shadow: inset 0 1px 1px rgba(255,255,255,0.1); flex-shrink: 0;
+}
+.fc-title { font-size: 1.1rem; font-weight: 700; color: #fff; margin-bottom: 0.2rem; }
+.fc-sub { font-size: 0.85rem; color: var(--text2); font-weight: 400; }
+
 .flt-1 { animation: flt1 6s ease-in-out infinite; }
 .flt-2 { animation: flt2 7.5s ease-in-out infinite; }
 @keyframes flt1 { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-8px);} }
 @keyframes flt2 { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-6px);} }
 
-.pipeline-row{display:flex;align-items:center;justify-content:space-between;padding:0.8rem 1.2rem;background:rgba(6,12,24,0.7);border:1px solid rgba(56,189,248,0.15);border-radius:12px;position:relative;overflow:hidden;}
-.pipeline-row::before{content:'';position:absolute;top:0;bottom:0;left:-60%;width:50%;background:linear-gradient(90deg,transparent,rgba(56,189,248,0.08),transparent);animation:pipeShimmer 3s linear infinite;}
-@keyframes pipeShimmer{to{left:120%;}}
-.ps{display:flex;align-items:center;gap:0.4rem;opacity:0;transform:translateY(4px);transition:all 0.4s ease;}
-.ps.vis{opacity:1;transform:none;}
-.ps-dot{width:8px;height:8px;border-radius:50%;box-shadow:0 0 8px currentColor;}
-.ps-text{font-size:0.75rem;color:var(--text2);}
-.ps-text strong{color:var(--text);font-weight:600;}
-.ps-arrow{color:var(--muted);font-size:0.75rem;}
+/* Glowing Pipeline Animation */
+.pipeline-row-new {
+  display: flex; align-items: center; justify-content: space-between;
+  background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255,255,255,0.05);
+  border-radius: 16px; padding: 1.2rem 1.5rem; width: 95%;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2); position: relative; overflow: hidden;
+}
+.pl-step { display: flex; align-items: center; gap: 0.6rem; font-size: 0.85rem; font-weight: 600; color: var(--text2); z-index: 2; }
+.pl-dot { width: 10px; height: 10px; border-radius: 50%; }
+.pl-dim { background: rgba(255,255,255,0.2); }
+.pl-cyan { background: var(--cyan); box-shadow: 0 0 12px var(--cyan); }
+.pl-step.active-step { color: #fff; }
+.pl-arrow { color: rgba(255,255,255,0.2); z-index: 2; font-size: 0.9rem; }
+.pipe-glow-sweep {
+  position: absolute; top: 0; bottom: 0; left: -50%; width: 50%;
+  background: linear-gradient(90deg, transparent, rgba(56,189,248,0.15), transparent);
+  animation: sweep 3s infinite linear; z-index: 1;
+}
+@keyframes sweep { to { left: 150%; } }
+
+body.light-mode .fc-title, body.light-mode .left-headline { color: #0F172A; }
+body.light-mode .fc, body.light-mode .pipeline-row-new { background: #FFFFFF; border-color: rgba(0,0,0,0.05); box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+body.light-mode .pl-step { color: #475569; }
+body.light-mode .pl-step.active-step { color: #0F172A; }
+body.light-mode .pl-dim { background: rgba(0,0,0,0.1); }
+body.light-mode .pl-arrow { color: rgba(0,0,0,0.2); }
 
 /* RIGHT PANEL */
-.right{background:#05080F; display:flex;flex-direction:column;align-items:center; justify-content:center; height:100vh; position: relative;}
+.right{background:#05080F; display:flex;flex-direction:column;align-items:center; justify-content:center; height:100vh; position: relative; transition: background 0.3s ease;}
+body.light-mode .right { background: #FFFFFF; }
+
 .right-glow {position: absolute; width: 400px; height: 400px; background: var(--violet); border-radius: 50%; filter: blur(150px); opacity: 0.08; top: 50%; left: 50%; transform: translate(-50%, -50%);}
-.auth-box {width: 100%; max-width: 420px; position: relative; z-index: 2; padding: 2rem;}
+.auth-box {width: 100%; max-width: 420px; position: relative; z-index: 2; padding: 2rem; transition: background 0.3s ease;}
+body.light-mode .auth-box { background: #FFFFFF; border-color: #E2E8F0; box-shadow: 0 20px 40px rgba(0,0,0,0.05); border-radius: 24px; border: 1px solid var(--glass-border); padding: 2.5rem; }
 
 /* Role Tabs & Inputs */
 .role-tabs{display:flex;gap:0.25rem;padding:0.3rem;background:rgba(0,0,0,0.3);border-radius:12px;margin-bottom:2rem;border:1px solid var(--glass-border);}
+body.light-mode .role-tabs { background: #F1F5F9; border-color: #E2E8F0; }
+
 .rtab{flex:1;padding:0.6rem 0;border-radius:8px;font-size:0.75rem;font-weight:600;text-align:center;cursor:pointer;border:none;background:none;color:var(--text2);transition:0.3s;}
 .rtab.active{background:rgba(255,255,255,0.1);color:#fff;}
+body.light-mode .rtab { color: #64748B; }
+body.light-mode .rtab.active { color: #0F172A; background: #FFFFFF; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
 
 .login-h1{font-family:var(--fh);font-size:2rem;font-weight:800;margin-bottom:0.5rem;}
 .login-sub{font-size:0.9rem;color:var(--text2);margin-bottom:2rem;}
+body.light-mode .login-h1 { color: #0F172A; }
 
 .input-group { position: relative; margin-bottom: 1.2rem; }
 .form-input {
@@ -90,6 +147,8 @@ body{color:var(--text);font-family:var(--fb);display:flex;}
   border-radius: 12px; padding: 1.4rem 1rem 0.6rem 1rem; color: white;
   outline: none; font-family: var(--fb); font-size: 0.9rem; transition: 0.3s;
 }
+body.light-mode .form-input { background: #F8FAFC; border-color: #E2E8F0; color: #0F172A; }
+
 .floating-label {position: absolute; left: 1rem; top: 1rem; color: var(--text2); font-size: 0.9rem; pointer-events: none; transition: 0.2s;}
 .form-input:focus ~ .floating-label, .form-input:not(:placeholder-shown) ~ .floating-label {
   top: 0.4rem; font-size: 0.65rem; color: var(--cyan); font-weight: 600; text-transform: uppercase;
@@ -106,14 +165,18 @@ body{color:var(--text);font-family:var(--fb);display:flex;}
 /* Divider & Animations */
 .divider-wrap { display:flex; align-items:center; margin: 1.5rem 0; }
 .divider-line { flex:1; height:1px; background:var(--glass-border); }
+body.light-mode .divider-line { background: #E2E8F0; }
 .divider-text { color:var(--muted); font-size:0.75rem; padding:0 1rem; }
 .stagger-1 { animation: slideUpFade 0.6s ease forwards; opacity: 0; }
 @keyframes slideUpFade { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
+/* Dynamic hiding for sign-up link */
+#rightPanel:not(.ri-student) #signup-link-container { display: none !important; }
+
 @media(max-width:768px){.left{display:none;}.page{grid-template-columns:1fr;}}
 </style>
 </head>
-<body>
+<body class="login-page">
 
 <!-- Theme Toggle Restored -->
 <button id="theme-toggle" onclick="toggleTheme()" title="Toggle theme" aria-label="Toggle dark/light mode">
@@ -132,39 +195,44 @@ body{color:var(--text);font-family:var(--fb);display:flex;}
         <div class="brand-icon">IQ</div>
         <div class="brand-name">Campus<em>IQ</em></div>
       </div>
-      <div class="left-headline">Turn Campus Activity<br>into <span>Verified Talent</span></div>
+      <div class="left-headline">
+        Turn Campus<br>Activity<br>
+        into <span class="cyan-text">Verified</span><br>
+        <span class="grad-text">Talent</span>
+      </div>
       <p class="left-sub">AI-powered skill intelligence for the next generation of builders.</p>
       
-      <!-- AI Features & Animations Restored -->
+      <!-- AI Features & Animations Restored and Enhanced -->
       <div class="left-cards">
         <div class="fc flt-1">
-          <div class="fc-icon">🏆</div>
+          <div class="fc-icon" style="background:rgba(245,158,11,0.15)">🏆</div>
           <div>
-            <strong style="font-size:0.95rem;display:block;margin-bottom:0.2rem;">Hackathon Winner</strong>
-            <span style="font-size:0.8rem;color:var(--text2)">React · Machine Learning · Python</span>
+            <div class="fc-title">Hackathon Winner</div>
+            <div class="fc-sub">React · Machine Learning · Python</div>
           </div>
         </div>
         
-        <div class="pipeline-row">
-          <div class="ps" id="ps0"><div class="ps-dot" style="color:#8BA8C4;background:#3A5268"></div><div class="ps-text"><strong>Uploaded</strong></div></div>
-          <div class="ps-arrow">&rarr;</div>
-          <div class="ps" id="ps1"><div class="ps-dot" style="color:#38BDF8;background:#38BDF8"></div><div class="ps-text"><strong>AI Scan</strong></div></div>
-          <div class="ps-arrow">&rarr;</div>
-          <div class="ps" id="ps2"><div class="ps-dot" style="color:#10B981;background:#10B981"></div><div class="ps-text"><strong>Verified</strong></div></div>
+        <div class="pipeline-row-new">
+          <div class="pl-step"><div class="pl-dot pl-dim"></div> <span>Uploaded</span></div>
+          <div class="pl-arrow">&rarr;</div>
+          <div class="pl-step active-step"><div class="pl-dot pl-cyan"></div> <span>AI Scan</span></div>
+          <div class="pl-arrow">&rarr;</div>
+          <div class="pl-step"><div class="pl-dot pl-dim"></div> <span>Verified</span></div>
+          <div class="pipe-glow-sweep"></div>
         </div>
 
         <div class="fc flt-2">
-          <div class="fc-icon">🧠</div>
+          <div class="fc-icon" style="background:rgba(56,189,248,0.15)">🧠</div>
           <div>
-            <strong style="font-size:0.95rem;display:block;margin-bottom:0.2rem;">Skill Profile</strong>
-            <span style="font-size:0.8rem;color:var(--text2)">Automatically generated from verified activities</span>
+            <div class="fc-title">Skill Profile</div>
+            <div class="fc-sub">Automatically generated from verified activities</div>
           </div>
         </div>
       </div>
     </div>
   </div>
 
-  <div class="right">
+  <div class="right" id="rightPanel">
     <div class="right-glow"></div>
     <div class="auth-box">
       
@@ -204,24 +272,25 @@ body{color:var(--text);font-family:var(--fb);display:flex;}
         <!-- Google Container -->
         <div id="googleBtnContainer" style="display:flex; justify-content:center; width:100%;"></div>
 
-        <!-- Bypass Mode Completely Removed Here -->
-
-        <div style="text-align:center; margin-top:1.5rem; font-size:0.85rem;">
+        <!-- Create Account link wrapped to automatically hide for non-students -->
+        <div id="signup-link-container" style="text-align:center; margin-top:1.5rem; font-size:0.85rem;">
           Don't have an account? <a id="goRegister" style="color:var(--cyan); cursor:pointer;">Sign up here</a>
         </div>
       </div>
 
-      <!-- REGISTER VIEW (Restored Create Account Feature) -->
+      <!-- REGISTER VIEW (Restored Create Account Feature, locked to Student) -->
       <div id="registerView" style="display:none">
-        <!-- Role Tabs Synced for Create Account -->
-        <div class="role-tabs stagger-1">
-          <button class="rtab active" data-role="student">Student</button>
-          <button class="rtab" data-role="teacher">Teacher</button>
-          <button class="rtab" data-role="admin">Admin</button>
-          <button class="rtab" data-role="recruiter">Recruiter</button>
-        </div>
+        
         <div class="login-h1">Create Account</div>
         <form id="registerForm">
+          
+          <div class="input-group" style="margin-bottom: 1.5rem;">
+            <div style="display:inline-block; padding: 0.5rem 1.2rem; background: rgba(56,189,248,0.15); color:var(--cyan); border: 1px solid rgba(56,189,248,0.3); border-radius:8px; font-weight:600; font-size:0.85rem; cursor:default;">🎓 Student Account Registration</div>
+            <select class="form-select" id="regRole" style="display:none;">
+              <option value="student" selected>Student</option>
+            </select>
+          </div>
+
           <div class="input-group"><input class="form-input" id="regName" placeholder=" " required><label class="floating-label">Full Name</label></div>
           <div class="input-group"><input class="form-input" id="regEmail" type="email" placeholder=" " required><label class="floating-label">Institutional Email</label></div>
           <div class="input-group"><input class="form-input" id="regPass" type="password" placeholder=" " required><label class="floating-label">Password (6+ chars)</label></div>
@@ -249,19 +318,22 @@ body{color:var(--text);font-family:var(--fb);display:flex;}
 const ROUTE_MAP = { student: 'student.html', teacher: 'teacher.html', admin: 'admin.html', recruiter: 'recruiter.html' };
 let activeRole = 'student';
 
-// --- UI Logic (Code 1 Style - Upgraded to sync between both views) ---
+// --- UI Logic (Code 1 Style) ---
 document.querySelectorAll('.rtab').forEach(tab => {
   tab.addEventListener('click', () => {
-    // Make sure we update all tabs across both views (SignIn and Register)
-    const role = tab.dataset.role;
     document.querySelectorAll('.rtab').forEach(b => b.classList.remove('active'));
-    document.querySelectorAll(`.rtab[data-role="${role}"]`).forEach(b => b.classList.add('active'));
-    activeRole = role;
+    tab.classList.add('active');
+    activeRole = tab.dataset.role;
     
-    const sub = document.getElementById('loginSub');
-    if (sub) sub.textContent = `Sign in to your ${activeRole} portal`;
+    // Applying role class to rightPanel allows CSS to hide/show the register link automatically
+    const rightPanel = document.getElementById('rightPanel');
+    if(rightPanel) rightPanel.className = 'right ri-' + activeRole;
+    
+    document.getElementById('loginSub').textContent = `Sign in to your ${activeRole} portal`;
   });
 });
+// Initialize panel class
+document.getElementById('rightPanel').className = 'right ri-student';
 
 const goReg = document.getElementById('goRegister'), goLog = document.getElementById('goLogin');
 const signView = document.getElementById('signInView'), regView = document.getElementById('registerView');
@@ -272,6 +344,11 @@ function saasToast(msg, type='ok') {
   if(typeof showToast === 'function') { showToast(msg, '', type); }
   else { alert(msg); }
 }
+
+// Ensure theme toggle function exists if theme.js is missing
+window.toggleTheme = window.toggleTheme || function() {
+  document.body.classList.toggle('light-mode');
+};
 
 // --- Exact Logic & Validation (Code 2 Style) ---
 document.getElementById('loginForm').onsubmit = async (e) => {
@@ -293,17 +370,18 @@ document.getElementById('registerForm').onsubmit = async (e) => {
   const email = document.getElementById('regEmail').value.trim().toLowerCase();
   const [local, domain] = email.split('@');
 
+  // Hardcoded to activeRole 'student' since only students can register
+  const regRole = 'student';
+
   // Strict Domain Check
-  if (activeRole === 'student' && (domain !== 'iilm.edu' || !local.includes('ug'))) {
+  if (domain !== 'iilm.edu' || !local.includes('ug')) {
     saasToast("Students must use @iilm.edu containing 'ug'", 'error'); return;
-  } else if (activeRole === 'teacher' && (domain !== 'iilm.edu' || local.includes('ug'))) {
-    saasToast("Teachers must use @iilm.edu (No 'ug')", 'error'); return;
   }
 
   try {
-    await Auth.register({ name: document.getElementById('regName').value, email, password: document.getElementById('regPass').value, role: activeRole });
+    await Auth.register({ name: document.getElementById('regName').value, email, password: document.getElementById('regPass').value, role: regRole });
     saasToast("Account Created.");
-    setTimeout(() => window.location.href = ROUTE_MAP[activeRole], 800);
+    setTimeout(() => window.location.href = ROUTE_MAP[regRole], 800);
   } catch(err) { saasToast(err.message, 'error'); }
 };
 
@@ -348,16 +426,6 @@ window.onGoogleSignIn = async (response) => {
   const pts = Array.from({length: 50}, () => new P());
   function loop() { ctx.clearRect(0,0,W,H); pts.forEach(p => p.draw()); requestAnimationFrame(loop); }
   loop();
-})();
-
-// --- AI Pipeline Logic (Added for the visual features) ---
-(function(){
-  const ids=['ps0','ps1','ps2'];
-  function run(){
-    ids.forEach(id=>{const el=document.getElementById(id);if(el)el.classList.remove('vis');});
-    ids.forEach((id,i)=>setTimeout(()=>{const el=document.getElementById(id);if(el)el.classList.add('vis');},i*500+200));
-  }
-  run();setInterval(run,5500);
 })();
 </script>
 </body>
