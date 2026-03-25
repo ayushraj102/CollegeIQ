@@ -35,7 +35,8 @@ html,body{height:100%;margin:0;padding:0;overflow:hidden;background:var(--bg); t
 body{color:var(--text);font-family:var(--fb);display:flex;}
 
 #bgCanvas{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:0.8;}
-.page{position:relative;z-index:1;display:grid;grid-template-columns:1fr 1fr;width:100vw;height:100vh;}
+/* Adjusted Grid: Make left side smaller (0.8fr) and right side larger (1.2fr) */
+.page{position:relative;z-index:1;display:grid;grid-template-columns:0.8fr 1.2fr;width:100vw;height:100vh;}
 
 /* THEME TOGGLE */
 #theme-toggle {
@@ -47,69 +48,74 @@ body{color:var(--text);font-family:var(--fb);display:flex;}
 }
 #theme-toggle:hover { background: rgba(255, 255, 255, 0.1); transform: scale(1.05); }
 
-/* LEFT PANEL */
+/* LEFT PANEL (Properly Resized) */
 .left{
   background:linear-gradient(135deg, rgba(6,13,30,0.8), rgba(9,21,37,0.9));
-  backdrop-filter: blur(20px); padding: 4rem;
+  backdrop-filter: blur(20px); padding: 3rem;
   display:flex;flex-direction:column;justify-content:center;
   position:relative;overflow:hidden; border-right: 1px solid var(--glass-border);
   transition: background 0.3s ease;
 }
 body.light-mode .left, :root[data-theme="light"] .left { background: linear-gradient(135deg, #F1F5F9, #E2E8F0); }
 
-.orb-1{position:absolute;width:600px;height:600px;background:var(--cyan);top:-200px;left:-200px;border-radius:50%;filter:blur(120px);opacity:0.15;}
-.orb-2{position:absolute;width:400px;height:400px;background:var(--violet);bottom:-100px;right:-100px;border-radius:50%;filter:blur(100px);opacity:0.1;}
+.orb-1{position:absolute;width:500px;height:500px;background:var(--cyan);top:-200px;left:-200px;border-radius:50%;filter:blur(120px);opacity:0.15;}
+.orb-2{position:absolute;width:350px;height:350px;background:var(--violet);bottom:-100px;right:-100px;border-radius:50%;filter:blur(100px);opacity:0.1;}
 
-/* Left Scale Adjustment */
-.left-content { position: relative; z-index: 2; max-width: 480px; transform: scale(0.88); transform-origin: left center; }
-.left-brand{display:flex;align-items:center;gap:0.75rem;margin-bottom:3rem;}
-.brand-icon{width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg, var(--cyan), var(--violet));display:flex;align-items:center;justify-content:center;font-family:var(--fh);font-size:0.85rem;font-weight:800;color:#fff;box-shadow: 0 8px 20px rgba(56,189,248,0.3);}
-.brand-name{font-family:var(--fh);font-size:1.4rem;font-weight:800;letter-spacing:-0.5px;}
+/* Fixed Container Widths (No CSS Scaling which causes hidden items) */
+.left-content { position: relative; z-index: 2; max-width: 420px; }
+.left-brand{display:flex;align-items:center;gap:0.6rem;margin-bottom:2.5rem;}
+.brand-icon{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg, var(--cyan), var(--violet));display:flex;align-items:center;justify-content:center;font-family:var(--fh);font-size:0.8rem;font-weight:800;color:#fff;box-shadow: 0 8px 20px rgba(56,189,248,0.3);}
+.brand-name{font-family:var(--fh);font-size:1.25rem;font-weight:800;letter-spacing:-0.5px;}
 .brand-name em{color:var(--cyan);font-style:normal;}
 
-/* Exact Typography Match from Image */
-.left-headline{font-family:var(--fh);font-size:3.2rem;font-weight:800;line-height:1.1;margin-bottom:1.5rem;letter-spacing:-1px;}
+/* Adjusted Typography Sizes */
+.left-headline{font-family:var(--fh);font-size:2.2rem;font-weight:800;line-height:1.15;margin-bottom:1rem;letter-spacing:-1px;}
 .left-headline .cyan-text { color: var(--cyan); background: none; -webkit-text-fill-color: initial; }
 .left-headline .grad-text { background:linear-gradient(90deg, #38BDF8, #A78BFA);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
-.left-sub{font-size:1.1rem;color:var(--text2);line-height:1.6;margin-bottom:3rem;}
+.left-sub{font-size:0.95rem;color:var(--text2);line-height:1.6;margin-bottom:2rem;}
 
-/* Feature Cards */
-.left-cards{display:flex;flex-direction:column;gap:1.2rem;}
+/* Feature Cards (More compact) */
+.left-cards{display:flex;flex-direction:column;gap:1rem;}
 .fc{
   background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255,255,255,0.05);
-  border-radius: 16px; padding: 1.25rem 1.5rem; backdrop-filter: blur(12px); 
-  display: flex; align-items: center; gap: 1.2rem; width: 95%; box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+  border-radius: 12px; padding: 1rem 1.2rem; backdrop-filter: blur(12px); 
+  display: flex; align-items: center; gap: 1rem; width: 100%; box-shadow: 0 10px 30px rgba(0,0,0,0.2);
 }
 .fc-icon { 
-  width: 48px; height: 48px; border-radius: 14px; background: rgba(255,255,255,0.03);
-  display: flex; align-items: center; justify-content: center; font-size: 1.5rem; 
+  width: 38px; height: 38px; border-radius: 10px; background: rgba(255,255,255,0.03);
+  display: flex; align-items: center; justify-content: center; font-size: 1.2rem; 
   box-shadow: inset 0 1px 1px rgba(255,255,255,0.1); flex-shrink: 0;
 }
-.fc-title { font-size: 1.1rem; font-weight: 700; color: #fff; margin-bottom: 0.2rem; }
-.fc-sub { font-size: 0.85rem; color: var(--text2); font-weight: 400; }
+.fc-title { font-size: 0.95rem; font-weight: 700; color: #fff; margin-bottom: 0.2rem; }
+.fc-sub { font-size: 0.8rem; color: var(--text2); font-weight: 400; }
 
 .flt-1 { animation: flt1 6s ease-in-out infinite; }
 .flt-2 { animation: flt2 7.5s ease-in-out infinite; }
 @keyframes flt1 { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-8px);} }
 @keyframes flt2 { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-6px);} }
 
-/* Glowing Pipeline Animation */
+/* Glowing Pipeline Animation - Enhanced with more steps & animated text */
 .pipeline-row-new {
   display: flex; align-items: center; justify-content: space-between;
   background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255,255,255,0.05);
-  border-radius: 16px; padding: 1.2rem 1.5rem; width: 95%;
+  border-radius: 12px; padding: 1rem 1.2rem; width: 100%;
   box-shadow: 0 10px 30px rgba(0,0,0,0.2); position: relative; overflow: hidden;
 }
-.pl-step { display: flex; align-items: center; gap: 0.6rem; font-size: 0.85rem; font-weight: 600; color: var(--text2); z-index: 2; }
-.pl-dot { width: 10px; height: 10px; border-radius: 50%; }
+.pl-step { display: flex; align-items: center; gap: 0.4rem; font-size: 0.75rem; font-weight: 600; color: var(--text2); z-index: 2; }
+.pl-dot { width: 8px; height: 8px; border-radius: 50%; }
 .pl-dim { background: rgba(255,255,255,0.2); }
 .pl-cyan { background: var(--cyan); box-shadow: 0 0 12px var(--cyan); }
 .pl-step.active-step { color: #fff; }
-.pl-arrow { color: rgba(255,255,255,0.2); z-index: 2; font-size: 0.9rem; }
+.pl-arrow { color: rgba(255,255,255,0.2); z-index: 2; font-size: 0.8rem; }
+
+/* Pulsating animated text for the AI Scan */
+.scanning-text { animation: pulseText 1.5s ease-in-out infinite; color: var(--cyan); }
+@keyframes pulseText { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+
 .pipe-glow-sweep {
   position: absolute; top: 0; bottom: 0; left: -50%; width: 50%;
   background: linear-gradient(90deg, transparent, rgba(56,189,248,0.15), transparent);
-  animation: sweep 3s infinite linear; z-index: 1;
+  animation: sweep 2.5s infinite linear; z-index: 1;
 }
 @keyframes sweep { to { left: 150%; } }
 
@@ -121,7 +127,7 @@ body.light-mode .pl-dim { background: rgba(0,0,0,0.1); }
 body.light-mode .pl-arrow { color: rgba(0,0,0,0.2); }
 
 /* RIGHT PANEL */
-.right{background:#05080F; display:flex;flex-direction:column;align-items:center; justify-content:center; height:100vh; position: relative; transition: background 0.3s ease;}
+.right{background:#05080F; display:flex;flex-direction:column;align-items:center; justify-content:center; height:100vh; position: relative; transition: background 0.3s ease; overflow-y: auto;}
 body.light-mode .right { background: #FFFFFF; }
 
 .right-glow {position: absolute; width: 400px; height: 400px; background: var(--violet); border-radius: 50%; filter: blur(150px); opacity: 0.08; top: 50%; left: 50%; transform: translate(-50%, -50%);}
@@ -141,6 +147,8 @@ body.light-mode .rtab.active { color: #0F172A; background: #FFFFFF; box-shadow: 
 .login-sub{font-size:0.9rem;color:var(--text2);margin-bottom:2rem;}
 body.light-mode .login-h1 { color: #0F172A; }
 
+.form-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+
 .input-group { position: relative; margin-bottom: 1.2rem; }
 .form-input {
   width: 100%; background: #0A101C; border: 1px solid var(--glass-border);
@@ -148,6 +156,20 @@ body.light-mode .login-h1 { color: #0F172A; }
   outline: none; font-family: var(--fb); font-size: 0.9rem; transition: 0.3s;
 }
 body.light-mode .form-input { background: #F8FAFC; border-color: #E2E8F0; color: #0F172A; }
+
+/* Premium Select Dropdown */
+.form-select-new {
+  width: 100%; background: #0A101C; border: 1px solid var(--glass-border);
+  border-radius: 12px; padding: 1.05rem 1rem; color: white;
+  outline: none; font-family: var(--fb); font-size: 0.9rem; transition: 0.3s;
+  appearance: none; cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%2394A3B8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 0.8rem center;
+}
+body.light-mode .form-select-new { background-color: #F8FAFC; border-color: #E2E8F0; color: #0F172A; }
+.form-select-new:focus { border-color: var(--cyan); box-shadow: 0 0 0 3px rgba(56,189,248,0.1); }
+.form-select-new option { background: #0A101C; color: white; }
+body.light-mode .form-select-new option { background: #fff; color: #0F172A; }
 
 .floating-label {position: absolute; left: 1rem; top: 1rem; color: var(--text2); font-size: 0.9rem; pointer-events: none; transition: 0.2s;}
 .form-input:focus ~ .floating-label, .form-input:not(:placeholder-shown) ~ .floating-label {
@@ -187,6 +209,7 @@ body.light-mode .divider-line { background: #E2E8F0; }
 <div id="toast-wrap" style="position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:9999;display:flex;flex-direction:column;align-items:center;"></div>
 
 <div class="page">
+  <!-- LEFT SIDE -->
   <div class="left">
     <div class="orb orb-1"></div>
     <div class="orb orb-2"></div>
@@ -202,7 +225,7 @@ body.light-mode .divider-line { background: #E2E8F0; }
       </div>
       <p class="left-sub">AI-powered skill intelligence for the next generation of builders.</p>
       
-      <!-- AI Features & Animations Restored and Enhanced -->
+      <!-- AI Features & Animations -->
       <div class="left-cards">
         <div class="fc flt-1">
           <div class="fc-icon" style="background:rgba(245,158,11,0.15)">🏆</div>
@@ -215,7 +238,9 @@ body.light-mode .divider-line { background: #E2E8F0; }
         <div class="pipeline-row-new">
           <div class="pl-step"><div class="pl-dot pl-dim"></div> <span>Uploaded</span></div>
           <div class="pl-arrow">&rarr;</div>
-          <div class="pl-step active-step"><div class="pl-dot pl-cyan"></div> <span>AI Scan</span></div>
+          <div class="pl-step active-step"><div class="pl-dot pl-cyan"></div> <span class="scanning-text">AI Scan</span></div>
+          <div class="pl-arrow">&rarr;</div>
+          <div class="pl-step"><div class="pl-dot pl-dim"></div> <span>Extracted</span></div>
           <div class="pl-arrow">&rarr;</div>
           <div class="pl-step"><div class="pl-dot pl-dim"></div> <span>Verified</span></div>
           <div class="pipe-glow-sweep"></div>
@@ -232,13 +257,14 @@ body.light-mode .divider-line { background: #E2E8F0; }
     </div>
   </div>
 
+  <!-- RIGHT SIDE -->
   <div class="right" id="rightPanel">
     <div class="right-glow"></div>
     <div class="auth-box">
       
       <!-- SIGN IN VIEW -->
       <div id="signInView">
-        <!-- Admin Role Restored -->
+        <!-- Role Tabs -->
         <div class="role-tabs stagger-1">
           <button class="rtab active" data-role="student">Student</button>
           <button class="rtab" data-role="teacher">Teacher</button>
@@ -278,27 +304,64 @@ body.light-mode .divider-line { background: #E2E8F0; }
         </div>
       </div>
 
-      <!-- REGISTER VIEW (Restored Create Account Feature, locked to Student) -->
+      <!-- REGISTER VIEW (Upgraded Form for Students) -->
       <div id="registerView" style="display:none">
+        <div class="login-h1">Apply for Admission</div>
+        <div class="login-sub">Create your student profile</div>
         
-        <div class="login-h1">Create Account</div>
         <form id="registerForm">
+          <div class="input-group">
+            <input class="form-input" id="regName" placeholder=" " required>
+            <label class="floating-label">Full Name</label>
+          </div>
+          <div class="input-group">
+            <input class="form-input" id="regEmail" type="email" placeholder=" " required>
+            <label class="floating-label">Institutional Email (@iilm.edu)</label>
+          </div>
           
-          <div class="input-group" style="margin-bottom: 1.5rem;">
-            <div style="display:inline-block; padding: 0.5rem 1.2rem; background: rgba(56,189,248,0.15); color:var(--cyan); border: 1px solid rgba(56,189,248,0.3); border-radius:8px; font-weight:600; font-size:0.85rem; cursor:default;">🎓 Student Account Registration</div>
-            <select class="form-select" id="regRole" style="display:none;">
-              <option value="student" selected>Student</option>
-            </select>
+          <div class="form-row-2">
+            <div class="input-group" style="margin-bottom:0;">
+              <input class="form-input" id="regUrn" placeholder=" " required>
+              <label class="floating-label">URN / Roll No.</label>
+            </div>
+            <div class="input-group" style="margin-bottom:0;">
+              <select class="form-select-new" id="regDept" required>
+                <option value="" disabled selected hidden>Department</option>
+                <option value="CSE">Computer Science (CSE)</option>
+                <option value="ECE">Electronics (ECE)</option>
+                <option value="IT">Information Tech (IT)</option>
+                <option value="DS">Data Science</option>
+              </select>
+            </div>
+          </div>
+          
+          <div class="form-row-2" style="margin-top: 1.2rem;">
+            <div class="input-group" style="margin-bottom:0;">
+              <select class="form-select-new" id="regYear" required>
+                <option value="" disabled selected hidden>Year</option>
+                <option value="1">1st Year</option>
+                <option value="2">2nd Year</option>
+                <option value="3">3rd Year</option>
+                <option value="4">4th Year</option>
+              </select>
+            </div>
+            <div class="input-group" style="margin-bottom:0;">
+              <input class="form-input" id="regSection" placeholder=" ">
+              <label class="floating-label">Section (Optional)</label>
+            </div>
           </div>
 
-          <div class="input-group"><input class="form-input" id="regName" placeholder=" " required><label class="floating-label">Full Name</label></div>
-          <div class="input-group"><input class="form-input" id="regEmail" type="email" placeholder=" " required><label class="floating-label">Institutional Email</label></div>
-          <div class="input-group"><input class="form-input" id="regPass" type="password" placeholder=" " required><label class="floating-label">Password (6+ chars)</label></div>
+          <div class="input-group" style="margin-top: 1.2rem;">
+            <input class="form-input" id="regPass" type="password" placeholder=" " required>
+            <label class="floating-label">Create Password (6+ chars)</label>
+          </div>
+
           <div class="btn-glow-wrap">
             <div class="btn-glow"></div>
             <button class="btn-login" id="regBtn" type="submit">Create Account</button>
           </div>
         </form>
+        
         <div style="text-align:center; margin-top:1.5rem; font-size:0.85rem;">
           Already have an account? <a id="goLogin" style="color:var(--cyan); cursor:pointer;">Sign in</a>
         </div>
@@ -318,7 +381,7 @@ body.light-mode .divider-line { background: #E2E8F0; }
 const ROUTE_MAP = { student: 'student.html', teacher: 'teacher.html', admin: 'admin.html', recruiter: 'recruiter.html' };
 let activeRole = 'student';
 
-// --- UI Logic (Code 1 Style) ---
+// --- UI Logic ---
 document.querySelectorAll('.rtab').forEach(tab => {
   tab.addEventListener('click', () => {
     document.querySelectorAll('.rtab').forEach(b => b.classList.remove('active'));
@@ -350,7 +413,7 @@ window.toggleTheme = window.toggleTheme || function() {
   document.body.classList.toggle('light-mode');
 };
 
-// --- Exact Logic & Validation (Code 2 Style) ---
+// --- Exact Logic & Validation ---
 document.getElementById('loginForm').onsubmit = async (e) => {
   e.preventDefault();
   const btn = document.getElementById('loginBtn');
@@ -370,7 +433,6 @@ document.getElementById('registerForm').onsubmit = async (e) => {
   const email = document.getElementById('regEmail').value.trim().toLowerCase();
   const [local, domain] = email.split('@');
 
-  // Hardcoded to activeRole 'student' since only students can register
   const regRole = 'student';
 
   // Strict Domain Check
@@ -378,8 +440,29 @@ document.getElementById('registerForm').onsubmit = async (e) => {
     saasToast("Students must use @iilm.edu containing 'ug'", 'error'); return;
   }
 
+  const urn = document.getElementById('regUrn').value.trim();
+  const dept = document.getElementById('regDept').value;
+  const year = parseInt(document.getElementById('regYear').value);
+  const section = document.getElementById('regSection').value.trim() || 'A';
+  
+  if(!dept || !year) {
+      saasToast("Please select Department and Year", 'error'); return;
+  }
+
+  const data = {
+    name: document.getElementById('regName').value,
+    email: email,
+    password: document.getElementById('regPass').value,
+    role: regRole,
+    rollNo: urn,
+    dept: dept,
+    year: year,
+    section: section,
+    gpa: 0
+  };
+
   try {
-    await Auth.register({ name: document.getElementById('regName').value, email, password: document.getElementById('regPass').value, role: regRole });
+    await Auth.register(data);
     saasToast("Account Created.");
     setTimeout(() => window.location.href = ROUTE_MAP[regRole], 800);
   } catch(err) { saasToast(err.message, 'error'); }
