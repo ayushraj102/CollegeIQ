@@ -9,7 +9,7 @@
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 <link rel="stylesheet" href="shared.css">
 <style>
-/* ─── ORIGINAL UI PRESERVED ─── */
+/* ─── ORIGINAL UI PRESERVED & UPGRADED ─── */
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
 :root{
   --bg:#04070F;--s1:#080E1C;--s2:#0C1525;
@@ -40,14 +40,32 @@ body{background:var(--bg);color:var(--text);font-family:var(--fb);display:flex;}
 .rtab.active{background:rgba(56,189,248,0.18);color:var(--cyan);}
 .login-h1{font-family:var(--fh);font-size:1.7rem;font-weight:800;margin-bottom:0.2rem;}
 .login-sub{font-size:0.8rem;color:var(--text2);margin-bottom:1.3rem;}
-.form-input{width:100%;background:#0A1424;border:1px solid rgba(255,255,255,0.09);border-radius:10px;padding:0.8rem;color:white;outline:none;font-family:var(--fb);margin-bottom:1rem;transition:border-color 0.2s;}
+
+.form-group{margin-bottom:1rem;}
+.form-label{display:block;font-size:0.65rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.4rem;}
+.form-input{width:100%;background:#0A1424;border:1px solid rgba(255,255,255,0.09);border-radius:10px;padding:0.8rem;color:white;outline:none;font-family:var(--fb);transition:border-color 0.2s;}
 .form-input:focus{border-color:var(--cyan);}
-.btn-login{width:100%;padding:0.85rem;border-radius:11px;border:none;background:linear-gradient(135deg,#38BDF8,#0EA5E9);color:#fff;font-weight:700;cursor:pointer;transition:all 0.2s;}
+
+.btn-login{width:100%;padding:0.85rem;border-radius:11px;border:none;background:linear-gradient(135deg,#38BDF8,#0EA5E9);color:#fff;font-weight:700;cursor:pointer;transition:all 0.2s;margin-top:0.5rem;}
 .btn-login:disabled{opacity:0.6;cursor:not-allowed;}
 .btn-google{width:100%;padding:0.75rem;border-radius:10px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.04);color:var(--text);display:flex;align-items:center;justify-content:center;gap:0.6rem;cursor:pointer;font-family:var(--fb);transition:background 0.2s;}
 .btn-google:hover{background:rgba(255,255,255,0.08);}
 .switch-link{text-align:center;font-size:0.77rem;color:var(--text2);margin-top:1.2rem;}
 .switch-link a{color:var(--cyan);font-weight:600;cursor:pointer;}
+
+/* NEW: Premium Role Selector */
+.role-selector { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; margin-bottom: 0.5rem; }
+.role-selector input[type="radio"] { display: none; }
+.role-card {
+    background: #0A1424; border: 1px solid rgba(255,255,255,0.09); border-radius: 10px;
+    padding: 0.7rem 0.2rem; text-align: center; cursor: pointer; transition: all 0.2s;
+    color: var(--text2); font-size: 0.75rem; font-weight: 600; font-family: var(--fb);
+}
+.role-card:hover { border-color: rgba(255,255,255,0.2); }
+.role-selector input[type="radio"]:checked + .role-card {
+    background: rgba(56,189,248,0.1); border-color: var(--cyan); color: var(--cyan); box-shadow: 0 0 10px rgba(56,189,248,0.1);
+}
+
 @media(max-width:768px){.left{display:none;}.page{grid-template-columns:1fr;}.right{padding:2rem;}}
 </style>
 </head>
@@ -82,21 +100,26 @@ body{background:var(--bg);color:var(--text);font-family:var(--fb);display:flex;}
 
   <!-- RIGHT PANEL -->
   <div class="right" id="rightPanel">
-    <div class="role-tabs" id="roleTabs">
-      <button class="rtab active" data-role="student">Student</button>
-      <button class="rtab" data-role="teacher">Teacher</button>
-      <button class="rtab" data-role="admin">Admin</button>
-      <button class="rtab" data-role="recruiter">Recruiter</button>
-    </div>
-
+    
     <!-- SIGN IN VIEW -->
     <div id="signInView">
+      <div class="role-tabs" id="roleTabs">
+        <button class="rtab active" data-role="student">Student</button>
+        <button class="rtab" data-role="teacher">Teacher</button>
+        <button class="rtab" data-role="admin">Admin</button>
+        <button class="rtab" data-role="recruiter">Recruiter</button>
+      </div>
+
       <div class="login-h1">Welcome Back</div>
       <div class="login-sub" id="loginSub">Sign in to your student dashboard</div>
       
       <form id="loginForm">
-        <input class="form-input" id="loginEmail" type="email" placeholder="Email Address" required>
-        <input class="form-input" id="loginPass" type="password" placeholder="Password" required>
+        <div class="form-group">
+          <input class="form-input" id="loginEmail" type="email" placeholder="Email Address" required>
+        </div>
+        <div class="form-group">
+          <input class="form-input" id="loginPass" type="password" placeholder="Password" required>
+        </div>
         <button class="btn-login" id="loginBtn" type="submit">Sign In →</button>
       </form>
 
@@ -125,13 +148,35 @@ body{background:var(--bg);color:var(--text);font-family:var(--fb);display:flex;}
       <div class="login-h1">Create Account</div>
       <div class="login-sub">Join the CampusIQ network</div>
       <form id="registerForm">
-        <input class="form-input" id="regName" placeholder="Full Name" required>
-        <input class="form-input" id="regEmail" type="email" placeholder="Email Address" required>
-        <input class="form-input" id="regPass" type="password" placeholder="Create Password (min 6 chars)" required>
-        <select class="form-input" id="regRole" style="background:#0A1424;color:white">
-            <option value="student">Student</option>
-            <option value="recruiter">Recruiter</option>
-        </select>
+        
+        <div class="form-group">
+          <label class="form-label">I am a</label>
+          <div class="role-selector">
+            <label>
+              <input type="radio" name="regRole" value="student" checked>
+              <div class="role-card">🎓 Student</div>
+            </label>
+            <label>
+              <input type="radio" name="regRole" value="teacher">
+              <div class="role-card">👨‍🏫 Teacher</div>
+            </label>
+            <label>
+              <input type="radio" name="regRole" value="recruiter">
+              <div class="role-card">🏢 Recruiter</div>
+            </label>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <input class="form-input" id="regName" placeholder="Full Name" required>
+        </div>
+        <div class="form-group">
+          <input class="form-input" id="regEmail" type="email" placeholder="Email Address" required>
+        </div>
+        <div class="form-group">
+          <input class="form-input" id="regPass" type="password" placeholder="Create Password (min 6 chars)" required>
+        </div>
+        
         <button class="btn-login" id="regBtn" type="submit">Create Account →</button>
       </form>
       <div class="switch-link">Already have an account? <a id="goLogin">Sign in</a></div>
@@ -179,14 +224,15 @@ document.getElementById('loginForm').onsubmit = async (e) => {
 
   try {
     const session = await Auth.login(email, pass);
-    if(typeof showToast === 'function') showToast(`Welcome back, ${session.name.split(' ')[0]}!`, 'Redirecting...', 'ok');
     
+    // UI Feedback & Redirection
+    if(typeof showToast === 'function') showToast(`Welcome back, ${session.name.split(' ')[0]}!`, 'Redirecting...', 'ok');
     setTimeout(() => {
       window.location.href = ROUTE_MAP[session.role] || 'student.html';
     }, 1000);
   } catch(err) {
     if(typeof showToast === 'function') showToast(err.message, '', 'error');
-    else alert(err.message); // Fallback if utils.js failed
+    else alert(err.message); 
     btn.disabled = false; btn.textContent = 'Sign In →';
   }
 };
@@ -195,7 +241,11 @@ document.getElementById('loginForm').onsubmit = async (e) => {
 document.getElementById('registerForm').onsubmit = async (e) => {
     e.preventDefault();
     const btn = document.getElementById('regBtn');
-    const role = document.getElementById('regRole').value;
+    
+    // Get selected role from the new visual radio buttons
+    const roleEl = document.querySelector('input[name="regRole"]:checked');
+    const role = roleEl ? roleEl.value : 'student';
+
     const data = {
         name: document.getElementById('regName').value,
         email: document.getElementById('regEmail').value,
@@ -206,7 +256,7 @@ document.getElementById('registerForm').onsubmit = async (e) => {
     btn.disabled = true; btn.textContent = 'Creating Account...';
     try {
         await Auth.register(data);
-        if(typeof showToast === 'function') showToast("Account Created!", "Accessing portal...");
+        if(typeof showToast === 'function') showToast("Account Created!", "Accessing portal...", 'ok');
         setTimeout(() => window.location.href = ROUTE_MAP[role], 1000);
     } catch(err) {
         if(typeof showToast === 'function') showToast(err.message, '', 'error');
@@ -219,8 +269,13 @@ document.getElementById('googleBtn').onclick = () => {
   if (typeof google !== 'undefined' && google.accounts.id) {
     google.accounts.id.prompt((notification) => {
       if (notification.isNotDisplayed()) {
-         console.warn("GSI Prompt failed:", notification.getNotDisplayedReason());
-         if(typeof showToast === 'function') showToast("Google Login blocked or origin not allowed.", '', 'error');
+         const reason = notification.getNotDisplayedReason();
+         console.warn("GSI Prompt failed:", reason);
+         if (reason === 'origin_not_allowed') {
+             if(typeof showToast === 'function') showToast("Google Login Blocked", "Domain not whitelisted in Google Console.", 'error');
+         } else {
+             if(typeof showToast === 'function') showToast("Google Login unavailable: " + reason, '', 'error');
+         }
       }
     });
   } else {
@@ -231,6 +286,7 @@ document.getElementById('googleBtn').onclick = () => {
 // --- Google Response Handler (Must be global) ---
 window.onGoogleSignIn = async (response) => {
   try {
+    // Role is automatically determined inside auth.js based on email structure
     const session = Auth.handleGoogleCredential(response.credential);
     if(typeof showToast === 'function') showToast("Google Login Success!", "Redirecting...");
     setTimeout(() => window.location.href = ROUTE_MAP[session.role], 1000);
