@@ -4,290 +4,207 @@
 <script src="theme.js"></script>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>CampusIQ — Sign In</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@500;600;700&display=swap" rel="stylesheet">
 <!-- Google Identity Services -->
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 <link rel="stylesheet" href="shared.css">
 <style>
-/* ─── PREMIUM SAAS DESIGN SYSTEM (Stripe / Linear Aesthetic) ─── */
+/* ─── PREMIUM UI: REFERENCE MATCH ─── */
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
 :root{
-  --bg: #030509; /* Ultra-deep space black */
-  --s1: #0A101C;
-  --cyan: #38BDF8;
-  --cyan-dim: rgba(56, 189, 248, 0.15);
-  --violet: #8B5CF6;
-  --red: #EF4444;
-  --text: #F8FAFC;
-  --text-muted: #8B9BB4;
-  --border-light: rgba(255, 255, 255, 0.08);
-  --border-dim: rgba(255, 255, 255, 0.04);
-  --fh: 'Syne', sans-serif;
-  --fb: 'Inter', -apple-system, sans-serif; /* Inter gives that crisp SaaS feel */
+  --bg-page: #A0A5B1; /* Cool slate background from reference */
+  --modal-grad: linear-gradient(135deg, #FDFDFD 0%, #FDF4D4 100%);
+  --yellow: #FDD14B;
+  --yellow-hover: #F6C531;
+  --text-main: #111827;
+  --text-muted: #828A9A;
+  --input-bg: #F4F5F7;
+  --border-light: #E5E7EB;
+  --fb: 'Inter', -apple-system, sans-serif;
+  --fh: 'Outfit', sans-serif;
 }
-html,body{height:100%;margin:0;padding:0;overflow:hidden;background:var(--bg);}
-body{color:var(--text);font-family:var(--fb);display:flex;}
+html,body{height:100%;margin:0;padding:0;background:var(--bg-page);font-family:var(--fb);display:flex;align-items:center;justify-content:center;}
 
-/* Subtle Animated Background Context */
-#bgCanvas{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:0.4;}
-
-/* Layout Structure */
-.page{position:relative;z-index:1;display:grid;grid-template-columns:4.5fr 5.5fr;width:100vw;height:100vh;}
-
-/* ─── LEFT PANEL (Calm & Supportive) ─── */
-.left{
-  background: transparent;
-  border-right: 1px solid var(--border-dim);
-  padding: 4rem 4rem 4rem 5rem;
-  display:flex;flex-direction:column;justify-content:center;
-  position:relative;
+/* ─── MAIN MODAL LAYOUT ─── */
+.modal-wrapper {
+  width: 92vw; max-width: 1200px; height: 85vh; min-height: 650px;
+  background: var(--modal-grad);
+  border-radius: 40px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  display: flex; position: relative; overflow: hidden;
 }
-.left-brand{display:flex;align-items:center;gap:0.75rem;margin-bottom:4rem;}
-.brand-icon{
-  width:36px;height:36px;border-radius:10px;
-  background:linear-gradient(180deg, var(--cyan), #0284c7);
-  display:flex;align-items:center;justify-content:center;
-  font-family:var(--fh);font-size:0.8rem;font-weight:800;color:#fff;
-  box-shadow: inset 0 1px 1px rgba(255,255,255,0.4), 0 4px 12px rgba(56,189,248,0.2);
-}
-.brand-name{font-family:var(--fh);font-size:1.25rem;font-weight:700;letter-spacing:-0.03em;}
-.brand-name em{color:var(--cyan);font-style:normal;}
 
-.left-content { max-width: 420px; }
-.left-headline{
-  font-family:var(--fb);font-size:1.4rem;font-weight:600;
-  line-height:1.3;margin-bottom:0.75rem;letter-spacing:-0.02em;color:#fff;
-}
-.left-sub{font-size:0.9rem;color:var(--text-muted);line-height:1.6;margin-bottom:2.5rem;}
-
-/* Restrained Feature List */
-.features-list { display: flex; flex-direction: column; gap: 1.25rem; }
-.feature-item {
-  display: flex; align-items: center; gap: 1rem;
-  opacity: 0.7; transition: opacity 0.2s;
-}
-.feature-item:hover { opacity: 1; }
-.f-icon {
-  width: 32px; height: 32px; border-radius: 8px; background: var(--border-dim);
-  border: 1px solid var(--border-light); display: flex; align-items: center; justify-content: center;
-  color: var(--text-muted); font-size: 0.9rem;
-}
-.f-text strong { display: block; font-size: 0.85rem; font-weight: 500; color: #E2E8F0; margin-bottom: 0.1rem; }
-.f-text span { font-size: 0.75rem; color: #64748B; }
-
-/* ─── RIGHT PANEL (Focused Form Area) ─── */
-.right{
-  background: radial-gradient(circle at center, #070B14 0%, var(--bg) 100%);
-  padding:0; display:flex;flex-direction:column;
-  align-items:center; justify-content:center; height:100vh; overflow-y:auto;
+/* ─── LEFT PANEL (Form) ─── */
+.left-panel {
+  flex: 0 0 45%; padding: 3rem 4rem;
+  display: flex; flex-direction: column; justify-content: space-between;
   position: relative;
 }
-.right-glow {
-  position: absolute; width: 500px; height: 500px; 
-  background: radial-gradient(circle, rgba(56,189,248,0.05) 0%, transparent 70%);
-  top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: none; z-index: 1;
+
+.brand-pill {
+  display: inline-flex; align-items: center; justify-content: center;
+  padding: 0.6rem 1.5rem; border-radius: 99px;
+  border: 1px solid rgba(0,0,0,0.15);
+  font-family: var(--fh); font-weight: 500; font-size: 1rem; color: var(--text-main);
+  align-self: flex-start;
 }
 
-/* Elevated Form Card */
-.auth-box {
-  width: 100%; max-width: 400px; position: relative; z-index: 2;
-  padding: 2.5rem; border-radius: 24px;
-  background: rgba(10, 15, 28, 0.6);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  box-shadow: 0 30px 60px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.04);
-  backdrop-filter: blur(20px);
-}
+.form-container { width: 100%; max-width: 360px; margin: 0 auto; display: flex; flex-direction: column; justify-content: center; flex: 1; }
 
-/* Snappy Animations */
-.stagger-1 { animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; }
-.stagger-2 { animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) 0.05s forwards; opacity: 0; }
-.stagger-3 { animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) 0.1s forwards; opacity: 0; }
-.stagger-4 { animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) 0.15s forwards; opacity: 0; }
-@keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+.header-title { font-family: var(--fh); font-size: 2rem; font-weight: 600; color: var(--text-main); margin-bottom: 0.5rem; text-align: center; }
+.header-sub { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 2.5rem; text-align: center; }
 
-/* Role Tabs (Top selector) */
-.role-tabs{
-  display:flex; gap:0.25rem; padding:0.25rem; background: rgba(0,0,0,0.3);
-  border-radius:10px; margin-bottom:2rem; border:1px solid var(--border-dim);
+/* Role Selector (Segmented Pill) */
+.role-tabs {
+  display: flex; background: rgba(0,0,0,0.04); border-radius: 99px; padding: 0.3rem; margin-bottom: 1.5rem;
 }
-.rtab{
-  flex:1; padding:0.5rem 0; border-radius:6px; font-size:0.75rem; font-weight:500;
-  text-align:center; cursor:pointer; border:none; background:none; color:var(--text-muted);
-  transition:all 0.2s ease;
+.rtab {
+  flex: 1; padding: 0.6rem 0; border-radius: 99px; border: none; background: transparent;
+  font-size: 0.75rem; font-weight: 600; color: var(--text-muted); cursor: pointer; transition: all 0.3s;
 }
-.rtab:hover { color: var(--text); }
-.rtab.active{
-  background: rgba(255,255,255,0.08); color:#fff;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.05);
-}
+.rtab.active { background: #fff; color: var(--text-main); box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
 
-.login-h1{font-size:1.5rem;font-weight:600;margin-bottom:0.4rem;letter-spacing:-0.03em;}
-.login-sub{font-size:0.85rem;color:var(--text-muted);margin-bottom:2rem;}
-
-/* ─── CRISP INPUTS ─── */
-.form-group { margin-bottom: 1.25rem; position: relative; }
-.form-label {
-  display: block; font-size: 0.75rem; font-weight: 500; color: #94A3B8; 
-  margin-bottom: 0.4rem; transition: color 0.2s;
-}
+/* Inputs */
+.form-group { margin-bottom: 1.2rem; position: relative; }
+.form-label { display: block; font-size: 0.75rem; font-weight: 500; color: var(--text-muted); margin-bottom: 0.5rem; margin-left: 0.8rem; }
 .form-input {
-  width: 100%; background: rgba(0,0,0,0.2); border: 1px solid var(--border-light);
-  border-radius: 10px; padding: 0.75rem 1rem; color: #fff;
-  outline: none; font-family: var(--fb); font-size: 0.9rem;
-  transition: all 0.2s ease; box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+  width: 100%; background: var(--input-bg); border: 2px solid transparent;
+  border-radius: 99px; padding: 1rem 1.5rem; color: var(--text-main);
+  font-family: var(--fb); font-size: 0.9rem; transition: all 0.2s;
 }
-.form-input::placeholder { color: #475569; }
-.form-input:focus {
-  border-color: var(--cyan); background: rgba(0,0,0,0.4);
-  box-shadow: 0 0 0 3px var(--cyan-dim), inset 0 2px 4px rgba(0,0,0,0.1);
-}
-.form-group:focus-within .form-label { color: #E2E8F0; }
+.form-input::placeholder { color: #A0AABF; }
+.form-input:focus { border-color: var(--yellow); background: #fff; outline: none; }
 
-/* Password Toggle */
 .pwd-toggle {
-  position: absolute; right: 0.75rem; top: 1.8rem; /* aligned with input center */
-  background: none; border: none; color: #64748B; cursor: pointer;
-  padding: 0.25rem; transition: color 0.2s; display: flex; align-items: center;
+  position: absolute; right: 1.2rem; top: 2.2rem; background: none; border: none;
+  color: #A0AABF; cursor: pointer; display: flex; align-items: center;
 }
-.pwd-toggle:hover { color: #fff; }
 
-/* ─── PREMIUM BUTTONS ─── */
-.btn-login {
-  width: 100%; padding: 0.75rem; border-radius: 10px; border: 1px solid transparent;
-  background: linear-gradient(180deg, #38BDF8 0%, #0284C7 100%); color: #fff;
-  font-weight: 500; font-size: 0.9rem; cursor: pointer; font-family: var(--fb);
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1); margin-top: 0.5rem;
-  box-shadow: inset 0 1px 1px rgba(255,255,255,0.3), 0 2px 5px rgba(0,0,0,0.2);
-  display: flex; justify-content: center; align-items: center; gap: 0.5rem;
+/* Buttons */
+.btn-primary {
+  width: 100%; background: var(--yellow); color: var(--text-main);
+  border: none; border-radius: 99px; padding: 1.1rem; font-family: var(--fb);
+  font-size: 0.95rem; font-weight: 600; cursor: pointer; transition: all 0.2s;
+  margin-top: 0.5rem; margin-bottom: 1.2rem;
+  display: flex; align-items: center; justify-content: center; gap: 0.5rem;
 }
-.btn-login:hover { 
-  filter: brightness(1.1); transform: translateY(-1px);
-  box-shadow: inset 0 1px 1px rgba(255,255,255,0.4), 0 4px 10px rgba(56,189,248,0.25);
-}
-.btn-login:active { transform: translateY(0); box-shadow: inset 0 1px 1px rgba(255,255,255,0.1); }
-.btn-login:disabled { opacity: 0.6; cursor: not-allowed; transform: none; filter: grayscale(0.5); }
+.btn-primary:hover { background: var(--yellow-hover); transform: translateY(-1px); }
+.btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
 
-/* Spinner */
-.spinner {
-  width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.3);
-  border-top-color: #fff; border-radius: 50%; animation: spin 0.6s linear infinite;
-  display: none;
+.social-btns { display: flex; gap: 1rem; }
+.btn-social {
+  flex: 1; display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+  background: transparent; border: 1px solid var(--border-light);
+  border-radius: 99px; padding: 0.9rem; font-size: 0.85rem; font-weight: 500;
+  color: var(--text-main); cursor: pointer; transition: all 0.2s;
 }
+.btn-social:hover { background: rgba(0,0,0,0.02); }
+
+/* Footer Links */
+.footer-links {
+  display: flex; justify-content: space-between; width: 100%;
+  font-size: 0.75rem; color: var(--text-muted); align-items: center;
+}
+.footer-links a { color: var(--text-main); font-weight: 600; text-decoration: underline; text-decoration-color: transparent; cursor: pointer; transition: text-decoration-color 0.2s; }
+.footer-links a:hover { text-decoration-color: var(--text-main); }
+
+/* ─── RIGHT PANEL (Image & Widgets) ─── */
+.right-panel {
+  flex: 1; margin: 1.5rem 1.5rem 1.5rem 0; border-radius: 32px;
+  background: url('https://images.unsplash.com/photo-1522071820081-009f0129c71c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80') center/cover no-relative;
+  position: relative; overflow: hidden;
+}
+.close-btn {
+  position: absolute; top: 1.5rem; right: 1.5rem; width: 40px; height: 40px;
+  background: rgba(255,255,255,0.9); border-radius: 50%; display: flex;
+  align-items: center; justify-content: center; cursor: pointer; font-size: 1.2rem;
+  color: var(--text-main); border: none; z-index: 10; backdrop-filter: blur(5px);
+}
+
+/* Floating Overlays */
+.widget-yellow {
+  position: absolute; top: 2rem; left: 2rem; background: var(--yellow);
+  padding: 1rem 1.5rem; border-radius: 16px; color: var(--text-main);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.1); z-index: 2;
+}
+.w-title { font-size: 0.8rem; font-weight: 600; margin-bottom: 0.2rem; }
+.w-time { font-size: 0.7rem; opacity: 0.8; }
+.dot { position: absolute; top: 1rem; right: 1rem; width: 6px; height: 6px; background: #fff; border-radius: 50%; }
+
+.widget-dark {
+  position: absolute; top: 3.5rem; left: 4rem; background: rgba(31, 41, 55, 0.9);
+  padding: 1rem 1.5rem; border-radius: 16px; color: #fff; z-index: 1;
+  width: 200px; height: 70px; display: flex; align-items: flex-end;
+}
+
+.avatars {
+  position: absolute; top: 35%; right: 3rem; display: flex; flex-direction: column; gap: -10px;
+}
+.avatar-circle {
+  width: 48px; height: 48px; border-radius: 50%; border: 3px solid rgba(255,255,255,0.2);
+  background: #ccc; object-fit: cover; box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+.a1 { transform: translateX(-20px); z-index: 3; background: url('https://i.pravatar.cc/100?img=5') center/cover; }
+.a2 { z-index: 2; background: url('https://i.pravatar.cc/100?img=9') center/cover; }
+.a3 { transform: translateX(20px) translateY(-10px); z-index: 1; background: url('https://i.pravatar.cc/100?img=1') center/cover; }
+
+.widget-glass {
+  position: absolute; bottom: 2rem; right: 2rem; background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.3);
+  padding: 1.5rem; border-radius: 20px; color: #fff; width: 280px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+.calendar-days { display: flex; justify-content: space-between; text-align: center; margin-bottom: 1rem; }
+.day { display: flex; flex-direction: column; gap: 0.4rem; }
+.day span { font-size: 0.7rem; opacity: 0.8; }
+.day strong { font-size: 1.1rem; font-weight: 500; }
+.day.active strong { background: rgba(255,255,255,0.3); padding: 0.2rem 0.4rem; border-radius: 8px; }
+.glass-graph { width: 100%; height: 40px; background: repeating-linear-gradient(45deg, rgba(255,255,255,0.1), rgba(255,255,255,0.1) 2px, transparent 2px, transparent 6px); border-radius: 8px; }
+
+.widget-white {
+  position: absolute; bottom: 2rem; left: 2rem; background: #fff;
+  padding: 1.2rem; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  display: flex; flex-direction: column; gap: 0.5rem; z-index: 2;
+}
+.w-faces { display: flex; margin-top: 0.5rem; }
+.w-faces img { width: 24px; height: 24px; border-radius: 50%; border: 2px solid #fff; margin-right: -8px; }
+
+/* ─── UTILS & ANIMATIONS ─── */
+.spinner { width: 18px; height: 18px; border: 2px solid rgba(0,0,0,0.2); border-top-color: var(--text-main); border-radius: 50%; animation: spin 0.8s linear infinite; display: none; }
 @keyframes spin { to { transform: rotate(360deg); } }
 
-/* Divider */
-.divider-wrap { display:flex; align-items:center; margin: 1.5rem 0; }
-.divider-line { flex:1; height:1px; background:var(--border-dim); }
-.divider-text { color:#475569; font-size:0.7rem; padding:0 0.75rem; font-weight:500; }
+.fade-in { animation: fadeIn 0.4s ease forwards; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-/* Subtle Google Button */
-.btn-google {
-  width: 100%; padding: 0.75rem; border-radius: 10px; border: 1px solid var(--border-light);
-  background: rgba(255,255,255,0.02); color: #E2E8F0; display: flex; align-items: center;
-  justify-content: center; gap: 0.5rem; cursor: pointer; font-family: var(--fb);
-  font-weight: 500; font-size: 0.85rem; transition: all 0.2s ease;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-.btn-google:hover { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.15); }
-.btn-google svg { width: 16px; height: 16px; }
-
-/* Link */
-.switch-link { text-align: center; font-size: 0.8rem; color: var(--text-muted); margin-top: 1.5rem; }
-.switch-link a { color: #E2E8F0; font-weight: 500; cursor: pointer; text-decoration: underline; text-decoration-color: var(--border-light); text-underline-offset: 3px; transition: all 0.2s; }
-.switch-link a:hover { color: #fff; text-decoration-color: var(--cyan); }
-
-/* ─── ROLE SELECTOR (Register) ─── */
-.role-selector { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.4rem; margin-bottom: 1.25rem; }
-.role-selector input[type="radio"] { display: none; }
-.role-card {
-  padding: 0.5rem 0.2rem; text-align: center; border-radius: 8px; transition: all 0.2s;
-  background: rgba(0,0,0,0.2); border: 1px solid var(--border-light);
-  color: var(--text-muted); font-size: 0.75rem; font-weight: 500; cursor: pointer;
-}
-.role-selector input[type="radio"]:checked + .role-card {
-  background: rgba(56,189,248,0.1); border-color: var(--cyan); color: #fff;
-}
-
-/* Premium Toast */
-.toast-lg {
-  background: #111827; border: 1px solid var(--border-light);
-  padding: 0.85rem 1.25rem; border-radius: 12px; color: white; font-family: var(--fb);
-  font-size: 0.85rem; font-weight: 500; box-shadow: 0 10px 30px rgba(0,0,0,0.5); margin-bottom: 0.5rem;
-  display: flex; align-items: center; gap: 0.75rem;
-}
-.toast-lg::before {
-  content: ''; display: block; width: 8px; height: 8px; border-radius: 50%; background: var(--cyan);
-}
+/* Premium Toast Override */
+.toast-lg { background: #111827; padding: 1rem 1.5rem; border-radius: 16px; color: white; font-family: var(--fb); font-size: 0.85rem; font-weight: 500; box-shadow: 0 10px 30px rgba(0,0,0,0.5); margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.75rem; }
+.toast-lg::before { content: ''; display: block; width: 8px; height: 8px; border-radius: 50%; background: var(--yellow); }
 .toast-lg.error::before { background: var(--red); }
 
-@media(max-width:900px){
-  .page { grid-template-columns: 1fr; }
-  .left { display: none; }
-  .auth-box { border: none; background: transparent; box-shadow: none; backdrop-filter: none; padding: 1.5rem; }
+@media(max-width: 900px) {
+  .modal-wrapper { flex-direction: column; width: 100vw; height: 100vh; border-radius: 0; }
+  .right-panel { display: none; }
+  .left-panel { padding: 2rem; }
 }
 </style>
 </head>
-<body class="login-page">
-<!-- Subtle Mesh Background Context -->
-<canvas id="bgCanvas"></canvas>
+<body>
 
-<!-- Toast Container -->
 <div id="toast-wrap" style="position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:9999;display:flex;flex-direction:column;align-items:center;"></div>
 
-<div class="page" id="loginPage">
-  <!-- ─── LEFT PANEL (Restrained & Professional) ─── -->
-  <div class="left">
-    <div class="left-brand">
-      <div class="brand-icon">IQ</div>
-      <div class="brand-name">CampusIQ</div>
-    </div>
+<div class="modal-wrapper fade-in">
+  
+  <!-- ─── LEFT FORM PANEL ─── -->
+  <div class="left-panel">
+    <div class="brand-pill">CampusIQ</div>
     
-    <div class="left-content stagger-1">
-      <h1 class="left-headline">Turn campus activity into verified talent.</h1>
-      <p class="left-sub">An intelligent ecosystem connecting ambitious students, educators, and top-tier recruiters through verified skills.</p>
+    <div class="form-container">
       
-      <div class="features-list">
-        <div class="feature-item stagger-2">
-          <div class="f-icon">
-            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-          </div>
-          <div class="f-text">
-            <strong>Verified Portfolios</strong>
-            <span>Automatic credential tracking and validation.</span>
-          </div>
-        </div>
-        <div class="feature-item stagger-3">
-          <div class="f-icon">
-            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-          </div>
-          <div class="f-text">
-            <strong>AI Skill Intelligence</strong>
-            <span>Dynamic profiling for enterprise readiness.</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ─── RIGHT PANEL (Focused Form Area) ─── -->
-  <div class="right" id="rightPanel">
-    <div class="right-glow"></div>
-    
-    <div class="auth-box">
       <!-- SIGN IN VIEW -->
       <div id="signInView">
-        <div class="role-tabs stagger-1" id="roleTabs">
-          <button class="rtab active" data-role="student">Student</button>
-          <button class="rtab" data-role="teacher">Teacher</button>
-          <button class="rtab" data-role="admin">Admin</button>
-          <button class="rtab" data-role="recruiter">Recruiter</button>
-        </div>
-
-        <div class="login-h1 stagger-1">Welcome back</div>
-        <div class="login-sub stagger-1" id="loginSub">Sign in to your student dashboard</div>
+        <h1 class="header-title">Welcome back</h1>
+        <p class="header-sub">Sign in to access your dashboard</p>
         
-        <form id="loginForm" class="stagger-2">
-          
+        <form id="loginForm">
           <div class="form-group">
             <label class="form-label" for="loginEmail">Email address</label>
             <input class="form-input" id="loginEmail" type="email" placeholder="name@domain.edu" required>
@@ -295,83 +212,126 @@ body{color:var(--text);font-family:var(--fb);display:flex;}
           
           <div class="form-group">
             <label class="form-label" for="loginPass">Password</label>
-            <input class="form-input" id="loginPass" type="password" placeholder="••••••••" required>
+            <input class="form-input" id="loginPass" type="password" placeholder="••••••••••••••" required>
             <button type="button" class="pwd-toggle" id="toggleLoginPwd" tabindex="-1">
-              <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
             </button>
           </div>
           
-          <button class="btn-login" id="loginBtn" type="submit">
+          <button class="btn-primary" id="loginBtn" type="submit">
             <span class="spinner" id="loginSpinner"></span>
-            <span id="loginBtnText">Sign in</span>
+            <span id="loginBtnText">Sign In</span>
           </button>
+
+          <div class="social-btns">
+            <button class="btn-social" type="button">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.126 3.802 3.058 1.49-.068 2.059-.968 3.868-.968 1.785 0 2.321.968 3.893.935 1.637-.035 2.65-1.528 3.632-2.983 1.144-1.674 1.616-3.298 1.638-3.385-.035-.015-3.178-1.22-3.203-4.856-.026-3.04 2.482-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.619 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.56-1.702z"/></svg>
+              Apple
+            </button>
+            <button class="btn-social" id="googleBtn" type="button">
+              <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+              Google
+            </button>
+          </div>
         </form>
-
-        <div class="divider-wrap stagger-3">
-          <div class="divider-line"></div>
-          <div class="divider-text">OR</div>
-          <div class="divider-line"></div>
-        </div>
-
-        <button class="btn-google stagger-3" id="googleBtn" type="button">
-          <svg viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
-          Continue with Google
-        </button>
-
-        <!-- Google Identity Hidden Trigger -->
-        <div id="g_id_onload" data-client_id="70835003370-fbdg01a9mgp13s80cgd65174udp3h74k.apps.googleusercontent.com" data-callback="onGoogleSignIn" data-auto_prompt="false"></div>
-
-        <div class="switch-link stagger-4">Don't have an account? <a id="goRegister">Sign up</a></div>
       </div>
 
       <!-- REGISTER VIEW -->
-      <div id="registerView" style="display:none">
-        <div class="login-h1 stagger-1">Create account</div>
-        <div class="login-sub stagger-1">Join the CampusIQ network</div>
+      <div id="registerView" style="display:none;">
+        <h1 class="header-title">Create an account</h1>
+        <p class="header-sub">Sign up to join the CampusIQ network</p>
         
-        <form id="registerForm" class="stagger-2">
-          
-          <div class="role-selector">
-            <label>
-              <input type="radio" name="regRole" value="student" checked>
-              <div class="role-card">Student</div>
-            </label>
-            <label>
-              <input type="radio" name="regRole" value="teacher">
-              <div class="role-card">Teacher</div>
-            </label>
-            <label>
-              <input type="radio" name="regRole" value="recruiter">
-              <div class="role-card">Recruiter</div>
-            </label>
-          </div>
+        <div class="role-tabs">
+          <button class="rtab active" data-role="student">Student</button>
+          <button class="rtab" data-role="teacher">Teacher</button>
+          <button class="rtab" data-role="recruiter">Recruiter</button>
+        </div>
 
+        <form id="registerForm">
           <div class="form-group">
             <label class="form-label" for="regName">Full name</label>
-            <input class="form-input" id="regName" placeholder="Jane Doe" required>
+            <input class="form-input" id="regName" placeholder="Amélie Laurent" required>
           </div>
           <div class="form-group">
             <label class="form-label" for="regEmail">Email address</label>
-            <input class="form-input" id="regEmail" type="email" placeholder="jane.ug23@iilm.edu" required>
+            <input class="form-input" id="regEmail" type="email" placeholder="amelielaurent@iilm.edu" required>
           </div>
           <div class="form-group">
             <label class="form-label" for="regPass">Password</label>
-            <input class="form-input" id="regPass" type="password" placeholder="At least 6 characters" required>
+            <input class="form-input" id="regPass" type="password" placeholder="••••••••••••••" required>
             <button type="button" class="pwd-toggle" id="toggleRegPwd" tabindex="-1">
-              <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
             </button>
           </div>
           
-          <button class="btn-login" id="regBtn" type="submit" style="margin-top: 1rem;">
+          <button class="btn-primary" id="regBtn" type="submit">
             <span class="spinner" id="regSpinner"></span>
-            <span id="regBtnText">Create account</span>
+            <span id="regBtnText">Submit</span>
           </button>
         </form>
-        <div class="switch-link stagger-3">Already have an account? <a id="goLogin">Sign in</a></div>
       </div>
+
+    </div>
+
+    <!-- Footers -->
+    <div class="footer-links">
+      <div id="footerText">Have any account? <a id="toggleViewBtn">Sign in</a></div>
+      <div><a href="#">Terms & Conditions</a></div>
     </div>
   </div>
+
+  <!-- ─── RIGHT IMAGE PANEL & WIDGETS ─── -->
+  <div class="right-panel">
+    <button class="close-btn">✕</button>
+
+    <!-- Overlay Widgets mimicking reference -->
+    <div class="widget-dark">
+      <div class="w-time" style="opacity:0.6">10:00am–11:00am</div>
+      <div class="dot" style="background:var(--yellow); top:auto; bottom:1rem"></div>
+    </div>
+    
+    <div class="widget-yellow">
+      <div class="w-title">CampusIQ Sync Review</div>
+      <div class="w-time">09:30am–10:00am</div>
+      <div class="dot"></div>
+    </div>
+
+    <div class="avatars">
+      <img class="avatar-circle a1" src="https://i.pravatar.cc/100?img=5" alt="A">
+      <img class="avatar-circle a2" src="https://i.pravatar.cc/100?img=9" alt="B">
+      <img class="avatar-circle a3" src="https://i.pravatar.cc/100?img=1" alt="C">
+    </div>
+
+    <div class="widget-white">
+      <div class="w-title" style="color:#000">Daily Meeting</div>
+      <div class="w-time" style="color:#828A9A">12:00pm–01:00pm</div>
+      <div class="dot" style="background:var(--yellow)"></div>
+      <div class="w-faces">
+        <img src="https://i.pravatar.cc/100?img=12" alt="F">
+        <img src="https://i.pravatar.cc/100?img=32" alt="F">
+        <img src="https://i.pravatar.cc/100?img=44" alt="F">
+        <img src="https://i.pravatar.cc/100?img=15" alt="F">
+      </div>
+    </div>
+
+    <div class="widget-glass">
+      <div class="calendar-days">
+        <div class="day"><span>Sun</span><strong>22</strong></div>
+        <div class="day"><span>Mon</span><strong>23</strong></div>
+        <div class="day"><span>Tue</span><strong>24</strong></div>
+        <div class="day active"><span>Wed</span><strong>25</strong></div>
+        <div class="day"><span>Thu</span><strong>26</strong></div>
+        <div class="day"><span>Fri</span><strong>27</strong></div>
+        <div class="day"><span>Sat</span><strong>28</strong></div>
+      </div>
+      <div class="glass-graph"></div>
+    </div>
+
+  </div>
 </div>
+
+<!-- Google Identity Hidden Trigger -->
+<div id="g_id_onload" data-client_id="70835003370-fbdg01a9mgp13s80cgd65174udp3h74k.apps.googleusercontent.com" data-callback="onGoogleSignIn" data-auto_prompt="false"></div>
 
 <!-- Load Core Scripts -->
 <script src="db.js"></script>
@@ -383,38 +343,37 @@ body{color:var(--text);font-family:var(--fb);display:flex;}
 
 const ROUTE_MAP = { student: 'student.html', teacher: 'teacher.html', admin: 'admin.html', recruiter: 'recruiter.html' };
 let activeRole = 'student';
+let isLogin = true;
 
-// --- Tab UI Logic ---
+// --- Role Tab Logic ---
 document.querySelectorAll('.rtab').forEach(tab => {
   tab.addEventListener('click', () => {
     document.querySelectorAll('.rtab').forEach(b => b.classList.remove('active'));
     tab.classList.add('active');
     activeRole = tab.dataset.role;
-    document.getElementById('loginSub').textContent = `Sign in to your ${activeRole} dashboard`;
   });
 });
 
-// --- View Toggles ---
-const goReg = document.getElementById('goRegister'), goLog = document.getElementById('goLogin');
-const signView = document.getElementById('signInView'), regView = document.getElementById('registerView');
+// --- View Toggle Logic ---
+const signView = document.getElementById('signInView');
+const regView = document.getElementById('registerView');
+const toggleBtn = document.getElementById('toggleViewBtn');
+const footerText = document.getElementById('footerText');
 
-function resetAnimations(containerId) {
-  document.querySelectorAll(`#${containerId} [class*="stagger-"]`).forEach(el => {
-    el.style.animation = 'none'; el.offsetHeight; el.style.animation = null;
-  });
-}
-
-goReg.onclick = (e) => { 
-  e.preventDefault(); 
-  signView.style.display='none'; 
-  regView.style.display='block'; 
-  resetAnimations('registerView');
-};
-goLog.onclick = (e) => { 
-  e.preventDefault(); 
-  signView.style.display='block'; 
-  regView.style.display='none'; 
-  resetAnimations('signInView');
+toggleBtn.onclick = (e) => {
+  e.preventDefault();
+  isLogin = !isLogin;
+  if (isLogin) {
+    signView.style.display = 'block';
+    regView.style.display = 'none';
+    footerText.innerHTML = `Don't have an account? <a id="toggleViewBtn">Sign up</a>`;
+  } else {
+    signView.style.display = 'none';
+    regView.style.display = 'block';
+    footerText.innerHTML = `Have any account? <a id="toggleViewBtn">Sign in</a>`;
+  }
+  // Re-bind the dynamically created link
+  document.getElementById('toggleViewBtn').onclick = toggleBtn.onclick;
 };
 
 // --- Password Visibility Toggle ---
@@ -425,38 +384,34 @@ function setupPwdToggle(btnId, inputId) {
   btn.onclick = () => {
     if (input.type === 'password') {
       input.type = 'text';
-      btn.innerHTML = '<svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>';
+      btn.innerHTML = '<svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>';
     } else {
       input.type = 'password';
-      btn.innerHTML = '<svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
+      btn.innerHTML = '<svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
     }
   };
 }
 setupPwdToggle('toggleLoginPwd', 'loginPass');
 setupPwdToggle('toggleRegPwd', 'regPass');
 
-// --- Custom Premium Toast ---
+// --- Toast & Buttons ---
 function saasToast(msg, type='ok') {
-  if(typeof showToast === 'function') {
-    showToast(msg, '', type);
-  } else {
-    const wrap = document.getElementById('toast-wrap');
-    const t = document.createElement('div');
-    t.className = `toast-lg ${type==='error'?'error':''}`;
-    t.textContent = msg;
-    wrap.appendChild(t);
-    setTimeout(() => { t.style.opacity='0'; setTimeout(()=>t.remove(),300); }, 3000);
-  }
+  if(typeof showToast === 'function') { showToast(msg, '', type); return; }
+  const wrap = document.getElementById('toast-wrap');
+  const t = document.createElement('div');
+  t.className = `toast-lg ${type==='error'?'error':''}`;
+  t.textContent = msg;
+  wrap.appendChild(t);
+  setTimeout(() => { t.style.opacity='0'; setTimeout(()=>t.remove(),300); }, 3000);
 }
 
-// --- Button State Handlers ---
 function setBtnLoading(btnId, spinnerId, textId, isLoading) {
   const btn = document.getElementById(btnId);
   const spin = document.getElementById(spinnerId);
   const text = document.getElementById(textId);
   btn.disabled = isLoading;
   spin.style.display = isLoading ? 'inline-block' : 'none';
-  text.textContent = isLoading ? 'Processing...' : (btnId==='loginBtn' ? 'Sign in' : 'Create account');
+  text.textContent = isLoading ? 'Processing...' : (btnId==='loginBtn' ? 'Sign In' : 'Submit');
 }
 
 // --- Standard Login ---
@@ -480,34 +435,28 @@ document.getElementById('loginForm').onsubmit = async (e) => {
 // --- Standard Register ---
 document.getElementById('registerForm').onsubmit = async (e) => {
     e.preventDefault();
-    const roleEl = document.querySelector('input[name="regRole"]:checked');
-    const role = roleEl ? roleEl.value : 'student';
-
     const email = document.getElementById('regEmail').value.trim().toLowerCase();
     const localPart = email.split('@')[0];
     const domain = email.split('@')[1] || '';
 
-    // ── DOMAIN RESTRICTION UI LOGIC ──
-    if (role === 'student' && (domain !== 'iilm.edu' || !localPart.includes('ug'))) {
-        saasToast("Students must use @iilm.edu email containing 'ug'", 'error');
-        return;
-    } else if (role === 'teacher' && (domain !== 'iilm.edu' || localPart.includes('ug'))) {
-        saasToast("Teachers must use @iilm.edu email without 'ug'", 'error');
-        return;
+    if (activeRole === 'student' && (domain !== 'iilm.edu' || !localPart.includes('ug'))) {
+        saasToast("Students must use @iilm.edu email containing 'ug'", 'error'); return;
+    } else if (activeRole === 'teacher' && (domain !== 'iilm.edu' || localPart.includes('ug'))) {
+        saasToast("Teachers must use @iilm.edu email without 'ug'", 'error'); return;
     }
 
     const data = {
         name: document.getElementById('regName').value,
         email: email,
         password: document.getElementById('regPass').value,
-        role: role
+        role: activeRole
     };
     
     setBtnLoading('regBtn', 'regSpinner', 'regBtnText', true);
     try {
         await Auth.register(data);
         saasToast("Account created successfully!", 'ok');
-        setTimeout(() => window.location.href = ROUTE_MAP[role], 800);
+        setTimeout(() => window.location.href = ROUTE_MAP[activeRole], 800);
     } catch(err) {
         saasToast(err.message, 'error');
         setBtnLoading('regBtn', 'regSpinner', 'regBtnText', false);
@@ -532,9 +481,7 @@ document.getElementById('googleBtn').onclick = () => {
      setTimeout(() => {
          const mockPayload = { email: "demo.ug24@iilm.edu", name: "Google Demo Student" };
          const mockJwt = "mockHeader." + btoa(JSON.stringify(mockPayload)) + ".mockSignature";
-         if (typeof window.onGoogleSignIn === 'function') {
-             window.onGoogleSignIn({ credential: mockJwt });
-         }
+         if (typeof window.onGoogleSignIn === 'function') window.onGoogleSignIn({ credential: mockJwt });
      }, 800);
      return;
   }
@@ -543,16 +490,11 @@ document.getElementById('googleBtn').onclick = () => {
     google.accounts.id.prompt((notification) => {
       if (notification.isNotDisplayed()) {
          const reason = notification.getNotDisplayedReason();
-         if (reason === 'origin_not_allowed' || reason === 'unregistered_origin') {
-             saasToast("Domain not whitelisted in Google Console.", 'error');
-         } else {
-             saasToast("Google Login unavailable.", 'error');
-         }
+         if (reason === 'origin_not_allowed' || reason === 'unregistered_origin') saasToast("Domain not whitelisted in Google Console.", 'error');
+         else saasToast("Google Login unavailable.", 'error');
       }
     });
-  } else {
-    saasToast("Google Library failed to load.", 'error');
-  }
+  } else { saasToast("Google Library failed to load.", 'error'); }
 };
 
 window.onGoogleSignIn = async (response) => {
@@ -560,40 +502,8 @@ window.onGoogleSignIn = async (response) => {
     const session = Auth.handleGoogleCredential(response.credential);
     saasToast("Google Login Success!", 'ok');
     setTimeout(() => window.location.href = ROUTE_MAP[session.role], 800);
-  } catch(err) {
-    saasToast(err.message, 'error');
-  }
+  } catch(err) { saasToast(err.message, 'error'); }
 };
-
-// --- Calm Canvas Mesh Background Animation ---
-(function() {
-  const c = document.getElementById('bgCanvas'), ctx = c.getContext('2d');
-  let W, H;
-  function resize() { W = c.width = window.innerWidth; H = c.height = window.innerHeight; }
-  resize(); window.onresize = resize;
-
-  let offset = 0;
-  function loop() { 
-    ctx.clearRect(0, 0, W, H); 
-    
-    // Very subtle grid mesh, typical of modern developer tools
-    ctx.strokeStyle='rgba(255,255,255,0.015)'; 
-    ctx.lineWidth = 1;
-    
-    const gridSize = 60;
-    const moveX = (offset * 0.5) % gridSize;
-    const moveY = (offset * 0.5) % gridSize;
-
-    ctx.beginPath();
-    for(let x=moveX; x<W; x+=gridSize){ ctx.moveTo(x,0); ctx.lineTo(x,H); }
-    for(let y=moveY; y<H; y+=gridSize){ ctx.moveTo(0,y); ctx.lineTo(W,y); }
-    ctx.stroke();
-    
-    offset += 0.5;
-    requestAnimationFrame(loop); 
-  }
-  loop();
-})();
 </script>
 </body>
 </html>
