@@ -9,10 +9,10 @@
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
 :root{--bg:#04070F;--s1:#080E1C;--s2:#0C1525;--cyan:#38BDF8;--violet:#8B5CF6;--emerald:#10B981;--amber:#F59E0B;--red:#EF4444;--text:#EDF4FF;--text2:#8BA8C4;--muted:#3A5268;--b2:#0F1E30;--fh:'Syne',sans-serif;--fb:'Outfit',sans-serif;}
-html,body{height:100%;}
-body{background:var(--bg);color:var(--text);font-family:var(--fb);min-height:100vh;display:flex;align-items:center;justify-content:center;}
+html,body{height:100%;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:var(--fb);min-height:100vh;display:flex;align-items:stretch;justify-content:stretch;}
 #bgCanvas{position:fixed;inset:0;z-index:0;pointer-events:none;}
-.page{position:relative;z-index:1;display:grid;grid-template-columns:1fr 1fr;width:min(1080px,100vw);min-height:min(700px,100vh);border-radius:20px;overflow:hidden;box-shadow:0 40px 100px rgba(0,0,0,0.7);}
+.page{position:relative;z-index:1;display:grid;grid-template-columns:1fr 1fr;width:100vw;min-height:100vh;border-radius:0;overflow:hidden;box-shadow:none;}
 
 /* LEFT */
 .left{background:linear-gradient(150deg,#060D1E,#091525,#0B1D2E);padding:2.5rem;display:flex;flex-direction:column;gap:1.5rem;position:relative;overflow:hidden;}
@@ -199,10 +199,10 @@ body.login-page #theme-toggle{position:fixed;top:16px;right:16px;z-index:100;}
 
       <div class="demo-creds" id="demoCreds">
         <strong>Demo accounts:</strong><br>
-        Student: student1@campusiq.edu / stud123<br>
-        Teacher: teacher1@campusiq.edu / teach123<br>
-        Admin: admin@campusiq.edu / admin123<br>
-        Recruiter: recruiter@techcorp.com / rec123
+        Student: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="7d0e0908191813094c3d1e1c100d080e140c53181908">[email&#160;protected]</a> / stud123<br>
+        Teacher: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="f084959193989582c1b093919d8085839981de959485">[email&#160;protected]</a> / teach123<br>
+        Admin: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="4f2e2b2226210f2c2e223f3a3c263e612a2b3a">[email&#160;protected]</a> / admin123<br>
+        Recruiter: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="99ebfcfaebecf0edfcebd9edfcfaf1faf6ebe9b7faf6f4">[email&#160;protected]</a> / rec123
       </div>
     </div>
 
@@ -313,7 +313,7 @@ body.login-page #theme-toggle{position:fixed;top:16px;right:16px;z-index:100;}
   </div>
 </div>
 
-<script src="db.js"></script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src="db.js"></script>
 <script src="utils.js"></script>
 <script src="auth.js"></script>
 <script>
@@ -552,16 +552,4 @@ function hideErr()    { errMsg.classList.remove('show'); errMsg.style.display = 
     for(let y=0;y<H;y+=60){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
     for(let i=0;i<pts.length;i++) for(let j=i+1;j<pts.length;j++){const dx=pts[i].x-pts[j].x,dy=pts[i].y-pts[j].y,d=Math.sqrt(dx*dx+dy*dy);if(d<105){ctx.beginPath();ctx.moveTo(pts[i].x,pts[i].y);ctx.lineTo(pts[j].x,pts[j].y);ctx.strokeStyle='rgba(56,189,248,'+(0.05*(1-d/105))+')';ctx.lineWidth=0.5;ctx.stroke();}}
     pts.forEach(p => { p.tick(); p.draw(); });
-    requestAnimationFrame(loop);
-  }
-  loop();
-})();
-
-// ── Card 3D tilt ──────────────────────────────────────────
-document.querySelectorAll('.fc').forEach(card => {
-  card.addEventListener('mousemove', e => { const r=card.getBoundingClientRect(),x=(e.clientX-r.left)/r.width-0.5,y=(e.clientY-r.top)/r.height-0.5; card.style.transform=`perspective(500px) rotateX(${-y*12}deg) rotateY(${x*12}deg) scale(1.04) translateY(-4px)`; });
-  card.addEventListener('mouseleave', () => { card.style.transform=''; });
-});
-</script>
-</body>
-</html>
+    requestAnimationFra
