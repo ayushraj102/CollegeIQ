@@ -4,55 +4,59 @@
 <script src="theme.js"></script>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>CampusIQ — Private Assembly</title>
-<!-- Elegant Serif + Modern Sans -->
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<!-- Clean Modern SaaS Typography -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <!-- Google Identity Services -->
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 <link rel="stylesheet" href="shared.css">
 <style>
-/* ─── OBSIDIAN ASSEMBLY AESTHETIC ─── */
+/* ─── PREMIUM SAAS AESTHETIC ─── */
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
 :root{
-  --bg-sand: #E6DFD3;
-  --bg-mocha: #B49C82;
-  --obsidian: #111111;
-  --glass: rgba(255, 255, 255, 0.25);
-  --glass-border: rgba(255, 255, 255, 0.5);
-  --text-dark: #1A1A1A;
-  --text-muted: #5A5A5A;
-  --font-serif: 'Playfair Display', serif;
-  --font-sans: 'Inter', sans-serif;
+  --bg-main: #F8FAFC;
+  --bg-accent: #EEF2F6;
+  --primary: #0F172A;
+  --primary-hover: #1E293B;
+  --glass: rgba(255, 255, 255, 0.85);
+  --glass-border: rgba(255, 255, 255, 0.4);
+  --text-dark: #0F172A;
+  --text-muted: #64748B;
+  --border-light: #E2E8F0;
+  --focus-ring: rgba(56, 189, 248, 0.4);
+  --font-sans: 'Inter', -apple-system, sans-serif;
 }
-html,body{height:100%;margin:0;padding:0;background:var(--bg-sand);font-family:var(--font-sans);overflow:hidden;}
+html,body{height:100%;margin:0;padding:0;background:var(--bg-main);font-family:var(--font-sans);overflow:hidden;color:var(--text-dark);}
 
-/* ─── IMMERSIVE BACKGROUND ─── */
+/* ─── SOFT IMMERSIVE BACKGROUND ─── */
 .bg-container {
   position: fixed; inset: 0; z-index: 0;
-  background: radial-gradient(circle at 50% 100%, var(--bg-mocha) 0%, var(--bg-sand) 80%);
-  display: flex; justify-content: center; align-items: flex-end;
+  background: radial-gradient(circle at 50% -20%, #E2E8F0 0%, var(--bg-main) 80%);
+  display: flex; justify-content: center; align-items: center;
 }
 
-/* The Central Obsidian Shape */
+/* Ambient SaaS Glows */
 .obsidian-shape {
-  width: 70vw; height: 75vh;
-  background: url('https://images.unsplash.com/photo-1616487532255-75e1f0e4b85c?q=80&w=1600&auto=format&fit=crop') center/cover no-repeat;
-  border-top-left-radius: 50% 40%; border-top-right-radius: 50% 40%;
-  mask-image: radial-gradient(ellipse at center, black 40%, transparent 80%);
-  -webkit-mask-image: radial-gradient(ellipse at center, black 40%, transparent 80%);
-  opacity: 0.85; filter: contrast(1.1) brightness(0.8);
+  width: 100vw; height: 100vh; position: absolute;
+  background: 
+    radial-gradient(circle at 15% 50%, rgba(56, 189, 248, 0.06), transparent 50%),
+    radial-gradient(circle at 85% 30%, rgba(139, 92, 246, 0.05), transparent 50%);
+  z-index: 0;
 }
 
-/* Fine Linework */
+/* Subtle Grid Texture */
 .fine-lines {
-  position: absolute; inset: 0; pointer-events: none;
-  background-image: 
-    url("data:image/svg+xml,%3Csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0,300 C300,100 600,600 1200,200' stroke='rgba(26,26,26,0.1)' stroke-width='1' fill='none'/%3E%3Cpath d='M-200,600 C400,800 800,100 1400,400' stroke='rgba(255,255,255,0.3)' stroke-width='1' fill='none'/%3E%3C/svg%3E");
-  background-size: cover;
+  position: absolute; inset: 0; pointer-events: none; z-index: 1;
+  background-image: linear-gradient(var(--border-light) 1px, transparent 1px),
+                    linear-gradient(90deg, var(--border-light) 1px, transparent 1px);
+  background-size: 60px 60px;
+  mask-image: radial-gradient(circle at center, black 10%, transparent 80%);
+  -webkit-mask-image: radial-gradient(circle at center, black 10%, transparent 80%);
+  opacity: 0.4;
 }
 
-/* ─── TYPOGRAPHY & BRANDING ─── */
+/* ─── TYPOGRAPHY & LAYOUT ─── */
 .main-content {
-  position: relative; z-index: 1; width: 100vw; height: 100vh;
+  position: relative; z-index: 2; width: 100vw; height: 100vh;
   display: flex; flex-direction: column; align-items: center; justify-content: center;
 }
 
@@ -61,90 +65,112 @@ html,body{height:100%;margin:0;padding:0;background:var(--bg-sand);font-family:v
   display: flex; justify-content: space-between; align-items: flex-start;
 }
 .brand {
-  font-family: var(--font-serif); font-size: 1.2rem; line-height: 1.1; color: var(--text-dark);
+  font-family: var(--font-sans); font-size: 1.1rem; font-weight: 700; color: var(--primary); letter-spacing: -0.02em;
 }
-.brand span { display: block; font-style: italic; opacity: 0.7; font-size: 0.9rem; font-family: var(--font-sans); }
+.brand span { display: block; font-weight: 400; color: var(--text-muted); font-size: 0.8rem; margin-top: 0.1rem; }
 
 .hero-text {
-  text-align: center; font-family: var(--font-serif);
-  color: var(--text-dark); pointer-events: none; margin-bottom: -4rem; z-index: 0;
+  text-align: center; margin-bottom: 2rem; pointer-events: none;
 }
-.hero-text h1 { font-size: clamp(4rem, 8vw, 7rem); font-weight: 400; line-height: 0.9; letter-spacing: -0.03em; }
-.hero-text h1 i { font-style: italic; font-weight: 500; }
-.hero-sub { font-family: var(--font-sans); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.1em; margin-top: 1.5rem; opacity: 0.7; }
+.hero-text h1 { 
+  font-size: 2rem; font-weight: 600; line-height: 1.2; 
+  letter-spacing: -0.03em; color: var(--primary); 
+}
+.hero-sub { 
+  font-size: 0.95rem; color: var(--text-muted); 
+  margin-top: 0.5rem; font-weight: 400; 
+}
 
-/* ─── FROSTED GLASS FORM CARD ─── */
+/* ─── PREMIUM FORM CARD ─── */
 .glass-panel {
   background: var(--glass);
-  backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
-  border: 1px solid var(--glass-border);
-  border-radius: 20px; padding: 2.5rem; width: 100%; max-width: 420px;
-  box-shadow: 0 30px 60px rgba(0,0,0,0.1), inset 0 2px 0 rgba(255,255,255,0.6);
-  z-index: 2; position: relative;
-  animation: floatUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+  border: 1px solid #FFFFFF;
+  border-radius: 24px; padding: 2.5rem; width: 100%; max-width: 400px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.04), 0 1px 3px rgba(0,0,0,0.02);
+  z-index: 3; position: relative;
+  animation: floatUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
-@keyframes floatUp { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes floatUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
+/* Segmented Control (Tabs) */
 .role-tabs {
-  display: flex; gap: 0.2rem; background: rgba(255,255,255,0.3); border-radius: 12px; padding: 0.3rem; margin-bottom: 2rem;
+  display: flex; gap: 0.25rem; background: var(--bg-accent); 
+  border-radius: 12px; padding: 0.25rem; margin-bottom: 2rem;
+  border: 1px solid var(--border-light);
 }
 .rtab {
-  flex: 1; padding: 0.6rem 0; border: none; background: transparent; border-radius: 8px;
-  font-family: var(--font-sans); font-size: 0.75rem; font-weight: 500; color: var(--text-muted);
-  cursor: pointer; transition: all 0.3s ease;
+  flex: 1; padding: 0.5rem 0; border: none; background: transparent; border-radius: 8px;
+  font-family: var(--font-sans); font-size: 0.8rem; font-weight: 500; color: var(--text-muted);
+  cursor: pointer; transition: all 0.2s ease;
 }
-.rtab.active { background: #fff; color: var(--obsidian); box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+.rtab:hover { color: var(--primary); }
+.rtab.active { 
+  background: #fff; color: var(--primary); font-weight: 600;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06); 
+}
 
+/* Inputs */
 .form-group { margin-bottom: 1.25rem; position: relative; }
 .form-input {
-  width: 100%; background: rgba(255,255,255,0.6); border: 1px solid rgba(255,255,255,0.8);
-  padding: 1rem 1.25rem; border-radius: 12px; font-family: var(--font-sans);
-  font-size: 0.9rem; color: var(--obsidian); transition: all 0.3s ease;
+  width: 100%; background: #fff; border: 1px solid var(--border-light);
+  padding: 0.8rem 1rem; border-radius: 10px; font-family: var(--font-sans);
+  font-size: 0.9rem; color: var(--primary); transition: all 0.2s ease;
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.02);
 }
-.form-input::placeholder { color: rgba(26,26,26,0.4); font-weight: 300; }
-.form-input:focus { background: #fff; outline: none; border-color: var(--obsidian); box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+.form-input::placeholder { color: #94A3B8; font-weight: 400; }
+.form-input:focus { 
+  background: #fff; outline: none; border-color: #38BDF8; 
+  box-shadow: 0 0 0 3px var(--focus-ring); 
+}
 
-/* Obsidian Button */
+/* Primary Button */
 .btn-obsidian {
-  width: 100%; background: var(--obsidian); color: #fff; border: none;
-  padding: 1rem; border-radius: 12px; font-family: var(--font-sans); font-weight: 500;
-  font-size: 0.9rem; cursor: pointer; transition: all 0.3s ease; margin-top: 0.5rem;
+  width: 100%; background: var(--primary); color: #fff; border: none;
+  padding: 0.85rem; border-radius: 10px; font-family: var(--font-sans); font-weight: 500;
+  font-size: 0.95rem; cursor: pointer; transition: all 0.2s ease; margin-top: 0.5rem;
   display: flex; justify-content: center; align-items: center; gap: 0.5rem;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.15);
 }
-.btn-obsidian:hover { background: #2A2A2A; transform: translateY(-2px); box-shadow: 0 10px 20px rgba(0,0,0,0.15); }
-.btn-obsidian:disabled { opacity: 0.7; cursor: not-allowed; }
+.btn-obsidian:hover { 
+  background: var(--primary-hover); transform: translateY(-1px); 
+  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.2); 
+}
+.btn-obsidian:active { transform: translateY(0); box-shadow: 0 2px 4px rgba(15, 23, 42, 0.1); }
+.btn-obsidian:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
 
 .divider {
-  display: flex; align-items: center; margin: 1.5rem 0; font-size: 0.7rem; color: var(--text-muted);
-  text-transform: uppercase; letter-spacing: 0.05em;
+  display: flex; align-items: center; margin: 1.5rem 0; font-size: 0.75rem; 
+  color: var(--text-muted); font-weight: 500;
 }
-.divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: rgba(26,26,26,0.1); margin: 0 1rem; }
+.divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: var(--border-light); margin: 0 1rem; }
 
 /* View Toggle */
-.view-switch { text-align: center; font-size: 0.8rem; color: var(--text-muted); margin-top: 1.5rem; }
-.view-switch a { color: var(--obsidian); font-weight: 500; cursor: pointer; text-decoration: none; border-bottom: 1px solid var(--obsidian); padding-bottom: 2px; transition: opacity 0.2s; }
-.view-switch a:hover { opacity: 0.6; }
+.view-switch { text-align: center; font-size: 0.85rem; color: var(--text-muted); margin-top: 1.5rem; }
+.view-switch a { color: var(--primary); font-weight: 600; cursor: pointer; text-decoration: none; transition: opacity 0.2s; }
+.view-switch a:hover { opacity: 0.7; text-decoration: underline; text-underline-offset: 2px; }
 
 /* Custom Toast */
 .toast-obs {
-  background: var(--obsidian); color: #fff; padding: 1rem 1.5rem; border-radius: 12px;
+  background: #fff; color: var(--primary); padding: 1rem 1.25rem; border-radius: 12px;
   font-family: var(--font-sans); font-size: 0.85rem; display: flex; align-items: center; gap: 0.75rem;
-  box-shadow: 0 15px 30px rgba(0,0,0,0.3); margin-bottom: 0.5rem;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1); margin-bottom: 0.5rem; border: 1px solid var(--border-light);
+  font-weight: 500;
 }
-.toast-obs::before { content:''; width:8px; height:8px; border-radius:50%; background:#E6DFD3; }
+.toast-obs::before { content:''; width:8px; height:8px; border-radius:50%; background:#10B981; }
 .toast-obs.err::before { background: #EF4444; }
 
-/* Bypass Button for Presentations */
+/* Bypass Button */
 .btn-bypass {
-  width: 100%; background: transparent; color: var(--text-muted); border: 1px dashed rgba(26,26,26,0.2);
-  padding: 0.75rem; border-radius: 12px; font-family: var(--font-sans); font-size: 0.8rem;
-  cursor: pointer; margin-top: 0.5rem; transition: all 0.2s;
+  width: 100%; background: transparent; color: var(--text-muted); border: 1px dashed var(--border-light);
+  padding: 0.7rem; border-radius: 10px; font-family: var(--font-sans); font-size: 0.8rem;
+  cursor: pointer; margin-top: 0.75rem; transition: all 0.2s; font-weight: 500;
 }
-.btn-bypass:hover { background: rgba(255,255,255,0.5); color: var(--obsidian); }
+.btn-bypass:hover { background: var(--bg-accent); color: var(--primary); border-color: #CBD5E1; }
 
 @media (max-width: 768px) {
-  .hero-text h1 { font-size: 3.5rem; }
-  .glass-panel { margin: 0 1.5rem; padding: 2rem; }
+  .hero-text h1 { font-size: 1.75rem; }
+  .glass-panel { margin: 0 1.5rem; padding: 2rem; border-radius: 20px; }
   .top-bar { padding: 1.5rem; }
 }
 </style>
@@ -163,13 +189,15 @@ html,body{height:100%;margin:0;padding:0;background:var(--bg-sand);font-family:v
 <div class="main-content">
   
   <div class="top-bar">
-    <div class="brand">Campus<i>IQ</i> <span>A Private Assembly</span></div>
-    <div class="brand" style="text-align: right; font-size: 0.85rem;">Coordinates<br><span style="font-style:normal; opacity:0.5;">Withheld</span></div>
+    <div class="brand">CampusIQ <span>Platform access</span></div>
+    <div class="brand" style="text-align: right; font-weight: 400; color: var(--text-muted); font-size: 0.85rem;">
+      Status<br><span style="color: #10B981; display: inline-block;">● Operational</span>
+    </div>
   </div>
 
   <div class="hero-text">
-    <h1>Intelligence <br><i>Shown First</i></h1>
-    <div class="hero-sub">Seek Admission</div>
+    <h1>Welcome to CampusIQ</h1>
+    <div class="hero-sub">Enter your credentials to securely access your portal</div>
   </div>
 
   <div class="glass-panel">
@@ -187,21 +215,20 @@ html,body{height:100%;margin:0;padding:0;background:var(--bg-sand);font-family:v
           <input class="form-input" id="loginEmail" type="email" placeholder="Institutional Email" required>
         </div>
         <div class="form-group">
-          <input class="form-input" id="loginPass" type="password" placeholder="Passkey" required>
+          <input class="form-input" id="loginPass" type="password" placeholder="Password" required>
         </div>
-        <button class="btn-obsidian" id="loginBtn" type="submit">Enter Assembly</button>
+        <button class="btn-obsidian" id="loginBtn" type="submit">Sign In</button>
       </form>
 
       <div class="divider">Or</div>
 
       <!-- OFFICIAL GOOGLE BUTTON CONTAINER -->
-      <!-- This is much more reliable than prompt() if origins are tricky -->
       <div id="googleBtnContainer" style="display:flex; justify-content:center; width:100%;"></div>
 
       <!-- FAILSAFE: Dev Bypass -->
       <button class="btn-bypass" id="bypassBtn" type="button" title="Use this if Google Login is blocked during presentations">Test Bypass (Dev Mode)</button>
 
-      <div class="view-switch">Commitment precedes entry. <a id="goRegister">Apply here</a></div>
+      <div class="view-switch">Don't have an account? <a id="goRegister">Sign up here</a></div>
     </div>
 
     <!-- REGISTER VIEW -->
@@ -214,18 +241,18 @@ html,body{height:100%;margin:0;padding:0;background:var(--bg-sand);font-family:v
 
       <form id="registerForm">
         <div class="form-group">
-          <input class="form-input" id="regName" placeholder="Full Identity" required>
+          <input class="form-input" id="regName" placeholder="Full Name" required>
         </div>
         <div class="form-group">
           <input class="form-input" id="regEmail" type="email" placeholder="Email (e.g. name.ug23@iilm.edu)" required>
         </div>
         <div class="form-group">
-          <input class="form-input" id="regPass" type="password" placeholder="Create Passkey (min 6)" required>
+          <input class="form-input" id="regPass" type="password" placeholder="Create Password (min 6 chars)" required>
         </div>
-        <button class="btn-obsidian" id="regBtn" type="submit">Submit Application</button>
+        <button class="btn-obsidian" id="regBtn" type="submit">Create Account</button>
       </form>
 
-      <div class="view-switch">Already granted access? <a id="goLogin">Enter here</a></div>
+      <div class="view-switch">Already have an account? <a id="goLogin">Sign in</a></div>
     </div>
 
   </div>
@@ -251,4 +278,105 @@ document.querySelectorAll('.rtab').forEach(tab => {
     activeRole = tab.dataset.role;
     
     // Sync both sets of tabs
-    document.querySelectorAll(`.rtab[data-role="${activeRole}"]`).forEach(b
+    document.querySelectorAll(`.rtab[data-role="${activeRole}"]`).forEach(b => b.classList.add('active'));
+  });
+});
+
+// --- View Toggles ---
+const goReg = document.getElementById('goRegister'), goLog = document.getElementById('goLogin');
+const signView = document.getElementById('signInView'), regView = document.getElementById('registerView');
+
+goReg.onclick = () => { signView.style.display='none'; regView.style.display='block'; };
+goLog.onclick = () => { signView.style.display='block'; regView.style.display='none'; };
+
+// --- Custom Toast ---
+function obsToast(msg, type='ok') {
+  if(typeof showToast === 'function') { showToast(msg, '', type); return; }
+  const wrap = document.getElementById('toast-wrap');
+  const t = document.createElement('div');
+  t.className = `toast-obs ${type==='err'?'err':''}`;
+  t.textContent = msg;
+  wrap.appendChild(t);
+  setTimeout(() => { t.style.opacity='0'; setTimeout(()=>t.remove(),300); }, 3000);
+}
+
+// --- Standard Login ---
+document.getElementById('loginForm').onsubmit = async (e) => {
+  e.preventDefault();
+  const btn = document.getElementById('loginBtn');
+  btn.disabled = true; btn.textContent = 'Authenticating...';
+
+  try {
+    const session = await Auth.login(document.getElementById('loginEmail').value.trim(), document.getElementById('loginPass').value);
+    obsToast(`Access granted, ${session.name.split(' ')[0]}.`);
+    setTimeout(() => { window.location.href = ROUTE_MAP[session.role] || 'student.html'; }, 800);
+  } catch(err) {
+    obsToast(err.message, 'err');
+    btn.disabled = false; btn.textContent = 'Sign In';
+  }
+};
+
+// --- Standard Register ---
+document.getElementById('registerForm').onsubmit = async (e) => {
+    e.preventDefault();
+    const email = document.getElementById('regEmail').value.trim().toLowerCase();
+    const localPart = email.split('@')[0];
+    const domain = email.split('@')[1] || '';
+
+    if (activeRole === 'student' && (domain !== 'iilm.edu' || !localPart.includes('ug'))) {
+        obsToast("Students must use @iilm.edu email containing 'ug'", 'err'); return;
+    } else if (activeRole === 'teacher' && (domain !== 'iilm.edu' || localPart.includes('ug'))) {
+        obsToast("Teachers must use @iilm.edu email without 'ug'", 'err'); return;
+    }
+
+    const btn = document.getElementById('regBtn');
+    btn.disabled = true; btn.textContent = 'Processing...';
+
+    try {
+        await Auth.register({ name: document.getElementById('regName').value, email, password: document.getElementById('regPass').value, role: activeRole });
+        obsToast("Application Accepted.");
+        setTimeout(() => window.location.href = ROUTE_MAP[activeRole], 800);
+    } catch(err) {
+        obsToast(err.message, 'err');
+        btn.disabled = false; btn.textContent = 'Create Account';
+    }
+};
+
+// --- Google Login Configuration (OFFICIAL RENDERED BUTTON) ---
+window.onload = () => {
+    if (typeof google !== 'undefined' && google.accounts && google.accounts.id) {
+        google.accounts.id.initialize({
+            client_id: "70835003370-fbdg01a9mgp13s80cgd65174udp3h74k.apps.googleusercontent.com",
+            callback: window.onGoogleSignIn
+        });
+        
+        // Render official button
+        google.accounts.id.renderButton(
+            document.getElementById("googleBtnContainer"),
+            { theme: "outline", size: "large", shape: "pill", width: 300, text: "continue_with" }
+        );
+    }
+};
+
+window.onGoogleSignIn = async (response) => {
+  try {
+    const session = Auth.handleGoogleCredential(response.credential);
+    obsToast("Identity Verified.");
+    setTimeout(() => window.location.href = ROUTE_MAP[session.role], 800);
+  } catch(err) { obsToast(err.message, 'err'); }
+};
+
+// --- DEV BYPASS BUTTON (Just in case Google blocks you during a demo) ---
+document.getElementById('bypassBtn').onclick = () => {
+    obsToast("Bypass Initiated. Mocking Google Identity...");
+    setTimeout(() => {
+        // Creates a fake Google JWT for demonstration purposes
+        const mockPayload = { email: "demo.ug24@iilm.edu", name: "Guest Maker" };
+        const mockJwt = "mockHeader." + btoa(JSON.stringify(mockPayload)) + ".mockSignature";
+        if (typeof window.onGoogleSignIn === 'function') window.onGoogleSignIn({ credential: mockJwt });
+    }, 1000);
+};
+
+</script>
+</body>
+</html>
