@@ -24,6 +24,16 @@ body{color:var(--text);font-family:var(--fb);display:flex;}
 #bgCanvas{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:0.8;}
 .page{position:relative;z-index:1;display:grid;grid-template-columns:1fr 1fr;width:100vw;height:100vh;}
 
+/* THEME TOGGLE */
+#theme-toggle {
+  position: fixed; top: 1.5rem; right: 1.5rem; z-index: 200;
+  width: 42px; height: 42px; border-radius: 50%;
+  background: rgba(255, 255, 255, 0.05); border: 1px solid var(--glass-border);
+  color: var(--text); cursor: pointer; transition: all 0.3s ease;
+  display: flex; align-items: center; justify-content: center;
+}
+#theme-toggle:hover { background: rgba(255, 255, 255, 0.1); transform: scale(1.05); }
+
 /* LEFT PANEL */
 .left{
   background:linear-gradient(135deg, rgba(6,13,30,0.8), rgba(9,21,37,0.9));
@@ -42,7 +52,24 @@ body{color:var(--text);font-family:var(--fb);display:flex;}
 .left-headline span{background:linear-gradient(90deg, #38BDF8, #A78BFA);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
 .left-sub{font-size:1rem;color:var(--text2);line-height:1.6;margin-bottom:3rem;}
 
-.fc{background: linear-gradient(145deg, rgba(255,255,255,0.05), rgba(255,255,255,0.01));border: 1px solid var(--glass-border);border-radius: 16px; padding: 1.2rem; backdrop-filter: blur(12px); margin-bottom: 1rem; display: flex; align-items: flex-start; gap: 1rem;}
+/* Feature Cards & AI Pipeline Animations */
+.left-cards{display:flex;flex-direction:column;gap:1rem;}
+.fc{background: linear-gradient(145deg, rgba(255,255,255,0.05), rgba(255,255,255,0.01));border: 1px solid var(--glass-border);border-radius: 16px; padding: 1.2rem; backdrop-filter: blur(12px); display: flex; align-items: flex-start; gap: 1rem;}
+.fc-icon { font-size: 1.5rem; background: rgba(255,255,255,0.05); padding: 0.5rem; border-radius: 10px; border: 1px solid var(--glass-border); }
+.flt-1 { animation: flt1 6s ease-in-out infinite; }
+.flt-2 { animation: flt2 7.5s ease-in-out infinite; }
+@keyframes flt1 { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-8px);} }
+@keyframes flt2 { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-6px);} }
+
+.pipeline-row{display:flex;align-items:center;justify-content:space-between;padding:0.8rem 1.2rem;background:rgba(6,12,24,0.7);border:1px solid rgba(56,189,248,0.15);border-radius:12px;position:relative;overflow:hidden;}
+.pipeline-row::before{content:'';position:absolute;top:0;bottom:0;left:-60%;width:50%;background:linear-gradient(90deg,transparent,rgba(56,189,248,0.08),transparent);animation:pipeShimmer 3s linear infinite;}
+@keyframes pipeShimmer{to{left:120%;}}
+.ps{display:flex;align-items:center;gap:0.4rem;opacity:0;transform:translateY(4px);transition:all 0.4s ease;}
+.ps.vis{opacity:1;transform:none;}
+.ps-dot{width:8px;height:8px;border-radius:50%;box-shadow:0 0 8px currentColor;}
+.ps-text{font-size:0.75rem;color:var(--text2);}
+.ps-text strong{color:var(--text);font-weight:600;}
+.ps-arrow{color:var(--muted);font-size:0.75rem;}
 
 /* RIGHT PANEL */
 .right{background:#05080F; display:flex;flex-direction:column;align-items:center; justify-content:center; height:100vh; position: relative;}
@@ -75,10 +102,6 @@ body{color:var(--text);font-family:var(--fb);display:flex;}
   position: relative; z-index: 1; width: 100%; padding: 0.9rem; border-radius: 12px; border: none;
   background: linear-gradient(135deg, #38BDF8, #8B5CF6); color: #fff; font-weight: 700; cursor: pointer;
 }
-.btn-bypass {
-  width: 100%; background: transparent; color: var(--text2); border: 1px dashed var(--glass-border);
-  padding: 0.7rem; border-radius: 10px; font-size: 0.8rem; cursor: pointer; margin-top: 1rem;
-}
 
 /* Divider & Animations */
 .divider-wrap { display:flex; align-items:center; margin: 1.5rem 0; }
@@ -91,6 +114,11 @@ body{color:var(--text);font-family:var(--fb);display:flex;}
 </style>
 </head>
 <body>
+
+<!-- Theme Toggle Restored -->
+<button id="theme-toggle" onclick="toggleTheme()" title="Toggle theme" aria-label="Toggle dark/light mode">
+  <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+</button>
 
 <canvas id="bgCanvas"></canvas>
 <div id="toast-wrap" style="position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:9999;display:flex;flex-direction:column;align-items:center;"></div>
@@ -106,6 +134,33 @@ body{color:var(--text);font-family:var(--fb);display:flex;}
       </div>
       <div class="left-headline">Turn Campus Activity<br>into <span>Verified Talent</span></div>
       <p class="left-sub">AI-powered skill intelligence for the next generation of builders.</p>
+      
+      <!-- AI Features & Animations Restored -->
+      <div class="left-cards">
+        <div class="fc flt-1">
+          <div class="fc-icon">🏆</div>
+          <div>
+            <strong style="font-size:0.95rem;display:block;margin-bottom:0.2rem;">Hackathon Winner</strong>
+            <span style="font-size:0.8rem;color:var(--text2)">React · Machine Learning · Python</span>
+          </div>
+        </div>
+        
+        <div class="pipeline-row">
+          <div class="ps" id="ps0"><div class="ps-dot" style="color:#8BA8C4;background:#3A5268"></div><div class="ps-text"><strong>Uploaded</strong></div></div>
+          <div class="ps-arrow">&rarr;</div>
+          <div class="ps" id="ps1"><div class="ps-dot" style="color:#38BDF8;background:#38BDF8"></div><div class="ps-text"><strong>AI Scan</strong></div></div>
+          <div class="ps-arrow">&rarr;</div>
+          <div class="ps" id="ps2"><div class="ps-dot" style="color:#10B981;background:#10B981"></div><div class="ps-text"><strong>Verified</strong></div></div>
+        </div>
+
+        <div class="fc flt-2">
+          <div class="fc-icon">🧠</div>
+          <div>
+            <strong style="font-size:0.95rem;display:block;margin-bottom:0.2rem;">Skill Profile</strong>
+            <span style="font-size:0.8rem;color:var(--text2)">Automatically generated from verified activities</span>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -113,10 +168,13 @@ body{color:var(--text);font-family:var(--fb);display:flex;}
     <div class="right-glow"></div>
     <div class="auth-box">
       
+      <!-- SIGN IN VIEW -->
       <div id="signInView">
+        <!-- Admin Role Restored -->
         <div class="role-tabs stagger-1">
           <button class="rtab active" data-role="student">Student</button>
           <button class="rtab" data-role="teacher">Teacher</button>
+          <button class="rtab" data-role="admin">Admin</button>
           <button class="rtab" data-role="recruiter">Recruiter</button>
         </div>
         <div class="login-h1">Welcome Back</div>
@@ -143,15 +201,25 @@ body{color:var(--text);font-family:var(--fb);display:flex;}
           <div class="divider-line"></div>
         </div>
 
+        <!-- Google Container -->
         <div id="googleBtnContainer" style="display:flex; justify-content:center; width:100%;"></div>
 
-        <button class="btn-bypass" id="bypassBtn">Test Bypass (Dev Mode)</button>
+        <!-- Bypass Mode Completely Removed Here -->
+
         <div style="text-align:center; margin-top:1.5rem; font-size:0.85rem;">
           Don't have an account? <a id="goRegister" style="color:var(--cyan); cursor:pointer;">Sign up here</a>
         </div>
       </div>
 
+      <!-- REGISTER VIEW (Restored Create Account Feature) -->
       <div id="registerView" style="display:none">
+        <!-- Role Tabs Synced for Create Account -->
+        <div class="role-tabs stagger-1">
+          <button class="rtab active" data-role="student">Student</button>
+          <button class="rtab" data-role="teacher">Teacher</button>
+          <button class="rtab" data-role="admin">Admin</button>
+          <button class="rtab" data-role="recruiter">Recruiter</button>
+        </div>
         <div class="login-h1">Create Account</div>
         <form id="registerForm">
           <div class="input-group"><input class="form-input" id="regName" placeholder=" " required><label class="floating-label">Full Name</label></div>
@@ -178,16 +246,20 @@ body{color:var(--text);font-family:var(--fb);display:flex;}
 <script>
 'use strict';
 
-const ROUTE_MAP = { student: 'student.html', teacher: 'teacher.html', recruiter: 'recruiter.html' };
+const ROUTE_MAP = { student: 'student.html', teacher: 'teacher.html', admin: 'admin.html', recruiter: 'recruiter.html' };
 let activeRole = 'student';
 
-// --- UI Logic (Code 1 Style) ---
+// --- UI Logic (Code 1 Style - Upgraded to sync between both views) ---
 document.querySelectorAll('.rtab').forEach(tab => {
   tab.addEventListener('click', () => {
+    // Make sure we update all tabs across both views (SignIn and Register)
+    const role = tab.dataset.role;
     document.querySelectorAll('.rtab').forEach(b => b.classList.remove('active'));
-    tab.classList.add('active');
-    activeRole = tab.dataset.role;
-    document.getElementById('loginSub').textContent = `Sign in to your ${activeRole} portal`;
+    document.querySelectorAll(`.rtab[data-role="${role}"]`).forEach(b => b.classList.add('active'));
+    activeRole = role;
+    
+    const sub = document.getElementById('loginSub');
+    if (sub) sub.textContent = `Sign in to your ${activeRole} portal`;
   });
 });
 
@@ -201,7 +273,7 @@ function saasToast(msg, type='ok') {
   else { alert(msg); }
 }
 
-// --- Logic & Validation (Code 2 Style) ---
+// --- Exact Logic & Validation (Code 2 Style) ---
 document.getElementById('loginForm').onsubmit = async (e) => {
   e.preventDefault();
   const btn = document.getElementById('loginBtn');
@@ -235,7 +307,7 @@ document.getElementById('registerForm').onsubmit = async (e) => {
   } catch(err) { saasToast(err.message, 'error'); }
 };
 
-// --- Official Google Setup ---
+// --- Exact Official Google Setup ---
 window.onload = () => {
   if (typeof google !== 'undefined') {
     google.accounts.id.initialize({
@@ -257,14 +329,7 @@ window.onGoogleSignIn = async (response) => {
   } catch(err) { saasToast(err.message, 'error'); }
 };
 
-document.getElementById('bypassBtn').onclick = () => {
-  saasToast("Bypassing... (Dev Mode)");
-  const mockPayload = { email: "demo.ug24@iilm.edu", name: "Guest User" };
-  const mockJwt = "b." + btoa(JSON.stringify(mockPayload)) + ".c";
-  window.onGoogleSignIn({ credential: mockJwt });
-};
-
-// --- Background Animation ---
+// --- Background Animation (Intact) ---
 (function() {
   const c = document.getElementById('bgCanvas'), ctx = c.getContext('2d');
   let W, H;
@@ -283,6 +348,16 @@ document.getElementById('bypassBtn').onclick = () => {
   const pts = Array.from({length: 50}, () => new P());
   function loop() { ctx.clearRect(0,0,W,H); pts.forEach(p => p.draw()); requestAnimationFrame(loop); }
   loop();
+})();
+
+// --- AI Pipeline Logic (Added for the visual features) ---
+(function(){
+  const ids=['ps0','ps1','ps2'];
+  function run(){
+    ids.forEach(id=>{const el=document.getElementById(id);if(el)el.classList.remove('vis');});
+    ids.forEach((id,i)=>setTimeout(()=>{const el=document.getElementById(id);if(el)el.classList.add('vis');},i*500+200));
+  }
+  run();setInterval(run,5500);
 })();
 </script>
 </body>
