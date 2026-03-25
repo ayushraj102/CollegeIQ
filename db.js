@@ -1,117 +1,113 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>CampusIQ — Recruiter Portal</title>
-<script src="theme.js"></script>
-<link rel="stylesheet" href="shared.css">
-<link rel="stylesheet" href="theme.css">
-</head>
-<body>
-<div id="toast-wrap"></div>
-<div class="app-shell">
-  <header class="topbar">
-    <div class="tb-brand"><div class="tb-brand-icon">IQ</div>Campus<em style="color:var(--cyan);font-style:normal;font-family:var(--font-h)">IQ</em></div>
-    <div class="tb-right">
-      <span class="tb-badge badge-recruiter">Recruiter</span>
-      <div class="tb-user"><div class="avatar av-sm" id="tbAvatar"></div><span id="tbName"></span></div>
-      <button id="theme-toggle" onclick="toggleTheme()"></button>
-      <button class="logout-btn" id="logoutBtn">Sign Out</button>
-    </div>
-  </header>
-  <aside class="sidebar">
-    <div class="sb-item active" data-page="discover">Discover Talent</div>
-    <div class="sb-item" data-page="jobs">My Jobs</div>
-  </aside>
-  <main class="main-area" id="mainArea"></main>
-</div>
-
-<!-- PROFILE MODAL -->
-<div class="modal-overlay" id="profileModal">
-  <div class="modal-box" style="max-width: 650px">
-    <div class="modal-hdr"><span class="modal-title" id="pmName">Student Profile</span><button class="modal-close" id="closePmBtn">✕</button></div>
-    <div id="pmContent"></div>
-  </div>
-</div>
-
-<script src="db.js"></script>
-<script src="utils.js"></script>
-<script src="auth.js"></script>
-<script>
+/**
+ * CampusIQ — db.js (Production Refactor)
+ * Centralized Data Access Object (DAO) for localStorage.
+ * Handles normalization, simulated database seeding, and fallback errors.
+ */
 'use strict';
-seedIfEmpty();
-const session = Auth.guard('recruiter');
-initTopbar(session);
-document.getElementById('logoutBtn').addEventListener('click', () => Auth.logout());
 
-const PAGES = { discover:renderDiscover, jobs:()=>{} };
-function renderPage(p) { showLoading('mainArea'); setTimeout(()=>(PAGES[p]||renderDiscover)(), 80); }
-setupNav(renderPage);
+const CIQ_VERSION = 'v6_prod_secure';
 
-function renderDiscover() {
-  const students = DB.getStudents();
-  document.getElementById('mainArea').innerHTML = `
-    <div class="page-hdr"><h2>Discover Talent</h2></div>
-    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:1rem" id="studentGrid">
-      ${students.map(st=>`
-        <div class="card animate-in">
-          <h4>${esc(st.name)}</h4>
-          <p class="text-xs text-muted">${esc(st.dept)} · Year ${st.year}</p>
-          <div class="divider"></div>
-          <button class="btn btn-primary btn-sm w-full view-profile" data-id="${st.id}">View Full Profile</button>
-        </div>
-      `).join('')}
-    </div>
-  `;
-
-  document.querySelectorAll('.view-profile').forEach(btn => {
-    btn.onclick = () => showProfile(btn.dataset.id);
-  });
+// ── PRIVATE DB PRIMITIVES ──
+function _uuid() {
+  return 'ciq-id-' + Math.random().toString(36).substr(2, 9) + Date.now().toString(36);
 }
 
-function showProfile(sid) {
-  const st = DB.getStudentById(sid);
-  const skills = DB.getRawSkills(sid);
-  const content = document.getElementById('pmContent');
+const _S = {
+  get(k)    { try { return JSON.parse(localStorage.getItem('ciq_' + k)) ?? null; } catch { return null; } },
+  set(k, v) { try { localStorage.setItem('ciq_' + k, JSON.stringify(v)); } catch(e) { console.error('Store full/disabled', e); } },
+  del(k)    { localStorage.removeItem('ciq_' + k); },
+};
+
+const DB = {
+  // ── SESSION MANAGEMENT ──
+  getSession() { return _S.get('session'); },
+  setSession(s) { _S.set('session', s); },
+  clearSession() { _S.del('session'); },
+
+  // ── USER OPERATIONS ──
+  getUsers() { return _S.get('users') || []; },
+  saveUsers(u) { _S.set('users', u); },
   
-  content.innerHTML = `
-    <div style="margin-bottom: 1.5rem">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem">
-        <label class="text-xs text-muted">Skill Map</label>
-        <button class="btn btn-xs btn-ai" id="aiInterviewBtn">✨ Generate AI Interview Questions</button>
-      </div>
-      <div class="skill-tags">${skills.map(s=>`<span class="skill-tag">${esc(s)}</span>`).join('') || 'No verified skills'}</div>
-      <div id="aiInterviewBox"></div>
-    </div>
-  `;
-  
-  document.getElementById('profileModal').classList.add('open');
+  getUserByEmail(email) {
+    if (!email) return null;
+    return this.getUsers().find(u => u.email.toLowerCase() === email.toLowerCase().trim());
+  },
+  getUserById(id) {
+    return this.getUsers().find(u => u.id === id);
+  },
 
-  document.getElementById('aiInterviewBtn').onclick = async () => {
-    const btn = document.getElementById('aiInterviewBtn');
-    const box = document.getElementById('aiInterviewBox');
-    btn.disabled = true;
-    btn.textContent = '✨ Thinking...';
-    box.innerHTML = `<div class="ai-response-box">Crafting technical questions for ${esc(st.name)}...</div>`;
+  createUser(data) {
+    const users = this.getUsers();
+    if (this.getUserByEmail(data.email)) throw new Error("Email already registered.");
 
-    try {
-      const prompt = `Candidate: ${st.name}. Skills: ${skills.join(', ')}. 
-      Generate 5 challenging technical interview questions tailored to these specific skills. 
-      Help the recruiter evaluate their real-world expertise.`;
-      
-      const questions = await callGemini(prompt, "You are an expert technical interviewer at a top tech company.");
-      box.innerHTML = `<div class="ai-response-box">${questions}</div>`;
-    } catch(e) {
-      box.innerHTML = `<div class="ai-response-box" style="color:var(--red)">AI Interview Assistant unavailable.</div>`;
-    } finally {
-      btn.disabled = false;
-      btn.textContent = '✨ Refresh Questions';
-    }
-  };
-}
+    const newUser = {
+      id: _uuid(),
+      name: data.name,
+      email: data.email.toLowerCase().trim(),
+      password: data.password, // IMPORTANT: Must be hashed by Auth layer before passing here
+      role: data.role,
+      createdAt: new Date().toISOString()
+    };
 
-setupModal('profileModal', 'closePmBtn');
-renderPage('discover');
-</script>
-</body>
-</html>
+    users.push(newUser);
+    this.saveUsers(users);
+
+    // Auto-provision portal profiles based on role
+    if (data.role === 'student') this._initStudentProfile(newUser.id, data);
+    if (data.role === 'teacher') this._initTeacherProfile(newUser.id, data);
+    if (data.role === 'recruiter') this._initRecruiterProfile(newUser.id, data);
+
+    return { user: newUser };
+  },
+
+  // ── ROLE PROFILES ──
+  getStudents() { return _S.get('students') || []; },
+  _initStudentProfile(userId, data) {
+    const list = this.getStudents();
+    list.push({ id: _uuid(), userId, name: data.name, dept: data.dept || 'General', year: data.year || 1, gpa: data.gpa || 0, rollNo: data.rollNo || 'N/A' });
+    _S.set('students', list);
+  },
+
+  getTeachers() { return _S.get('teachers') || []; },
+  _initTeacherProfile(userId, data) {
+    const list = this.getTeachers();
+    list.push({ id: _uuid(), userId, name: data.name, dept: data.dept || 'Engineering' });
+    _S.set('teachers', list);
+  },
+
+  getRecruiters() { return _S.get('recruiters') || []; },
+  _initRecruiterProfile(userId, data) {
+    const list = this.getRecruiters();
+    list.push({ id: _uuid(), userId, name: data.name, company: data.company || 'TechCorp' });
+    _S.set('recruiters', list);
+  }
+};
+
+/**
+ * INITIALIZATION ENGINE (Runs automatically)
+ * Securely seeds demo data with hashed passwords.
+ */
+(function seedIfEmpty() {
+  const currentVer = localStorage.getItem('ciq_schema_ver');
+  if (currentVer !== CIQ_VERSION) {
+    console.warn("CampusIQ: Initializing secure database schema...");
+    localStorage.clear();
+    localStorage.setItem('ciq_schema_ver', CIQ_VERSION);
+    
+    // Internal hashing function used strictly for safe seeding
+    const _seedHash = (s) => {
+        let h = 0; for(let i=0; i<s.length; i++) { h = ((h << 5) - h) + s.charCodeAt(i); h |= 0; }
+        return 'ciq_hash_' + Math.abs(h);
+    };
+
+    const demoAccounts = [
+      { name: 'System Admin', email: 'admin@campusiq.edu', password: _seedHash('admin123'), role: 'admin' },
+      { name: 'Arjun Rao', email: 'student1@campusiq.edu', password: _seedHash('stud123'), role: 'student', dept: 'CSE', year: 3 },
+      { name: 'Prof. Anjali', email: 'teacher1@campusiq.edu', password: _seedHash('teach123'), role: 'teacher', dept: 'Computer Science' },
+      { name: 'Nisha Patel', email: 'recruiter@techcorp.com', password: _seedHash('rec123'), role: 'recruiter', company: 'TechCorp' }
+    ];
+
+    demoAccounts.forEach(d => DB.createUser(d));
+    console.log("Database seeded successfully. Demo accounts are active.");
+  }
+})();
