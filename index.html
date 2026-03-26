@@ -19,7 +19,7 @@
   --glass-border: rgba(255, 255, 255, 0.08);
 }
 
-/* ─── DAY/NIGHT MODE TOGGLE VARIABLES ─── */
+/* ─── COMPREHENSIVE LIGHT MODE OVERRIDES ─── */
 :root[data-theme="light"], body.light-mode {
   --bg: #F8FAFC;
   --s1: #F1F5F9;
@@ -31,11 +31,44 @@
   --glass-border: rgba(0, 0, 0, 0.1);
 }
 
+/* Smoothly transition all backgrounds and text */
 html,body{height:100%;margin:0;padding:0;overflow:hidden;background:var(--bg); transition: background 0.3s ease;}
 body{color:var(--text);font-family:var(--fb);display:flex;}
 
+/* Left Side Light Mode */
+body.light-mode .left { background: linear-gradient(135deg, #F1F5F9, #E2E8F0); border-right: 1px solid rgba(0,0,0,0.05); }
+body.light-mode .fc { background: #FFFFFF; border: 1px solid rgba(0,0,0,0.08); box-shadow: 0 10px 30px rgba(0,0,0,0.03); }
+body.light-mode .fc-icon { background: #F8FAFC; border: 1px solid rgba(0,0,0,0.05); }
+body.light-mode .fc-title, body.light-mode .left-headline { color: #0F172A; }
+body.light-mode .fc-sub, body.light-mode .left-sub { color: #475569; }
+body.light-mode .pipeline-row { background: #FFFFFF; border: 1px solid rgba(0,0,0,0.08); box-shadow: 0 10px 30px rgba(0,0,0,0.03); }
+body.light-mode .ps-text strong { color: #0F172A; }
+
+/* Right Side Light Mode */
+body.light-mode .right { background: #FFFFFF; }
+body.light-mode .auth-box { background: #FFFFFF; border: 1px solid rgba(0,0,0,0.08); box-shadow: 0 20px 40px rgba(0,0,0,0.05); }
+body.light-mode .login-h1 { color: #0F172A; }
+body.light-mode .login-sub { color: #475569; }
+body.light-mode .role-tabs { background: #F1F5F9; border: 1px solid rgba(0,0,0,0.05); box-shadow: inset 0 2px 4px rgba(0,0,0,0.02); }
+body.light-mode .rtab { color: #64748B; }
+body.light-mode .rtab.active { color: #0F172A; background: #FFFFFF; box-shadow: 0 2px 6px rgba(0,0,0,0.06); border: 1px solid rgba(0,0,0,0.05); }
+body.light-mode .form-input { background: #F8FAFC; border: 1px solid rgba(0,0,0,0.1); color: #0F172A; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02); }
+body.light-mode .form-input:focus { background: #FFFFFF; border-color: var(--cyan); box-shadow: 0 0 0 3px rgba(56,189,248,0.15); }
+body.light-mode .floating-label { color: #64748B; }
+body.light-mode .divider-line { background: #E2E8F0; }
+body.light-mode .domain-note { color: #64748B; }
+
+/* Theme Toggle Button Light Mode */
+body.light-mode #theme-toggle { background: #FFFFFF; border: 1px solid rgba(0,0,0,0.1); color: #0F172A; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+body.light-mode #theme-toggle:hover { background: #F8FAFC; }
+body.light-mode .orb { opacity: 0.1; }
+body.light-mode .right-glow { opacity: 0.03; }
+
+/* Icon Swap Logic */
+body.light-mode .icon-moon { display: none; }
+body:not(.light-mode) .icon-sun { display: none; }
+
 #bgCanvas{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:0.8;}
-/* Adjusted Grid: Make left side smaller (0.8fr) and right side larger (1.2fr) */
 .page{position:relative;z-index:1;display:grid;grid-template-columns:0.8fr 1.2fr;width:100vw;height:100vh;}
 
 /* THEME TOGGLE */
@@ -48,7 +81,7 @@ body{color:var(--text);font-family:var(--fb);display:flex;}
 }
 #theme-toggle:hover { background: rgba(255, 255, 255, 0.1); transform: scale(1.05); }
 
-/* LEFT PANEL (Properly Resized) */
+/* LEFT PANEL */
 .left{
   background:linear-gradient(135deg, rgba(6,13,30,0.8), rgba(9,21,37,0.9));
   backdrop-filter: blur(20px); padding: 3rem;
@@ -56,98 +89,61 @@ body{color:var(--text);font-family:var(--fb);display:flex;}
   position:relative;overflow:hidden; border-right: 1px solid var(--glass-border);
   transition: background 0.3s ease;
 }
-body.light-mode .left, :root[data-theme="light"] .left { background: linear-gradient(135deg, #F1F5F9, #E2E8F0); }
+.orb-1{position:absolute;width:500px;height:500px;background:var(--cyan);top:-200px;left:-200px;border-radius:50%;filter:blur(120px);opacity:0.15;transition: opacity 0.3s;}
+.orb-2{position:absolute;width:350px;height:350px;background:var(--violet);bottom:-100px;right:-100px;border-radius:50%;filter:blur(100px);opacity:0.1;transition: opacity 0.3s;}
 
-.orb-1{position:absolute;width:500px;height:500px;background:var(--cyan);top:-200px;left:-200px;border-radius:50%;filter:blur(120px);opacity:0.15;}
-.orb-2{position:absolute;width:350px;height:350px;background:var(--violet);bottom:-100px;right:-100px;border-radius:50%;filter:blur(100px);opacity:0.1;}
-
-/* Fixed Container Widths (No CSS Scaling which causes hidden items) */
 .left-content { position: relative; z-index: 2; max-width: 420px; }
 .left-brand{display:flex;align-items:center;gap:0.6rem;margin-bottom:2.5rem;}
 .brand-icon{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg, var(--cyan), var(--violet));display:flex;align-items:center;justify-content:center;font-family:var(--fh);font-size:0.8rem;font-weight:800;color:#fff;box-shadow: 0 8px 20px rgba(56,189,248,0.3);}
 .brand-name{font-family:var(--fh);font-size:1.25rem;font-weight:800;letter-spacing:-0.5px;}
 .brand-name em{color:var(--cyan);font-style:normal;}
 
-/* Adjusted Typography Sizes */
-.left-headline{font-family:var(--fh);font-size:2.2rem;font-weight:800;line-height:1.15;margin-bottom:1rem;letter-spacing:-1px;}
+.left-headline{font-family:var(--fh);font-size:2.2rem;font-weight:800;line-height:1.15;margin-bottom:1rem;letter-spacing:-1px; transition: color 0.3s;}
 .left-headline .cyan-text { color: var(--cyan); background: none; -webkit-text-fill-color: initial; }
 .left-headline .grad-text { background:linear-gradient(90deg, #38BDF8, #A78BFA);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
-.left-sub{font-size:0.95rem;color:var(--text2);line-height:1.6;margin-bottom:2rem;}
+.left-sub{font-size:0.95rem;color:var(--text2);line-height:1.6;margin-bottom:2rem; transition: color 0.3s;}
 
-/* Feature Cards (More compact) */
 .left-cards{display:flex;flex-direction:column;gap:1rem;}
 .fc{
   background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255,255,255,0.05);
   border-radius: 12px; padding: 1rem 1.2rem; backdrop-filter: blur(12px); 
   display: flex; align-items: center; gap: 1rem; width: 100%; box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 .fc-icon { 
   width: 38px; height: 38px; border-radius: 10px; background: rgba(255,255,255,0.03);
   display: flex; align-items: center; justify-content: center; font-size: 1.2rem; 
-  box-shadow: inset 0 1px 1px rgba(255,255,255,0.1); flex-shrink: 0;
+  box-shadow: inset 0 1px 1px rgba(255,255,255,0.1); flex-shrink: 0; transition: all 0.3s;
 }
-.fc-title { font-size: 0.95rem; font-weight: 700; color: #fff; margin-bottom: 0.2rem; }
-.fc-sub { font-size: 0.8rem; color: var(--text2); font-weight: 400; }
+.fc-title { font-size: 0.95rem; font-weight: 700; color: #fff; margin-bottom: 0.2rem; transition: color 0.3s;}
+.fc-sub { font-size: 0.8rem; color: var(--text2); font-weight: 400; transition: color 0.3s;}
 
 .flt-1 { animation: flt1 6s ease-in-out infinite; }
 .flt-2 { animation: flt2 7.5s ease-in-out infinite; }
 @keyframes flt1 { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-8px);} }
 @keyframes flt2 { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-6px);} }
 
-/* Glowing Pipeline Animation - Enhanced with more steps & animated text */
-.pipeline-row-new {
-  display: flex; align-items: center; justify-content: space-between;
-  background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255,255,255,0.05);
-  border-radius: 12px; padding: 1rem 1.2rem; width: 100%;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.2); position: relative; overflow: hidden;
-}
-.pl-step { display: flex; align-items: center; gap: 0.4rem; font-size: 0.75rem; font-weight: 600; color: var(--text2); z-index: 2; }
-.pl-dot { width: 8px; height: 8px; border-radius: 50%; }
-.pl-dim { background: rgba(255,255,255,0.2); }
-.pl-cyan { background: var(--cyan); box-shadow: 0 0 12px var(--cyan); }
-.pl-step.active-step { color: #fff; }
-.pl-arrow { color: rgba(255,255,255,0.2); z-index: 2; font-size: 0.8rem; }
-
-/* Pulsating animated text for the AI Scan */
-.scanning-text { animation: pulseText 1.5s ease-in-out infinite; color: var(--cyan); }
-@keyframes pulseText { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
-
-.pipe-glow-sweep {
-  position: absolute; top: 0; bottom: 0; left: -50%; width: 50%;
-  background: linear-gradient(90deg, transparent, rgba(56,189,248,0.15), transparent);
-  animation: sweep 2.5s infinite linear; z-index: 1;
-}
-@keyframes sweep { to { left: 150%; } }
-
-body.light-mode .fc-title, body.light-mode .left-headline { color: #0F172A; }
-body.light-mode .fc, body.light-mode .pipeline-row-new { background: #FFFFFF; border-color: rgba(0,0,0,0.05); box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
-body.light-mode .pl-step { color: #475569; }
-body.light-mode .pl-step.active-step { color: #0F172A; }
-body.light-mode .pl-dim { background: rgba(0,0,0,0.1); }
-body.light-mode .pl-arrow { color: rgba(0,0,0,0.2); }
+.pipeline-row{display:flex;align-items:center;justify-content:space-between;padding:0.8rem 1.2rem;background:rgba(6,12,24,0.7);border:1px solid rgba(56,189,248,0.15);border-radius:12px;position:relative;overflow:hidden; transition: all 0.3s;}
+.pipeline-row::before{content:'';position:absolute;top:0;bottom:0;left:-60%;width:50%;background:linear-gradient(90deg,transparent,rgba(56,189,248,0.08),transparent);animation:pipeShimmer 3s linear infinite;}
+@keyframes pipeShimmer{to{left:120%;}}
+.ps{display:flex;align-items:center;gap:0.4rem;opacity:0;transform:translateY(4px);transition:all 0.4s ease;}
+.ps.vis{opacity:1;transform:none;}
+.ps-dot{width:8px;height:8px;border-radius:50%;box-shadow:0 0 8px currentColor;}
+.ps-text{font-size:0.75rem;color:var(--text2); transition: color 0.3s;}
+.ps-text strong{color:var(--text);font-weight:600; transition: color 0.3s;}
+.ps-arrow{color:var(--muted);font-size:0.75rem;}
 
 /* RIGHT PANEL */
-.right{background:#05080F; display:flex;flex-direction:column;align-items:center; justify-content:center; height:100vh; position: relative; transition: background 0.3s ease; overflow-y: auto;}
-body.light-mode .right { background: #FFFFFF; }
+.right{background:#05080F; display:flex;flex-direction:column;align-items:center; justify-content:center; height:100vh; position: relative; transition: background 0.3s ease;}
+.right-glow {position: absolute; width: 400px; height: 400px; background: var(--violet); border-radius: 50%; filter: blur(150px); opacity: 0.08; top: 50%; left: 50%; transform: translate(-50%, -50%); transition: opacity 0.3s;}
+.auth-box {width: 100%; max-width: 420px; position: relative; z-index: 2; padding: 2rem; transition: all 0.3s ease;}
 
-.right-glow {position: absolute; width: 400px; height: 400px; background: var(--violet); border-radius: 50%; filter: blur(150px); opacity: 0.08; top: 50%; left: 50%; transform: translate(-50%, -50%);}
-.auth-box {width: 100%; max-width: 420px; position: relative; z-index: 2; padding: 2rem; transition: background 0.3s ease;}
-body.light-mode .auth-box { background: #FFFFFF; border-color: #E2E8F0; box-shadow: 0 20px 40px rgba(0,0,0,0.05); border-radius: 24px; border: 1px solid var(--glass-border); padding: 2.5rem; }
-
-/* Role Tabs & Inputs */
-.role-tabs{display:flex;gap:0.25rem;padding:0.3rem;background:rgba(0,0,0,0.3);border-radius:12px;margin-bottom:2rem;border:1px solid var(--glass-border);}
-body.light-mode .role-tabs { background: #F1F5F9; border-color: #E2E8F0; }
-
+.role-tabs{display:flex;gap:0.25rem;padding:0.3rem;background:rgba(0,0,0,0.3);border-radius:12px;margin-bottom:2rem;border:1px solid var(--glass-border); transition: all 0.3s;}
 .rtab{flex:1;padding:0.6rem 0;border-radius:8px;font-size:0.75rem;font-weight:600;text-align:center;cursor:pointer;border:none;background:none;color:var(--text2);transition:0.3s;}
 .rtab.active{background:rgba(255,255,255,0.1);color:#fff;}
-body.light-mode .rtab { color: #64748B; }
-body.light-mode .rtab.active { color: #0F172A; background: #FFFFFF; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
 
-.login-h1{font-family:var(--fh);font-size:2rem;font-weight:800;margin-bottom:0.5rem;}
-.login-sub{font-size:0.9rem;color:var(--text2);margin-bottom:2rem;}
-body.light-mode .login-h1 { color: #0F172A; }
-
-.form-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+.login-h1{font-family:var(--fh);font-size:2rem;font-weight:800;margin-bottom:0.5rem; transition: color 0.3s;}
+.login-sub{font-size:0.9rem;color:var(--text2);margin-bottom:2rem; transition: color 0.3s;}
 
 .input-group { position: relative; margin-bottom: 1.2rem; }
 .form-input {
@@ -155,28 +151,11 @@ body.light-mode .login-h1 { color: #0F172A; }
   border-radius: 12px; padding: 1.4rem 1rem 0.6rem 1rem; color: white;
   outline: none; font-family: var(--fb); font-size: 0.9rem; transition: 0.3s;
 }
-body.light-mode .form-input { background: #F8FAFC; border-color: #E2E8F0; color: #0F172A; }
-
-/* Premium Select Dropdown */
-.form-select-new {
-  width: 100%; background: #0A101C; border: 1px solid var(--glass-border);
-  border-radius: 12px; padding: 1.05rem 1rem; color: white;
-  outline: none; font-family: var(--fb); font-size: 0.9rem; transition: 0.3s;
-  appearance: none; cursor: pointer;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%2394A3B8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
-  background-repeat: no-repeat; background-position: right 0.8rem center;
-}
-body.light-mode .form-select-new { background-color: #F8FAFC; border-color: #E2E8F0; color: #0F172A; }
-.form-select-new:focus { border-color: var(--cyan); box-shadow: 0 0 0 3px rgba(56,189,248,0.1); }
-.form-select-new option { background: #0A101C; color: white; }
-body.light-mode .form-select-new option { background: #fff; color: #0F172A; }
-
 .floating-label {position: absolute; left: 1rem; top: 1rem; color: var(--text2); font-size: 0.9rem; pointer-events: none; transition: 0.2s;}
 .form-input:focus ~ .floating-label, .form-input:not(:placeholder-shown) ~ .floating-label {
   top: 0.4rem; font-size: 0.65rem; color: var(--cyan); font-weight: 600; text-transform: uppercase;
 }
 
-/* BUTTONS */
 .btn-glow-wrap { position: relative; width: 100%; margin-top: 1rem; margin-bottom: 1rem; }
 .btn-glow { position: absolute; inset: 0; background: linear-gradient(135deg, var(--cyan), var(--violet)); filter: blur(12px); opacity: 0.4; border-radius: 12px; }
 .btn-login {
@@ -184,25 +163,31 @@ body.light-mode .form-select-new option { background: #fff; color: #0F172A; }
   background: linear-gradient(135deg, #38BDF8, #8B5CF6); color: #fff; font-weight: 700; cursor: pointer;
 }
 
-/* Divider & Animations */
 .divider-wrap { display:flex; align-items:center; margin: 1.5rem 0; }
-.divider-line { flex:1; height:1px; background:var(--glass-border); }
-body.light-mode .divider-line { background: #E2E8F0; }
+.divider-line { flex:1; height:1px; background:var(--glass-border); transition: background 0.3s; }
 .divider-text { color:var(--muted); font-size:0.75rem; padding:0 1rem; }
-.stagger-1 { animation: slideUpFade 0.6s ease forwards; opacity: 0; }
-@keyframes slideUpFade { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-
-/* Dynamic hiding for sign-up link */
-#rightPanel:not(.ri-student) #signup-link-container { display: none !important; }
 
 @media(max-width:768px){.left{display:none;}.page{grid-template-columns:1fr;}}
 </style>
 </head>
 <body class="login-page">
 
-<!-- Theme Toggle Restored -->
+<!-- Theme Toggle with Dynamic Sun/Moon SVG -->
 <button id="theme-toggle" onclick="toggleTheme()" title="Toggle theme" aria-label="Toggle dark/light mode">
-  <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+  <svg class="icon-sun" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+    <circle cx="12" cy="12" r="5"></circle>
+    <line x1="12" y1="1" x2="12" y2="3"></line>
+    <line x1="12" y1="21" x2="12" y2="23"></line>
+    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+    <line x1="1" y1="12" x2="3" y2="12"></line>
+    <line x1="21" y1="12" x2="23" y2="12"></line>
+    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+  </svg>
+  <svg class="icon-moon" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+  </svg>
 </button>
 
 <canvas id="bgCanvas"></canvas>
@@ -213,7 +198,7 @@ body.light-mode .divider-line { background: #E2E8F0; }
   <div class="left">
     <div class="orb orb-1"></div>
     <div class="orb orb-2"></div>
-    <div class="left-content stagger-1">
+    <div class="left-content">
       <div class="left-brand">
         <div class="brand-icon">IQ</div>
         <div class="brand-name">Campus<em>IQ</em></div>
@@ -225,7 +210,7 @@ body.light-mode .divider-line { background: #E2E8F0; }
       </div>
       <p class="left-sub">AI-powered skill intelligence for the next generation of builders.</p>
       
-      <!-- AI Features & Animations -->
+      <!-- AI Features & Animations Restored -->
       <div class="left-cards">
         <div class="fc flt-1">
           <div class="fc-icon" style="background:rgba(245,158,11,0.15)">🏆</div>
@@ -235,15 +220,12 @@ body.light-mode .divider-line { background: #E2E8F0; }
           </div>
         </div>
         
-        <div class="pipeline-row-new">
-          <div class="pl-step"><div class="pl-dot pl-dim"></div> <span>Uploaded</span></div>
-          <div class="pl-arrow">&rarr;</div>
-          <div class="pl-step active-step"><div class="pl-dot pl-cyan"></div> <span class="scanning-text">AI Scan</span></div>
-          <div class="pl-arrow">&rarr;</div>
-          <div class="pl-step"><div class="pl-dot pl-dim"></div> <span>Extracted</span></div>
-          <div class="pl-arrow">&rarr;</div>
-          <div class="pl-step"><div class="pl-dot pl-dim"></div> <span>Verified</span></div>
-          <div class="pipe-glow-sweep"></div>
+        <div class="pipeline-row">
+          <div class="ps" id="ps0"><div class="ps-dot" style="color:#8BA8C4;background:#3A5268"></div><div class="ps-text"><strong>Uploaded</strong></div></div>
+          <div class="ps-arrow">&rarr;</div>
+          <div class="ps" id="ps1"><div class="ps-dot" style="color:#38BDF8;background:#38BDF8"></div><div class="ps-text"><strong>AI Scan</strong></div></div>
+          <div class="ps-arrow">&rarr;</div>
+          <div class="ps" id="ps2"><div class="ps-dot" style="color:#10B981;background:#10B981"></div><div class="ps-text"><strong>Verified</strong></div></div>
         </div>
 
         <div class="fc flt-2">
@@ -264,8 +246,8 @@ body.light-mode .divider-line { background: #E2E8F0; }
       
       <!-- SIGN IN VIEW -->
       <div id="signInView">
-        <!-- Role Tabs -->
-        <div class="role-tabs stagger-1">
+        <!-- Admin Role Restored -->
+        <div class="role-tabs">
           <button class="rtab active" data-role="student">Student</button>
           <button class="rtab" data-role="teacher">Teacher</button>
           <button class="rtab" data-role="admin">Admin</button>
@@ -274,7 +256,7 @@ body.light-mode .divider-line { background: #E2E8F0; }
         <div class="login-h1">Welcome Back</div>
         <div class="login-sub" id="loginSub">Sign in to your portal</div>
 
-        <form id="loginForm">
+        <form id="loginForm" novalidate onsubmit="doLogin(event)">
           <div class="input-group">
             <input class="form-input" id="loginEmail" type="email" placeholder=" " required>
             <label class="floating-label">Institutional Email</label>
@@ -298,75 +280,9 @@ body.light-mode .divider-line { background: #E2E8F0; }
         <!-- Google Container -->
         <div id="googleBtnContainer" style="display:flex; justify-content:center; width:100%;"></div>
 
-        <!-- Create Account link wrapped to automatically hide for non-students -->
-        <div id="signup-link-container" style="text-align:center; margin-top:1.5rem; font-size:0.85rem;">
-          Don't have an account? <a id="goRegister" style="color:var(--cyan); cursor:pointer;">Sign up here</a>
-        </div>
+        <div class="domain-note" style="text-align:center; font-size:0.75rem; color:var(--muted); margin-top:1.5rem;">Only <span style="color:var(--cyan);font-weight:600;">@iilm.edu</span> accounts &mdash; change in CONFIG</div>
+
       </div>
-
-      <!-- REGISTER VIEW (Upgraded Form for Students) -->
-      <div id="registerView" style="display:none">
-        <div class="login-h1">Apply for Admission</div>
-        <div class="login-sub">Create your student profile</div>
-        
-        <form id="registerForm">
-          <div class="input-group">
-            <input class="form-input" id="regName" placeholder=" " required>
-            <label class="floating-label">Full Name</label>
-          </div>
-          <div class="input-group">
-            <input class="form-input" id="regEmail" type="email" placeholder=" " required>
-            <label class="floating-label">Institutional Email (@iilm.edu)</label>
-          </div>
-          
-          <div class="form-row-2">
-            <div class="input-group" style="margin-bottom:0;">
-              <input class="form-input" id="regUrn" placeholder=" " required>
-              <label class="floating-label">URN / Roll No.</label>
-            </div>
-            <div class="input-group" style="margin-bottom:0;">
-              <select class="form-select-new" id="regDept" required>
-                <option value="" disabled selected hidden>Department</option>
-                <option value="CSE">Computer Science (CSE)</option>
-                <option value="ECE">Electronics (ECE)</option>
-                <option value="IT">Information Tech (IT)</option>
-                <option value="DS">Data Science</option>
-              </select>
-            </div>
-          </div>
-          
-          <div class="form-row-2" style="margin-top: 1.2rem;">
-            <div class="input-group" style="margin-bottom:0;">
-              <select class="form-select-new" id="regYear" required>
-                <option value="" disabled selected hidden>Year</option>
-                <option value="1">1st Year</option>
-                <option value="2">2nd Year</option>
-                <option value="3">3rd Year</option>
-                <option value="4">4th Year</option>
-              </select>
-            </div>
-            <div class="input-group" style="margin-bottom:0;">
-              <input class="form-input" id="regSection" placeholder=" ">
-              <label class="floating-label">Section (Optional)</label>
-            </div>
-          </div>
-
-          <div class="input-group" style="margin-top: 1.2rem;">
-            <input class="form-input" id="regPass" type="password" placeholder=" " required>
-            <label class="floating-label">Create Password (6+ chars)</label>
-          </div>
-
-          <div class="btn-glow-wrap">
-            <div class="btn-glow"></div>
-            <button class="btn-login" id="regBtn" type="submit">Create Account</button>
-          </div>
-        </form>
-        
-        <div style="text-align:center; margin-top:1.5rem; font-size:0.85rem;">
-          Already have an account? <a id="goLogin" style="color:var(--cyan); cursor:pointer;">Sign in</a>
-        </div>
-      </div>
-
     </div>
   </div>
 </div>
@@ -388,30 +304,31 @@ document.querySelectorAll('.rtab').forEach(tab => {
     tab.classList.add('active');
     activeRole = tab.dataset.role;
     
-    // Applying role class to rightPanel allows CSS to hide/show the register link automatically
-    const rightPanel = document.getElementById('rightPanel');
-    if(rightPanel) rightPanel.className = 'right ri-' + activeRole;
-    
     document.getElementById('loginSub').textContent = `Sign in to your ${activeRole} portal`;
   });
 });
-// Initialize panel class
-document.getElementById('rightPanel').className = 'right ri-student';
-
-const goReg = document.getElementById('goRegister'), goLog = document.getElementById('goLogin');
-const signView = document.getElementById('signInView'), regView = document.getElementById('registerView');
-goReg.onclick = () => { signView.style.display='none'; regView.style.display='block'; };
-goLog.onclick = () => { signView.style.display='block'; regView.style.display='none'; };
 
 function saasToast(msg, type='ok') {
   if(typeof showToast === 'function') { showToast(msg, '', type); }
   else { alert(msg); }
 }
 
-// Ensure theme toggle function exists if theme.js is missing
+// Handle robust theme toggling logic
 window.toggleTheme = window.toggleTheme || function() {
-  document.body.classList.toggle('light-mode');
+  const isLight = document.body.classList.toggle('light-mode');
+  if (isLight) {
+    document.documentElement.setAttribute('data-theme', 'light');
+    localStorage.setItem('theme', 'light');
+  } else {
+    document.documentElement.setAttribute('data-theme', 'dark');
+    localStorage.setItem('theme', 'dark');
+  }
 };
+
+// Check Initial Theme
+if (localStorage.getItem('theme') === 'light' || document.documentElement.getAttribute('data-theme') === 'light') {
+  document.body.classList.add('light-mode');
+}
 
 // --- Exact Logic & Validation ---
 document.getElementById('loginForm').onsubmit = async (e) => {
@@ -426,46 +343,6 @@ document.getElementById('loginForm').onsubmit = async (e) => {
     saasToast(err.message, 'error');
     btn.disabled = false; btn.textContent = 'Sign In';
   }
-};
-
-document.getElementById('registerForm').onsubmit = async (e) => {
-  e.preventDefault();
-  const email = document.getElementById('regEmail').value.trim().toLowerCase();
-  const [local, domain] = email.split('@');
-
-  const regRole = 'student';
-
-  // Strict Domain Check
-  if (domain !== 'iilm.edu' || !local.includes('ug')) {
-    saasToast("Students must use @iilm.edu containing 'ug'", 'error'); return;
-  }
-
-  const urn = document.getElementById('regUrn').value.trim();
-  const dept = document.getElementById('regDept').value;
-  const year = parseInt(document.getElementById('regYear').value);
-  const section = document.getElementById('regSection').value.trim() || 'A';
-  
-  if(!dept || !year) {
-      saasToast("Please select Department and Year", 'error'); return;
-  }
-
-  const data = {
-    name: document.getElementById('regName').value,
-    email: email,
-    password: document.getElementById('regPass').value,
-    role: regRole,
-    rollNo: urn,
-    dept: dept,
-    year: year,
-    section: section,
-    gpa: 0
-  };
-
-  try {
-    await Auth.register(data);
-    saasToast("Account Created.");
-    setTimeout(() => window.location.href = ROUTE_MAP[regRole], 800);
-  } catch(err) { saasToast(err.message, 'error'); }
 };
 
 // --- Exact Official Google Setup ---
@@ -509,6 +386,16 @@ window.onGoogleSignIn = async (response) => {
   const pts = Array.from({length: 50}, () => new P());
   function loop() { ctx.clearRect(0,0,W,H); pts.forEach(p => p.draw()); requestAnimationFrame(loop); }
   loop();
+})();
+
+// --- AI Pipeline Logic ---
+(function(){
+  const ids=['ps0','ps1','ps2'];
+  function run(){
+    ids.forEach(id=>{const el=document.getElementById(id);if(el)el.classList.remove('vis');});
+    ids.forEach((id,i)=>setTimeout(()=>{const el=document.getElementById(id);if(el)el.classList.add('vis');},i*500+200));
+  }
+  run();setInterval(run,5500);
 })();
 </script>
 </body>
