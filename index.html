@@ -266,13 +266,25 @@ body.light-mode .right-glow { opacity: 0.03; }
   </div>
 </div>
 
+<!-- Load data layer first so Auth & DB are available -->
+<script src="data.js"></script>
 <script>
 'use strict';
+
+// ── Bootstrap: seed DB and redirect if already logged in ────────
+seedIfEmpty();
+(function checkExistingSession() {
+  const s = DB.getSession();
+  if (s && s.userId && s.role) {
+    const map = { student: 'student.html', teacher: 'teacher.html', admin: 'admin.html', recruiter: 'recruiter.html' };
+    if (map[s.role]) { window.location.href = map[s.role]; }
+  }
+})();
 
 const ROUTE_MAP = { student: 'student.html', teacher: 'teacher.html', admin: 'admin.html', recruiter: 'recruiter.html' };
 let activeRole = 'student';
 
-// --- UI Logic ---
+// ── Role tabs ────────────────────────────────────────────────────
 document.querySelectorAll('.rtab').forEach(tab => {
   tab.addEventListener('click', () => {
     document.querySelectorAll('.rtab').forEach(b => b.classList.remove('active'));
@@ -282,53 +294,96 @@ document.querySelectorAll('.rtab').forEach(tab => {
   });
 });
 
-function saasToast(msg, type='ok') {
-  console.log(`[Toast] ${type}: ${msg}`);
+// ── Toast ────────────────────────────────────────────────────────
+function showLoginToast(msg, type = 'error') {
+  const wrap = document.getElementById('toast-wrap');
+  if (!wrap) return;
+  const t = document.createElement('div');
+  t.style.cssText = `
+    background:${type === 'ok' ? 'rgba(16,185,129,0.15)' : 'rgba(239,68,68,0.15)'};
+    border:1px solid ${type === 'ok' ? 'rgba(16,185,129,0.3)' : 'rgba(239,68,68,0.3)'};
+    color:${type === 'ok' ? '#10B981' : '#EF4444'};
+    padding:0.75rem 1.2rem; border-radius:10px; font-size:0.875rem; font-weight:500;
+    margin-bottom:0.5rem; backdrop-filter:blur(8px);
+    opacity:0; transform:translateY(8px); transition:all 0.3s ease;
+  `;
+  t.textContent = (type === 'ok' ? '✅ ' : '❌ ') + msg;
+  wrap.appendChild(t);
+  requestAnimationFrame(() => requestAnimationFrame(() => { t.style.opacity = '1'; t.style.transform = 'translateY(0)'; }));
+  setTimeout(() => { t.style.opacity = '0'; setTimeout(() => t.remove(), 350); }, 4000);
 }
 
-// --- Robust Theme Toggle ---
+// ── Theme ────────────────────────────────────────────────────────
 window.toggleTheme = function() {
   const isLight = document.body.classList.toggle('light-mode');
   localStorage.setItem('theme', isLight ? 'light' : 'dark');
 };
+if (localStorage.getItem('theme') === 'light') document.body.classList.add('light-mode');
 
-// Apply Initial Theme
-if (localStorage.getItem('theme') === 'light') {
-  document.body.classList.add('light-mode');
-}
+// ── Login ────────────────────────────────────────────────────────
+window.doLogin = async function(e) {
+  if (e) e.preventDefault();
+  const btn   = document.getElementById('loginBtn');
+  const email = document.getElementById('loginEmail').value.trim();
+  const pass  = document.getElementById('loginPass').value;
 
-// --- Form Logic ---
-document.getElementById('loginForm').onsubmit = (e) => {
-  e.preventDefault();
-  const btn = document.getElementById('loginBtn');
-  btn.disabled = true; btn.textContent = 'Authenticating...';
-  // Mock logic
-  setTimeout(() => {
-    saasToast("Authentication mock complete");
-    btn.disabled = false; btn.textContent = 'Sign In';
-  }, 1000);
+  if (!email || !pass) { showLoginToast('Please enter your email and password.'); return; }
+
+  btn.disabled = true;
+  btn.textContent = 'Signing in…';
+
+  try {
+    await new Promise(r => setTimeout(r, 600)); // brief UX delay
+    const session = Auth.login(email, pass);
+
+    // Role mismatch check (tab selection is advisory, not enforced — but warn the user)
+    if (activeRole !== 'admin' && session.role !== activeRole) {
+      showLoginToast(`Signed in as ${session.role}. Redirecting to your portal…`, 'ok');
+    } else {
+      showLoginToast(`Welcome back, ${session.name.split(' ')[0]}! Redirecting…`, 'ok');
+    }
+
+    setTimeout(() => {
+      window.location.href = ROUTE_MAP[session.role] || 'index.html';
+    }, 900);
+  } catch(err) {
+    showLoginToast(err.message || 'Login failed. Please try again.');
+    btn.disabled = false;
+    btn.textContent = 'Sign In';
+  }
 };
 
-// --- Official Google Setup ---
+// Attach to form
+document.getElementById('loginForm').onsubmit = window.doLogin;
+
+// ── Google OAuth ─────────────────────────────────────────────────
 window.onload = () => {
   if (typeof google !== 'undefined') {
     google.accounts.id.initialize({
       client_id: "70835003370-fbdg01a9mgp13s80cgd65174udp3h74k.apps.googleusercontent.com",
-      callback: (res) => saasToast("Google Sign-In Triggered")
+      callback: (res) => {
+        try {
+          const session = Auth.handleGoogleCredential(res.credential);
+          showLoginToast(`Welcome, ${session.name.split(' ')[0]}! Redirecting…`, 'ok');
+          setTimeout(() => { window.location.href = ROUTE_MAP[session.role] || 'index.html'; }, 900);
+        } catch(e) {
+          showLoginToast(e.message || 'Google Sign-In failed.');
+        }
+      }
     });
     google.accounts.id.renderButton(
-      document.getElementById("googleBtnContainer"),
-      { theme: "filled_blue", size: "large", shape: "pill", width: 300 }
+      document.getElementById('googleBtnContainer'),
+      { theme: 'filled_blue', size: 'large', shape: 'pill', width: 300 }
     );
   }
 };
 
-// --- Background Animation ---
+// ── Background Canvas Animation ──────────────────────────────────
 (function() {
   const c = document.getElementById('bgCanvas'), ctx = c.getContext('2d');
   let W, H;
   function resize() { W = c.width = window.innerWidth; H = c.height = window.innerHeight; }
-  resize(); window.onresize = resize;
+  resize(); window.addEventListener('resize', resize);
   class P {
     constructor() { this.reset(); }
     reset() { this.x = Math.random()*W; this.y = Math.random()*H; this.vx = (Math.random()-0.5)*0.3; this.vy = (Math.random()-0.5)*0.3; this.r = 1; }
@@ -337,22 +392,22 @@ window.onload = () => {
       ctx.fillStyle = document.body.classList.contains('light-mode') ? 'rgba(56,189,248,0.4)' : 'rgba(56,189,248,0.2)';
       ctx.fill();
       this.x += this.vx; this.y += this.vy;
-      if(this.x<0||this.x>W||this.y<0||this.y>H) this.reset();
+      if (this.x < 0 || this.x > W || this.y < 0 || this.y > H) this.reset();
     }
   }
-  const pts = Array.from({length: 50}, () => new P());
-  function loop() { ctx.clearRect(0,0,W,H); pts.forEach(p => p.draw()); requestAnimationFrame(loop); }
+  const pts = Array.from({ length: 50 }, () => new P());
+  function loop() { ctx.clearRect(0, 0, W, H); pts.forEach(p => p.draw()); requestAnimationFrame(loop); }
   loop();
 })();
 
-// --- AI Pipeline Logic ---
-(function(){
-  const ids=['ps0','ps1','ps2'];
-  function run(){
-    ids.forEach(id=>{const el=document.getElementById(id);if(el)el.classList.remove('vis');});
-    ids.forEach((id,i)=>setTimeout(()=>{const el=document.getElementById(id);if(el)el.classList.add('vis');},i*500+200));
+// ── Pipeline Animation ───────────────────────────────────────────
+(function() {
+  const ids = ['ps0', 'ps1', 'ps2'];
+  function run() {
+    ids.forEach(id => { const el = document.getElementById(id); if (el) el.classList.remove('vis'); });
+    ids.forEach((id, i) => setTimeout(() => { const el = document.getElementById(id); if (el) el.classList.add('vis'); }, i * 500 + 200));
   }
-  run();setInterval(run,5500);
+  run(); setInterval(run, 5500);
 })();
 </script>
 </body>
