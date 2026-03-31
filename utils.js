@@ -74,12 +74,23 @@ function setupModal(id, closeBtnId) {
   document.addEventListener('keydown', e => { if (e.key === 'Escape' && m.classList.contains('open')) closeModal(id); });
 }
 
-/* ── Sidebar navigation ───────────────────────────────── */
+/* ── Sidebar navigation (with zoom animation) ────────── */
 function setupNav(renderFn) {
   document.querySelectorAll('.sb-item[data-page]').forEach(el => {
     el.addEventListener('click', () => {
-      document.querySelectorAll('.sb-item').forEach(i => i.classList.remove('active'));
+      // Remove active + zoom from all items
+      document.querySelectorAll('.sb-item').forEach(i => {
+        i.classList.remove('active');
+        i.classList.remove('sb-zoom');
+      });
+      // Add active
       el.classList.add('active');
+      // Trigger zoom animation (remove then re-add to restart)
+      void el.offsetWidth; // force reflow
+      el.classList.add('sb-zoom');
+      // Clean up animation class after it finishes
+      el.addEventListener('animationend', () => el.classList.remove('sb-zoom'), { once: true });
+
       renderFn(el.dataset.page);
     });
   });

@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>CampusIQ — Sign In</title>
+<script src="theme.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 <style>
@@ -314,11 +315,13 @@ function showLoginToast(msg, type = 'error') {
 }
 
 // ── Theme ────────────────────────────────────────────────────────
-window.toggleTheme = function() {
-  const isLight = document.body.classList.toggle('light-mode');
-  localStorage.setItem('theme', isLight ? 'light' : 'dark');
-};
-if (localStorage.getItem('theme') === 'light') document.body.classList.add('light-mode');
+// toggleTheme() is defined in theme.js — it now writes both 'theme' and
+// 'ciq-theme' keys and handles both body.light-mode + html[data-theme].
+// We only need to ensure body.light-mode is applied on load (theme.js
+// DOMContentLoaded listener handles it, but also do it here as fallback):
+if (localStorage.getItem('ciq-theme') === 'light' || localStorage.getItem('theme') === 'light') {
+  document.body.classList.add('light-mode');
+}
 
 // ── Login ────────────────────────────────────────────────────────
 window.doLogin = async function(e) {

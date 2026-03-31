@@ -185,7 +185,7 @@ function renderOverview() {
 }
 
 // ═══════════════════════════════════════════════════════
-// ACADEMICS
+// ACADEMICS  — with SVG line charts
 // ═══════════════════════════════════════════════════════
 function renderAcademics() {
   const acRecs = DB.getStudentAcademic(student.id);
@@ -194,12 +194,28 @@ function renderAcademics() {
 
   document.getElementById('mainArea').innerHTML = `
   <div class="page-hdr animate-in"><div class="page-hdr-left"><h2>My Academics</h2><p>${acRecs.length} subject records</p></div></div>
+
+  <!-- Stat cards -->
   <div class="grid-2 animate-in anim-delay-1" style="margin-bottom:1rem">
     <div class="stat-card"><div class="stat-label">Average Marks</div><div class="stat-val" style="color:${avgM>=75?'var(--emerald)':avgM>=60?'var(--cyan)':'var(--red)'}">${avgM}%</div></div>
     <div class="stat-card"><div class="stat-label">Average Attendance</div><div class="stat-val" style="color:${avgA>=75?'var(--emerald)':'var(--red)'}">${avgA}%</div></div>
   </div>
+
   ${acRecs.length ? `
-  <div class="card animate-in anim-delay-2">
+  <!-- Line Charts -->
+  <div class="grid-2 animate-in anim-delay-2" style="margin-bottom:1rem">
+    <div class="card">
+      <div class="card-title">📈 Marks per Subject</div>
+      <canvas id="marksChart" height="160" style="width:100%;display:block"></canvas>
+    </div>
+    <div class="card">
+      <div class="card-title">📅 Attendance per Subject</div>
+      <canvas id="attChart" height="160" style="width:100%;display:block"></canvas>
+    </div>
+  </div>
+
+  <!-- Table -->
+  <div class="card animate-in anim-delay-3">
     <div class="tbl-wrap"><table>
       <thead><tr><th>Subject</th><th>Semester</th><th>Marks</th><th>Quiz</th><th>Assignment</th><th>Attendance</th><th>Feedback</th></tr></thead>
       <tbody>${acRecs.map(r=>`<tr>
@@ -213,6 +229,161 @@ function renderAcademics() {
       </tr>`).join('')}</tbody>
     </table></div>
   </div>` : `<div class="card animate-in"><div class="empty-state"><div class="ico">📚</div><p>No academic records yet. Your teacher will add them.</p></div></div>`}`;
+
+  // Draw charts after DOM is painted
+  if (acRecs.length) {
+    requestAnimationFrame(() => {
+      drawLineChart('marksChart',      acRecs, 'marks',      '#38BDF8', '#8B5CF6');
+      drawLineChart('attChart',        acRecs, 'attendance', '#10B981', '#38BDF8');
+    });
+  }
+}
+
+/* ── Lightweight canvas line chart (no library) ── */
+function drawLineChart(canvasId, records, field, colorA, colorB) {
+  const canvas = document.getElementById(canvasId);
+  if (!canvas) return;
+
+  // Set actual pixel dimensions from layout width
+  const dpr = window.devicePixelRatio || 1;
+  const rect = canvas.getBoundingClientRect();
+  const W = rect.width  || canvas.parentElement.clientWidth || 400;
+  const H = canvas.height || 160;
+  canvas.width  = W * dpr;
+  canvas.height = H * dpr;
+  canvas.style.width  = W + 'px';
+  canvas.style.height = H + 'px';
+
+  const ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+
+  // Color tokens from current theme
+  const isDark   = document.documentElement.getAttribute('data-theme') !== 'light';
+  const textCol  = isDark ? 'rgba(148,173,202,0.8)' : 'rgba(45,74,106,0.8)';
+  const gridCol  = isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.07)';
+
+  const PAD = { top:14, right:16, bottom:42, left:36 };
+  const cW  = W - PAD.left - PAD.right;
+  const cH  = H - PAD.top  - PAD.bottom;
+
+  const values = records.map(r => Number(r[field]) || 0);
+  const labels = records.map(r => {
+    const s = r.subject || '';
+    return s.length > 10 ? s.slice(0, 9) + '…' : s;
+  });
+  const n    = values.length;
+  const min  = 0;
+  const max  = 100;
+  const step = n > 1 ? cW / (n - 1) : 0;
+
+  // ── Grid lines (5 horizontal) ──
+  ctx.lineWidth   = 1;
+  ctx.strokeStyle = gridCol;
+  ctx.setLineDash([4, 4]);
+  for (let i = 0; i <= 4; i++) {
+    const y = PAD.top + (cH / 4) * i;
+    ctx.beginPath();
+    ctx.moveTo(PAD.left, y);
+    ctx.lineTo(PAD.left + cW, y);
+    ctx.stroke();
+  }
+  ctx.setLineDash([]);
+
+  // ── Y-axis labels ──
+  ctx.fillStyle  = textCol;
+  ctx.font       = `${10 * (1/dpr < 1 ? 1 : 1)}px 'Outfit', sans-serif`;
+  ctx.textAlign  = 'right';
+  ctx.textBaseline = 'middle';
+  for (let i = 0; i <= 4; i++) {
+    const val = 100 - i * 25;
+    const y   = PAD.top + (cH / 4) * i;
+    ctx.fillText(val + '%', PAD.left - 5, y);
+  }
+
+  // ── Gradient fill under curve ──
+  const toX = (i) => PAD.left + (n === 1 ? cW / 2 : i * step);
+  const toY = (v) => PAD.top + cH - ((v - min) / (max - min)) * cH;
+
+  const grad = ctx.createLinearGradient(0, PAD.top, 0, PAD.top + cH);
+  grad.addColorStop(0,   colorA + '40');
+  grad.addColorStop(1,   colorA + '00');
+  ctx.beginPath();
+  ctx.moveTo(toX(0), PAD.top + cH);
+  for (let i = 0; i < n; i++) ctx.lineTo(toX(i), toY(values[i]));
+  ctx.lineTo(toX(n - 1), PAD.top + cH);
+  ctx.closePath();
+  ctx.fillStyle = grad;
+  ctx.fill();
+
+  // ── Line ──
+  const lineGrad = ctx.createLinearGradient(PAD.left, 0, PAD.left + cW, 0);
+  lineGrad.addColorStop(0, colorA);
+  lineGrad.addColorStop(1, colorB);
+  ctx.beginPath();
+  ctx.strokeStyle = lineGrad;
+  ctx.lineWidth   = 2.5;
+  ctx.lineJoin    = 'round';
+  ctx.lineCap     = 'round';
+  for (let i = 0; i < n; i++) {
+    if (i === 0) ctx.moveTo(toX(i), toY(values[i]));
+    else         ctx.lineTo(toX(i), toY(values[i]));
+  }
+  ctx.stroke();
+
+  // ── Dots + tooltip values ──
+  for (let i = 0; i < n; i++) {
+    const x = toX(i);
+    const y = toY(values[i]);
+    const v = values[i];
+    const col = v >= 75 ? '#10B981' : v >= 60 ? '#38BDF8' : '#F59E0B';
+
+    // Outer glow circle
+    ctx.beginPath();
+    ctx.arc(x, y, 6, 0, Math.PI * 2);
+    ctx.fillStyle = col + '30';
+    ctx.fill();
+
+    // Inner dot
+    ctx.beginPath();
+    ctx.arc(x, y, 3.5, 0, Math.PI * 2);
+    ctx.fillStyle = col;
+    ctx.fill();
+    ctx.strokeStyle = isDark ? '#111827' : '#fff';
+    ctx.lineWidth   = 1.5;
+    ctx.stroke();
+
+    // Value label above dot
+    ctx.fillStyle    = isDark ? '#E6EDF7' : '#0F172A';
+    ctx.font         = 'bold 9px Outfit, sans-serif';
+    ctx.textAlign    = 'center';
+    ctx.textBaseline = 'bottom';
+    ctx.fillText(v + '%', x, y - 7);
+  }
+
+  // ── X-axis labels ──
+  ctx.fillStyle    = textCol;
+  ctx.font         = '9px Outfit, sans-serif';
+  ctx.textAlign    = 'center';
+  ctx.textBaseline = 'top';
+  for (let i = 0; i < n; i++) {
+    ctx.fillText(labels[i], toX(i), PAD.top + cH + 8);
+  }
+
+  // ── Threshold line (75%) ──
+  const thresh = toY(75);
+  ctx.beginPath();
+  ctx.strokeStyle = 'rgba(245,158,11,0.35)';
+  ctx.lineWidth   = 1;
+  ctx.setLineDash([5, 5]);
+  ctx.moveTo(PAD.left, thresh);
+  ctx.lineTo(PAD.left + cW, thresh);
+  ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle    = 'rgba(245,158,11,0.6)';
+  ctx.font         = '8px Outfit, sans-serif';
+  ctx.textAlign    = 'left';
+  ctx.textBaseline = 'bottom';
+  ctx.fillText('75%', PAD.left + 2, thresh - 2);
 }
 
 // ═══════════════════════════════════════════════════════
